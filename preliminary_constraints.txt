@@ -1,0 +1,52 @@
+Preliminary Constraints
+1)     Users are uniquely identified by their User ID. Their Profile (words to describe oneself), Password, Area/Address, Phone Number must be provided. Email is optional. User ID must be unique to others.
+
+2)     There are two types of Users, they are either Consumers or PCS Admin(Covering Constraint).There are two types of consumers, they are either Pet Owner or CareTaker (Covering Constraint). Pet Owners can be CareTakers as well (Overlapping Constraint).
+
+3)     Consumers may provide their Bank Account Number to pay for any transaction, refunds or to credit their salary. They may also provide one credit card for payment of services.
+
+4)   Pets are uniquely identified by their Pet ID, and must have a profile. Optionally, Special Requirements of the pet may be added as an attribute.   Each Pet is owned by exactly one Pet Owner. A Pet should be able to uniquely identify their owners.
+
+5)     Pet Owners must indicate the number of pets they have on their account. Each registered Pet Owner must have at least one pet registered in the system. The existence of a pet on the PCS application depends on the pet owner, (Existential dependency). Moreover, once the Pet Owner is deleted, we need not keep track of the Pet any longer. 
+
+6)     Each Pet should belong to exactly one valid Pet Type.
+
+7)   Pet Types are identified by their Category (e.g dog, cats), and must have at least a minimum base price assigned to each category by the PCS Admin. 
+
+8)   There are two types of Care Takers: Full Timer and Part Timer. They must be either one of each type and cannot be both types. They do not satisfy overlap constraint, however they satisfy the covering constraint. 
+
+9)    Full Timers must have an attribute Pet Days Clocked, keeping track of the Pet Days they have accrued for that month. The value is reset at the start of the month. It is also assumed that all Full Timers have a Max Pet limit of 5. After each successful bid, the pet days clocked will increase for the corresponding month. 
+
+10)  Part Timers must have an attribute of Max Pet, which indicates the maximum number of pets they can take care of in one day. This value should be between 2 to 5. This rating value would be reviewed by the PCS Admin at the end of the month. If the average rating of the Part Timer is above 3 but below or equals to 4, limit is set to 3. If the average rating is above 4 and below or equals to 4.7, the limit is set to 4. If the rating is above 4.7, the limit is set to 5. If the rating of the Part Timer drops, resulting in a decrease in limit, successful bookings that exceeds the new limit will be kept. However, all future bids and bookings will be subjected to the limit.
+
+11)   Care Takers have to be able to take care of at least one Pet Type. Each CareTaker will also have a Fee per Day specified for the services of caring for each Pet Type. This fee is greater than or equals the listed price (of the corresponding caretaker) of the category of Pet Type. Fee per Day can be priced up to 1.1 times of base price if the CareTaker has an averaged rating of 4 or higher, and up to 1.2 times of base price if the Care Taker has an average rating of 4.7 or higher. However, the actual Fee per Day set is to be decided by the CareTaker who may choose to keep their price at the minimal base price.
+
+12)  There should be a table of Dates identified by the Date of a day. The Dates table should cover all days at least for the next two years.
+
+13)   Care Takers’ available Dates will be tracked over the course of the next two years. They are only open for bidding / booking, if they can work on a particular day and have at least 1 remaining pet slot (number of additional pets they can take care). 
+	a.       Full-time Care Takers are assumed to be available every day for the whole of the next two years, unless they decide to take leave on a particular Date. The number of pet slots available for each date is initialised as 5 (their Max Pet limit) at the beginning.
+	b.       Part-Time Care Takers have to update their available dates for the next two years. Their number of pet slots available for each Date is initialised to their Max Pet limit.
+
+14)   Full-Timers can apply for Leave Days to be taken. These Leave days allow their availability dates (for pet care services) to be removed from consideration, The Leave they have taken or will take in the year would be tracked. There are two conditions that have to be satisfied for the new Leave to be approved.
+	a.       They have no Pet booked to care for during that date (i.e. their availability for that date should be the Max Pet Limit).
+	b.       Their leave should not violate the minimum 2x150 consecutive days of work they have to commit to each year.
+
+15)   Pet Owners may bid for Care Taker’s services on behalf of their Pet on the days the particular Care Taker is available. Every bid must have a bid price greater than or equal to the listed price. Each successful bid will appear in the Bidding Records with a pending status. Once a bid is accepted by a Care Taker, bids by the same Pet Owner, with the same Pet and overlapping date range will be rejected automatically. They have to include information on the Transfer Type (either handing the pet over via Owner Delivery, Care Taker pick up or PCS Center), and the Payment Type (credit card or cash) if the bid is successful.
+	a.       The Pet Owner should also bid only for Care Takers that can care for their Pet Type for their bid to be valid. 
+	b.     The Care Taker will review the bids for his service and accept the bids according to his preference. 
+
+16)   A Bidding Record should be identifiable by the Pet ID, CareTaker ID, and the start Date of the service. It must include information on the Transfer Type, Payment Type, End Date of service, and a Bid Price (in form of fee per day for the Care Taker’s services). There must also be an attribute isPaid, which takes a boolean value indicating if the Pet Owner has paid for the service.
+	a.	Each Bidding Record has a compulsory attribute called Status. Status can take three possible values: Approved, Rejected or Pending. When the Pet Owner first bids for a Care Taker’s service on behalf of the pet, he or she will have to fill in the required fields, and then it will have the ‘pending’ status. Once the caretaker accepts the bid, the status of the bidding record would be updated to ‘approved’ status. Likewise, if the caretaker rejects the bid, the bidding record would be updated to ‘rejected’ status. 
+	b.     The Bidding Records could have a Rating (integer from 1 to 5) and Review (string of text) by the Pet Owner regarding the service provided by the Care Taker. The Rating and Review is to be filled by the Pet Owner after the end date of the service provided. 
+
+17)  A Calendar of Services rendered by PCS on each day should also be tracked. That is to say, for each date that a Care Taker is taking care of a Pet Owner’s pet, that date and a reference to the corresponding ‘approved’ Bidding Record will be an entry into the Calendar. Thus, each time a Bidding Record status changes from ‘pending’ to ‘approved’, there will be an entry for each date from the start date to the end date of the Bidding Record. The dates in the Calendar of Services are in discrete form, which makes it easier for the PCA admin to select the range of dates to pay the caretaker for at the end of the month. Querying directly from the Bidding Records would be inconvenient as there can be start dates and end dates of the services spanning across two months. 
+	a.     This allows for the identification of all services rendered to pet owners by PCS’s CareTakers on a particular date.
+	b.     Care Takers can also track the pets they are caring for on each date just like on an organised Calendar.
+The salaries for each month for each Care Taker can be computed from the Calendar of services rendered. The table for the Bidding Records can be inner joined with the Calendar of services, and the rows with the dates for a particular month and Care Taker can then be filtered out.
+Full-Time Care Taker’s salary is $3000 per month for up to 60 pet-days. Any excess pet-day, they will receive 80% of their price as a bonus. Due to the difference in prices for pet types, the highest pet day prices would be used for excess pet-day prices. Thus, the rows will first be sorted in increasing order of Fee per Day. The first 60 entries are ignored. Any additional rows after that, cumulatively add 80% times the Fee per Day on top of the base $3000.
+Part-time Care Taker’s salary is simply 75% of their stated price for the care of each pet. Thus, cumulatively add 75% times the Fee per Day to get the salary.
+
+18) And all the other constraints already listed in the question.
+
+Requirements with respect to implementation details that were unable to be reflected in our ER diagram would be justified in our project report. 
+
