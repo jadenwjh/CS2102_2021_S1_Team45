@@ -1,67 +1,92 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const pool = require("./db");
-const path = require("path");
+const pool = require("./db"); // db config setup file
 const PORT = process.env.PORT || 5000;
 
-//process.env.PORT
-//process.env.NODE_ENV => production or undefined
 
 //middleware
 app.use(cors());
 app.use(express.json()); // => allows us to access the req.body
 
-// app.use(express.static(path.join(__dirname, "client/build")));
-// app.use(express.static("./client/build")); => for demonstration
-app.use(express.static(path.join(__dirname, "client/build")));
-if (process.env.NODE_ENV === "production") {
-  //server static content
-  //npm run build
-  app.use(express.static(path.join(__dirname, "client/build")));
-}
 
-console.log(__dirname);
-console.log(path.join(__dirname, "client/build"));
+// Routes
 
-//ROUTES//
+/* 
+    ###########################
+    #          Debug          #
+    ###########################
+*/ 
 
-//get all Todos
-
-app.get("/todos", async (req, res) => {
+//get all table names in database
+app.get("/debug", async (req, res) => {
   try {
-    const allTodos = await pool.query("SELECT * FROM todo");
-
-    res.json(allTodos.rows);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-//get a todo
-
-app.get("/todos/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1", [
-      id,
-    ]);
-    res.json(todo.rows[0]);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-//create a todo
-
-app.post("/todos", async (req, res) => {
-  try {
-    console.log(req.body);
-    const { description } = req.body;
-    const newTodo = await pool.query(
-      "INSERT INTO todo (description) VALUES ($1) RETURNING *",
-      [description]
+    const getAllTables = await pool.query(
+      `SELECT table_name 
+      FROM pcs_database.tables 
+      WHERE table_schema = 'public' 
+      ORDER BY table_name;`
     );
+    res.json(getAllTables.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
+//get all contents of a table
+app.get("/debug/:name", async (req, res) => {
+  try {
+    const getTable = await pool.query(`SELECT * FROM ${req.params.name};`);
+    res.json(getTable.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+/* 
+    ###########################
+    #       Basic CRUD        #
+    ###########################
+*/
+
+/* 
+=======================
+|        Users        |
+=======================
+*/ 
+
+//get all Users
+app.get("/Users", async (req, res) => {
+  try {
+    const getUsers = await pool.query("SELECT * FROM Users;");
+
+    res.json(getUsers.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+//get an User by username
+app.get("/Users/:username", async (req, res) => {
+  try {
+    const getUser = await pool.query(`SELECT * FROM Users WHERE username = ${req.params.username};`);
+    res.json(getUser.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+//create an User
+app.post("/Users", async (req, res) => {
+  try {
+    //console.log(req.body);
+    
+    const query = `INSERT INTO Users (username, email, profile, address, phoneNum)
+    VALUES (${req.body.username}, ${req.body.email}, ${req.body.profile}, ${req.body.address}, ${req.body.phoneNum}) 
+    RETURNING *;`
+    
+    const newTodo = await pool.query(query);
 
     res.json(newTodo.rows[0]);
   } catch (err) {
@@ -69,41 +94,57 @@ app.post("/todos", async (req, res) => {
   }
 });
 
-//update a todo
-
-app.put("/todos/:id", async (req, res) => {
+//update an User's info
+app.put("/Users/:username", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { description } = req.body;
+    
+    var updateArray = []
+
+    for (const [k, v] of Object.entries(req.body)) {
+      updateArray.push(`${k} = ${v}`);
+    }
+
     const updateTodo = await pool.query(
-      "UPDATE todo SET description = $1 WHERE todo_id = $2",
-      [description, id]
+      `UPDATE Users SET ${updateArray} WHERE username = ${req.params.username};`
     );
 
-    res.json("Todo was updated");
+    res.json("User was updated");
   } catch (err) {
     console.error(err.message);
   }
 });
 
 //delete a todo
-
-app.delete("/todos/:id", async (req, res) => {
+app.delete("/Users/:username", async (req, res) => {
   try {
     const { id } = req.params;
-    const deleteTodo = await pool.query("DELETE FROM todo WHERE todo_id = $1", [
-      id,
-    ]);
-    res.json("Todo was deleted");
+    const deleteTodo = await pool.query(`DELETE FROM Users WHERE username = ${req.params.username};`);
+    res.json(`User ${req.params.username} was deleted`);
   } catch (err) {
     console.error(err.message);
   }
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build/index.html"));
-});
 
+/* 
+=====
+Debug
+=====
+*/ 
+
+
+
+/* 
+    #################################
+    #        Complex Triggers       #
+    #################################
+*/
+
+
+
+
+
+// Start Server
 app.listen(PORT, () => {
   console.log(`Server is starting on port ${PORT}`);
 });
