@@ -651,7 +651,7 @@ app.get("/Unavailability/:caretaker", async (req, res) => {
   }
 });
 
-//get n unavailable date if present by caretaker and avail
+//get a unavailable date if present by caretaker and avail
 app.get("/Unavailability/:caretaker/:avail", async (req, res) => {
   try {
     const getUnavailability = await pool.query(
