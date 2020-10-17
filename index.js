@@ -81,7 +81,13 @@ app.get("/Users/:username", async (req, res) => {
 app.post("/Users", async (req, res) => {
   try {
     const query = `INSERT INTO Users (username, email, profile, address, phoneNum)
-    VALUES ('${req.body.username}', '${req.body.email}', '${req.body.profile}', '${req.body.address}', '${req.body.phoneNum}') 
+    VALUES (
+      '${req.body.username}', 
+      '${req.body.email}', 
+      '${req.body.profile}', 
+      '${req.body.address}', 
+      '${req.body.phoneNum}'
+    ) 
     RETURNING *;`
     const newUser = await pool.query(query);
 
