@@ -23,7 +23,7 @@ app.get("/debug", async (req, res) => {
   try {
     const getAllTables = await pool.query(
       `SELECT table_name 
-      FROM pcs_database.tables 
+      FROM INFORMATION_SCHEMA.tables 
       WHERE table_schema = 'public' 
       ORDER BY table_name;`
     );

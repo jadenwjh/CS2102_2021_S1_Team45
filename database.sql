@@ -1,6 +1,3 @@
-CREATE DATABASE pcs_database;
-
---\c into pcs_database
 
 CREATE TABLE Users (
 	username VARCHAR PRIMARY KEY NOT NULL,
@@ -10,35 +7,35 @@ CREATE TABLE Users (
 	phoneNum INTEGER NOT NULL
 );
 
-CREATE TABLE Consumer (
+CREATE TABLE Consumers (
 	username VARCHAR PRIMARY KEY REFERENCES Users(username) ON DELETE cascade,
 	creditCard INTEGER,
 	bankAcc INTEGER NOT NULL
 );
 
-CREATE TABLE PCSadmin (
+CREATE TABLE PCSadmins (
 	username VARCHAR PRIMARY KEY REFERENCES Users(username) ON DELETE cascade
 );
 
-CREATE TABLE PetOwner (
+CREATE TABLE PetOwners (
 	username VARCHAR PRIMARY KEY REFERENCES Consumers(username) ON DELETE cascade
 );
 
-CREATE TABLE CareTaker (
-	username VARCHAR PRIMARY KEY REFERENCES Consumers(username) ON DELETE cascade
-  maxslots INTEGER NOT NULL,
+CREATE TABLE CareTakers (
+	username VARCHAR PRIMARY KEY REFERENCES Consumers(username) ON DELETE cascade,
+  maxslots INTEGER NOT NULL
 );
 
-CREATE TABLE FullTimer (
-	username VARCHAR PRIMARY KEY REFERENCES CareTaker(username) ON DELETE cascade
+CREATE TABLE FullTimers (
+	username VARCHAR PRIMARY KEY REFERENCES CareTakers(username) ON DELETE cascade
 );
 
-CREATE TABLE PartTimer (
-	username VARCHAR PRIMARY KEY REFERENCES CareTaker(username) ON DELETE cascade
+CREATE TABLE PartTimers (
+	username VARCHAR PRIMARY KEY REFERENCES CareTakers(username) ON DELETE cascade
 );
 
-CREATE TABLE Pet (
-	petowner VARCHAR REFERENCES PetOwner(username) ON DELETE CASCADE,
+CREATE TABLE Pets (
+	petowner VARCHAR REFERENCES PetOwners(username) ON DELETE CASCADE,
 	petname VARCHAR NOT NULL,
 	profile VARCHAR NOT NULL,
 	specialReq VARCHAR,
@@ -47,14 +44,14 @@ CREATE TABLE Pet (
 
 --parttimers 
 CREATE TABLE Availability (
-	caretaker VARCHAR REFERENCES PartTimer(username) ON DELETE CASCADE,
+	caretaker VARCHAR REFERENCES PartTimers(username) ON DELETE CASCADE,
 	avail DATE NOT NULL,
 	PRIMARY KEY (caretaker, avail)
 );
 
 --fulltimers
 CREATE TABLE Unavailability (
-	caretaker VARCHAR REFERENCES FullTimer(username) ON DELETE CASCADE,
+	caretaker VARCHAR REFERENCES FullTimers(username) ON DELETE CASCADE,
 	avail DATE NOT NULL,
 	PRIMARY KEY (caretaker, avail)
 );
@@ -66,18 +63,18 @@ CREATE TABLE Unavailability (
 -- 		3 jan 
 -- #######################
 
-CREATE TABLE PetType (
+CREATE TABLE PetTypes (
 	category VARCHAR PRIMARY KEY NOT NULL,
 	baseprice FLOAT(4) NOT NULL
 );
 
 CREATE TABLE Manages (
-	admin VARCHAR REFERENCES PCSadmin(username),
+	admin VARCHAR REFERENCES PCSadmins(username),
 	caretaker VARCHAR REFERENCES CareTakers(username),
 	PRIMARY KEY (admin, caretaker)
 ); 
 
-CREATE TABLE Bid (
+CREATE TABLE Bids (
 	petowner VARCHAR NOT NULL,
 	petname VARCHAR NOT NULL,
 	caretaker VARCHAR NOT NULL,
