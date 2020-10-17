@@ -81,7 +81,7 @@ app.get("/Users/:username", async (req, res) => {
 app.post("/Users", async (req, res) => {
   try {
     const query = `INSERT INTO Users (username, email, profile, address, phoneNum)
-    VALUES (${req.body.username}, ${req.body.email}, ${req.body.profile}, ${req.body.address}, ${req.body.phoneNum}) 
+    VALUES ('${req.body.username}', '${req.body.email}', '${req.body.profile}', '${req.body.address}', '${req.body.phoneNum}') 
     RETURNING *;`
     const newTodo = await pool.query(query);
 
@@ -97,11 +97,11 @@ app.put("/Users/:username", async (req, res) => {
     var updateArray = [];
 
     for (const [k, v] of Object.entries(req.body)) {
-      updateArray.push(`${k} = ${v}`);
+      updateArray.push(`${k} = '${v}'`);
     }
 
     const updateUser = await pool.query(
-      `UPDATE Users SET ${updateArray} WHERE username = ${req.params.username};`
+      `UPDATE Users SET ${updateArray} WHERE username = '${req.params.username}';`
     );
     //console.log(`UPDATE Users SET ${updateArray} WHERE username = ${req.params.username};`);
     res.json("User was updated");
@@ -113,7 +113,7 @@ app.put("/Users/:username", async (req, res) => {
 //delete a todo
 app.delete("/Users/:username", async (req, res) => {
   try {
-    const deleteUser = await pool.query(`DELETE FROM Users WHERE username = ${req.params.username};`);
+    const deleteUser = await pool.query(`DELETE FROM Users WHERE username = '${req.params.username}';`);
     res.json(`User ${req.params.username} was deleted`);
   } catch (err) {
     console.error(err.message);
