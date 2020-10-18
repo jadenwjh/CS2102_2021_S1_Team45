@@ -1,5 +1,7 @@
 package com.example.cs2102.data;
 
+import android.util.Log;
+
 import com.example.cs2102.data.model.LoggedInUser;
 
 /**
@@ -47,6 +49,7 @@ public class LoginRepository {
         // handle login
         Result<LoggedInUser> result = dataSource.login(username, password);
         if (result instanceof Result.Success) {
+            Log.d("LOGIN", "SUCCESS");
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
