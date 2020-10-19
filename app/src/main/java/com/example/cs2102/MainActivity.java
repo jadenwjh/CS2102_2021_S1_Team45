@@ -12,5 +12,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d("FIRST COMMIT", "SUCCESS");
+
+        //init libraries
+
+        //start intent LOGIN
     }
 }
