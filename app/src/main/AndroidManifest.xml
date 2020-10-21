@@ -11,16 +11,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <!--suppress CheckTagEmptyBody -->
-        <activity android:name=".Login.LoginActivity"></activity>
-        <activity android:name=".PetOwner.PetOwnerActivity" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".view.LoginActivity"
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.PetOwnerActivity" />
     </application>
 
 </manifest>
