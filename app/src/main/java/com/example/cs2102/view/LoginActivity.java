@@ -40,6 +40,9 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.user_type)
     Spinner userType;
 
+    @BindView(R.id.sign_up)
+    Button signUp;
+
     private LoginVM loginViewModel;
 
     @Override
@@ -65,6 +68,13 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startRegisterPage();
+            }
+        });
     }
 
     public void generateMenu() {
@@ -84,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void startUserPage(User user) {
+    private void startUserPage(User user) {
         String type = user.getType();
         Intent afterLogin;
         switch (type) {
@@ -94,6 +104,12 @@ public class LoginActivity extends AppCompatActivity {
             default: afterLogin = new Intent(this, PetOwnerRequestsActivity.class);
         }
         startActivity(afterLogin);
+        finish();
+    }
+
+    private void startRegisterPage() {
+        Intent registerUser = new Intent(this, RegisterActivity.class);
+        startActivity(registerUser);
         finish();
     }
 }

@@ -11,4 +11,15 @@
         <item>Care Taker</item>
         <item>Admin</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pet_owner">Pet Owner</string>
+    <string name="care_taker">Care Taker</string>
+    <string name="enter_your_address">Enter your address</string>
+    <string name="enter_your_pet_s_name">Enter your pet\'s name</string>
+    <string name="enter_your_pet_s_type">Enter your pet\'s type</string>
+    <string name="enter_your_number">Enter your number</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="register">Register</string>
 </resources>
