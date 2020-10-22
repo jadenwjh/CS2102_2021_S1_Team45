@@ -3,11 +3,8 @@ package com.example.cs2102.viewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.cs2102.model.DataApi;
+import com.example.cs2102.model.CareTaker;
 import com.example.cs2102.model.DataApiService;
-import com.example.cs2102.model.Pet;
-import com.example.cs2102.model.PetOwner;
-import com.example.cs2102.model.User;
 
 import java.util.List;
 
@@ -16,26 +13,25 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class PetOwnerVM extends ViewModel {
-
-    public MutableLiveData<List<PetOwner>> petOwners = new MutableLiveData<List<PetOwner>>();
+public class CareTakerAvailableVM extends ViewModel {
+    public MutableLiveData<List<CareTaker>> careTakers = new MutableLiveData<List<CareTaker>>();
     public MutableLiveData<Boolean> loadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void refreshPage() {fetchPetOwner();}
+    public void refreshPage() {fetchCareTakers();}
 
-    public void fetchPetOwner() {
+    public void fetchCareTakers() {
         loading.setValue(true);
-        disposable.add(dataApiService.getPetOwners()
+        disposable.add(dataApiService.getCareTakers()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<PetOwner>>() {
+                .subscribeWith(new DisposableSingleObserver<List<CareTaker>>() {
                     @Override
-                    public void onSuccess(List<PetOwner> _petOwners) {
-                        petOwners.setValue(_petOwners);
+                    public void onSuccess(List<CareTaker> _CareTakers) {
+                        careTakers.setValue(_CareTakers);
                         loadError.setValue(false);
                         loading.setValue(false);
                     }

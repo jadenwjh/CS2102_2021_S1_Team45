@@ -11,6 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
+        <activity android:name=".view.RegisterActivity"></activity>
+        <activity android:name=".view.CareTakerAvailableActivity" />
         <activity
             android:name=".view.LoginActivity"
             android:label="@string/title_activity_login">
@@ -20,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.PetOwnerActivity" />
+        <activity android:name=".view.PetOwnerRequestsActivity" />
     </application>
 
 </manifest>

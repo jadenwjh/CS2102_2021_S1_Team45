@@ -3,7 +3,6 @@ package com.example.cs2102.view;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.PetOwner;
-import com.example.cs2102.model.User;
 
 import java.util.List;
 
@@ -49,7 +47,7 @@ public class PetOwnerAdapter extends RecyclerView.Adapter<PetOwnerAdapter.PetOwn
         return petOwners.size();
     }
 
-    class PetOwnerViewHolder extends RecyclerView.ViewHolder{
+    static class PetOwnerViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.pet_owner_name)
         TextView petOwnerName;

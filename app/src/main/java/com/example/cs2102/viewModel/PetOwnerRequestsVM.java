@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.DataApiService;
-import com.example.cs2102.model.User;
+import com.example.cs2102.model.PetOwner;
 
 import java.util.List;
 
@@ -12,29 +12,27 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class LoginVM extends ViewModel {
+public class PetOwnerRequestsVM extends ViewModel {
 
-    public MutableLiveData<List<User>> users = new MutableLiveData<List<User>>();
+    public MutableLiveData<List<PetOwner>> petOwners = new MutableLiveData<List<PetOwner>>();
     public MutableLiveData<Boolean> loadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
-    public MutableLiveData<User> userProfile = new MutableLiveData<User>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void fetchUsers() {
+    public void refreshPage() {fetchPetOwners();}
+
+    public void fetchPetOwners() {
         loading.setValue(true);
-        disposable.add(dataApiService.getUsers()
+        disposable.add(dataApiService.getPetOwners()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<User>>() {
+                .subscribeWith(new DisposableSingleObserver<List<PetOwner>>() {
                     @Override
-                    public void onSuccess(List<User> _users) {
-                        users.setValue(_users);
+                    public void onSuccess(List<PetOwner> _petOwners) {
+                        petOwners.setValue(_petOwners);
                         loadError.setValue(false);
                         loading.setValue(false);
                     }
@@ -49,29 +47,9 @@ public class LoginVM extends ViewModel {
         );
     }
 
-    public void loginAttempt(String username, String password, String type) {
-        loading.setValue(true);
-        dataApiService.verifyLogin(username, password, type).enqueue(
-                new Callback<User>() {
-                    @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
-                        User user = response.body();
-                        userProfile.setValue(user);
-                    }
-
-                    @Override
-                    public void onFailure(Call<User> call, Throwable t) {
-                        //Prompt error
-                        //Make toast
-                    }
-                }
-        );
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();
         disposable.clear();
     }
-
 }

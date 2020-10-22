@@ -1,11 +1,7 @@
 package com.example.cs2102.view;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
-
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,13 +9,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
+import com.example.cs2102.constants.Strings;
+import com.example.cs2102.model.User;
 import com.example.cs2102.viewModel.LoginVM;
-import com.example.cs2102.viewModel.PetOwnerVM;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
@@ -49,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        makeSpinner();
+        generateMenu();
 
         loginViewModel = ViewModelProviders.of(this).get(LoginVM.class);
 
@@ -61,20 +59,15 @@ public class LoginActivity extends AppCompatActivity {
                 String t = userType.getSelectedItem().toString();
                 checkValidity(uName);
                 checkValidity(pw);
-                boolean loginSuccess = loginViewModel.isRegistered(uName, pw, t);
-                if (loginSuccess) {
-                    //new intent
-                } else {
-                    //invalid credentials
+                loginViewModel.loginAttempt(uName, pw, t);
+                if (loginViewModel.userProfile.getValue() != null) {
+                    startUserPage(loginViewModel.userProfile.getValue());
                 }
-                Log.d("Username:", uName);
-                Log.d("Password:", pw);
-                Log.d("Type:", t);
             }
         });
     }
 
-    public void makeSpinner() {
+    public void generateMenu() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.user_selection, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,5 +82,18 @@ public class LoginActivity extends AppCompatActivity {
         if (!Pattern.matches("[a-zA-Z]+", input)) {
             Log.d("SpecialCharactersError", "use only alphabets");
         }
+    }
+
+    public void startUserPage(User user) {
+        String type = user.getType();
+        Intent afterLogin;
+        switch (type) {
+            //case Strings.ADMIN: afterLogin = new Intent(this, AdminActivity.class);
+            case Strings.PET_OWNER: afterLogin = new Intent(this, CareTakerAvailableActivity.class);
+            case Strings.CARE_TAKER: afterLogin = new Intent(this, PetOwnerRequestsActivity.class);
+            default: afterLogin = new Intent(this, PetOwnerRequestsActivity.class);
+        }
+        startActivity(afterLogin);
+        finish();
     }
 }
