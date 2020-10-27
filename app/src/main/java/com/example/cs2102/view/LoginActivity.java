@@ -3,6 +3,7 @@ package com.example.cs2102.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
@@ -33,14 +35,14 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.login)
     Button login;
 
-    @BindView(R.id.loading)
-    ProgressBar loading;
-
     @BindView(R.id.user_type)
     Spinner userType;
 
     @BindView(R.id.sign_up)
     Button signUp;
+
+    @BindView(R.id.loading)
+    ProgressBar loadingBar;
 
     private LoginVM loginViewModel;
 
@@ -66,6 +68,17 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         signUp.setOnClickListener(view -> startRegisterPage());
+
+        loginViewModel.loading.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    loadingBar.setVisibility(View.VISIBLE);
+                } else {
+                    loadingBar.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     public void generateMenu() {

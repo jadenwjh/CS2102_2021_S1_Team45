@@ -2,12 +2,15 @@ package com.example.cs2102.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
@@ -25,6 +28,9 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     @BindView(R.id.care_taker)
     Button careTaker;
 
+    @BindView(R.id.loading)
+    ProgressBar loadingBar;
+
     private FragmentManager fm = getSupportFragmentManager();
     private FragmentTransaction ft = fm.beginTransaction();
     private Fragment careTakerFragment = fm.findFragmentByTag("CareTakerSignUp");
@@ -37,6 +43,17 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
+
+        registerViewModel.loading.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    loadingBar.setVisibility(View.VISIBLE);
+                } else {
+                    loadingBar.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         registerViewModel = ViewModelProviders.of(this).get(RegisterVM.class);
         switchFragment(1);
