@@ -1,13 +1,11 @@
 package com.example.cs2102.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -31,17 +29,27 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     @BindView(R.id.loading)
     ProgressBar loadingBar;
 
-    private FragmentManager fm = getSupportFragmentManager();
-    private FragmentTransaction ft = fm.beginTransaction();
-    private Fragment careTakerFragment = fm.findFragmentByTag("CareTakerSignUp");
-    private Fragment petOwnerFragment = fm.findFragmentByTag("PetOwnerSignUp");
+    private FragmentTransaction ft;
+    private CareTakerSignUpFragment careTakerFragment;
+    private PetOwnerSignUpFragment petOwnerFragment;
 
     private RegisterVM registerViewModel;
+    private static final String CURRENT_SIGN_UP = "RegisterSignUpFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        FragmentManager fm = getSupportFragmentManager();
+
+        if (savedInstanceState == null) {
+            ft = fm.beginTransaction();
+            careTakerFragment = new CareTakerSignUpFragment();
+            petOwnerFragment = new PetOwnerSignUpFragment();
+            //default sign up page
+            ft.add(R.id.register_form, petOwnerFragment, CURRENT_SIGN_UP).commit();
+        }
+
         ButterKnife.bind(this);
 
         registerViewModel.loading.observe(this, new Observer<Boolean>() {
@@ -50,47 +58,35 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
                 if (aBoolean) {
                     loadingBar.setVisibility(View.VISIBLE);
                 } else {
-                    loadingBar.setVisibility(View.INVISIBLE);
+                    loadingBar.setVisibility(View.GONE);
                 }
             }
         });
 
         registerViewModel = ViewModelProviders.of(this).get(RegisterVM.class);
-        switchFragment(1);
 
-        petOwner.setOnClickListener(view -> switchFragment(1));
+        petOwner.setOnClickListener(view -> switchFragment(Strings.PET_OWNER_SIGN_UP));
 
-        careTaker.setOnClickListener(view -> switchFragment(2));
+        careTaker.setOnClickListener(view -> switchFragment(Strings.CARE_TAKER_SIGN_UP));
     }
 
-    private void switchFragment(int id) {
-
+    private void switchFragment(String id) {
         switch (id) {
-            case 1: {
-                ft.replace(R.id.register_form, new PetOwnerSignUpFragment(), "PetOwnerSignUp");
-                if (careTakerFragment != null) {
-                    ft.remove(careTakerFragment);
-                }
-                ft.commit();
+            case Strings.PET_OWNER_SIGN_UP: {
+                ft.replace(R.id.register_form, petOwnerFragment, CURRENT_SIGN_UP).commit();
                 break;
             }
-            case 2: {
-                ft.replace(R.id.register_form, new CareTakerSignUpFragment(), "CareTakerSignUp");
-                if (petOwnerFragment != null) {
-                    ft.remove(petOwnerFragment);
-                }
-                ft.commit();
+            case Strings.CARE_TAKER_SIGN_UP: {
+                ft.replace(R.id.register_form, careTakerFragment, CURRENT_SIGN_UP).commit();
                 break;
             }
             default:
-                throw new RuntimeException("Unknown ID");
+                throw new RuntimeException("Unable to load sign up fragment");
         }
     }
 
     @Override
     public void onExitCareTakerRegister() {
-        Intent loginPage = new Intent(this, LoginActivity.class);
-        startActivity(loginPage);
         finish();
     }
 
@@ -108,8 +104,6 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
 
     @Override
     public void onExitPetOwnerRegister() {
-        Intent loginPage = new Intent(this, LoginActivity.class);
-        startActivity(loginPage);
         finish();
     }
 

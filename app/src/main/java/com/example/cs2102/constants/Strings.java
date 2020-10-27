@@ -8,6 +8,9 @@ public class Strings {
     public static final String FULL_TIME = "FT";
     public static final String PART_TIME = "PT";
 
+    public static final String PET_OWNER_SIGN_UP = "PetOwnerSignUp";
+    public static final String CARE_TAKER_SIGN_UP = "CareTakerSignUp";
+
     public static final String BASE_URL = "";
 
     public static final String USERS = "";

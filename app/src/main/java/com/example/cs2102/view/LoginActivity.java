@@ -119,6 +119,5 @@ public class LoginActivity extends AppCompatActivity {
     private void startRegisterPage() {
         Intent registerUser = new Intent(this, RegisterActivity.class);
         startActivity(registerUser);
-        finish();
     }
 }
