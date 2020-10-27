@@ -1,4 +1,4 @@
-package com.example.cs2102.view;
+package com.example.cs2102.view.loginView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +17,10 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.cs2102.R;
 import com.example.cs2102.constants.Strings;
 import com.example.cs2102.model.User;
+import com.example.cs2102.view.adminView.AdminActivity;
+import com.example.cs2102.view.careTakerView.CareTakerHomepage;
+import com.example.cs2102.view.petOwnerView.PetOwnerHomepage;
+import com.example.cs2102.view.registerView.RegisterActivity;
 import com.example.cs2102.viewModel.LoginVM;
 
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package com.example.cs2102.view;
+package com.example.cs2102.view.adminView;
 
 import android.os.Bundle;
 

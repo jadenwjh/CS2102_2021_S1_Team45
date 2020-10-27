@@ -11,19 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <activity android:name=".view.AdminActivity"></activity>
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".view.loginView.LoginActivity"
             android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.CareTakerHomepage" />
-        <activity android:name=".view.RegisterActivity" />
-        <activity android:name=".view.PetOwnerHomepage" />
+        <activity android:name=".view.careTakerView.CareTakerHomepage" />
+        <activity android:name=".view.registerView.RegisterActivity" />
+        <activity android:name=".view.petOwnerView.PetOwnerHomepage" />
+        <activity android:name=".view.adminView.AdminActivity" />
     </application>
 
 </manifest>

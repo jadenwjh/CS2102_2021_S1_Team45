@@ -3,7 +3,7 @@ package com.example.cs2102.viewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.cs2102.model.DataApiService;
+import com.example.cs2102.model.retrofitApi.DataApiService;
 import com.example.cs2102.model.User;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;

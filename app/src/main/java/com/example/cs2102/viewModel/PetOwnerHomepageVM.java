@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.CareTaker;
-import com.example.cs2102.model.DataApiService;
+import com.example.cs2102.model.retrofitApi.DataApiService;
 
 import java.util.List;
 

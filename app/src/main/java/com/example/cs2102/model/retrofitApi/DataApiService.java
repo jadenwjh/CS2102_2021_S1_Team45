@@ -1,6 +1,9 @@
-package com.example.cs2102.model;
+package com.example.cs2102.model.retrofitApi;
 
 import com.example.cs2102.constants.Strings;
+import com.example.cs2102.model.CareTaker;
+import com.example.cs2102.model.PetOwner;
+import com.example.cs2102.model.User;
 
 import java.util.List;
 
