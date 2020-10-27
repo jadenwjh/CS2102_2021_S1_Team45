@@ -22,4 +22,5 @@
     <string name="enter_your_email">Enter your email</string>
     <string name="sign_up">Sign Up</string>
     <string name="register">Register</string>
+    <string name="contract">State contract</string>
 </resources>

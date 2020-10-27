@@ -18,21 +18,12 @@ import java.util.Objects;
 
 public class CareTakerSignUpFragment extends Fragment {
 
-    private EditText username;
-    private EditText password;
-    private EditText email;
-    private EditText number;
-    private EditText address;
-    private Button register;
-
     private RegisterCTListener registerListener;
 
     public interface RegisterCTListener {
-        void onExitRegister();
-
-        //move these as a separate interface
-        void onCheckCareTakerUsernameTaken(String username);
-        void onRegisterCareTaker(String username, String password, String email, String number, String address);
+        void onExitCareTakerRegister();
+        boolean onCheckCareTakerUsernameTaken(String username);
+        void onRegisterCareTaker(String username, String password, String email, String number, String address, String contract);
     }
 
     @Nullable
@@ -44,25 +35,25 @@ public class CareTakerSignUpFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        username = (EditText) Objects.requireNonNull(getView()).findViewById(R.id.username);
-        password = (EditText) Objects.requireNonNull(getView()).findViewById(R.id.password);
-        email = (EditText) Objects.requireNonNull(getView()).findViewById(R.id.email);
-        number = (EditText) Objects.requireNonNull(getView()).findViewById(R.id.number);
-        address = (EditText) Objects.requireNonNull(getView()).findViewById(R.id.address);
-        register = (Button) Objects.requireNonNull(getView()).findViewById(R.id.register);
+        EditText username = Objects.requireNonNull(getView()).findViewById(R.id.username);
+        EditText password = Objects.requireNonNull(getView()).findViewById(R.id.password);
+        EditText email = Objects.requireNonNull(getView()).findViewById(R.id.email);
+        EditText number = Objects.requireNonNull(getView()).findViewById(R.id.number);
+        EditText address = Objects.requireNonNull(getView()).findViewById(R.id.address);
+        EditText contract = Objects.requireNonNull(getView()).findViewById(R.id.contract);
+        Button register = Objects.requireNonNull(getView()).findViewById(R.id.register);
 
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String uname = username.getText().toString();
-                String pw = password.getText().toString();
-                String mail = email.getText().toString();
-                String num = number.getText().toString();
-                String add = address.getText().toString();
+        register.setOnClickListener(currView -> {
+            String uname = username.getText().toString();
+            String pw = password.getText().toString();
+            String mail = email.getText().toString();
+            String num = number.getText().toString();
+            String add = address.getText().toString();
+            String con = contract.getText().toString();
 
-                registerListener.onCheckCareTakerUsernameTaken(uname);
-                registerListener.onRegisterCareTaker(uname, pw, mail, num, add);
-                registerListener.onExitRegister();
+            if (!registerListener.onCheckCareTakerUsernameTaken(uname)) {
+                registerListener.onRegisterCareTaker(uname, pw, mail, num, add, con);
+                registerListener.onExitCareTakerRegister();
             }
         });
     }
@@ -74,7 +65,7 @@ public class CareTakerSignUpFragment extends Fragment {
         if (context instanceof RegisterCTListener) {
             registerListener = (RegisterCTListener) context;
         } else {
-            throw new ClassCastException("ExitRegisterListener not implemented");
+            throw new ClassCastException("RegisterCTListener not implemented");
         }
     }
 

@@ -3,7 +3,6 @@ package com.example.cs2102.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,31 +49,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        generateMenu();
 
         loginViewModel = ViewModelProviders.of(this).get(LoginVM.class);
+        generateMenu();
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String uName = username.getText().toString();
-                String pw = password.getText().toString();
-                String t = userType.getSelectedItem().toString();
-                checkValidity(uName);
-                checkValidity(pw);
-                loginViewModel.loginAttempt(uName, pw, t);
-                if (loginViewModel.userProfile.getValue() != null) {
-                    startUserPage(loginViewModel.userProfile.getValue());
-                }
+        login.setOnClickListener(v -> {
+            String uName = username.getText().toString();
+            String pw = password.getText().toString();
+            String t = userType.getSelectedItem().toString();
+            checkValidity(uName);
+            checkValidity(pw);
+            loginViewModel.loginAttempt(uName, pw, t);
+            if (loginViewModel.userProfile.getValue() != null) {
+                startUserPage(loginViewModel.userProfile.getValue());
             }
         });
 
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startRegisterPage();
-            }
-        });
+        signUp.setOnClickListener(view -> startRegisterPage());
     }
 
     public void generateMenu() {
@@ -96,15 +87,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startUserPage(User user) {
         String type = user.getType();
-        Intent afterLogin;
         switch (type) {
-            //case Strings.ADMIN: afterLogin = new Intent(this, AdminActivity.class);
-            case Strings.PET_OWNER: afterLogin = new Intent(this, CareTakerAvailableActivity.class);
-            case Strings.CARE_TAKER: afterLogin = new Intent(this, PetOwnerRequestsActivity.class);
-            default: afterLogin = new Intent(this, PetOwnerRequestsActivity.class);
+//            case Strings.ADMIN:
+//                startActivity(new Intent(this, AdminActivity.class));
+//                finish();
+//                break;
+            case Strings.PET_OWNER:
+                startActivity(new Intent(this, CareTakerAvailableActivity.class));
+                finish();
+                break;
+            case Strings.CARE_TAKER:
+                startActivity(new Intent(this, PetOwnerRequestsActivity.class));
+                finish();
+                break;
         }
-        startActivity(afterLogin);
-        finish();
     }
 
     private void startRegisterPage() {

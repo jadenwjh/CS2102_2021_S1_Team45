@@ -66,6 +66,18 @@
         android:autofillHints="@string/enter_your_address"
         android:selectAllOnFocus="true" />
 
+    <EditText
+        android:id="@+id/contract"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:inputType="text"
+        android:hint="@string/contract"
+        android:autofillHints="@string/contract"
+        android:selectAllOnFocus="true" />
+
     <Button
         android:id="@+id/register"
         android:layout_width="wrap_content"

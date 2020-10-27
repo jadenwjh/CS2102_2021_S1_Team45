@@ -6,6 +6,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -41,6 +42,9 @@ public class CareTakerAvailableActivity extends AppCompatActivity {
         setContentView(R.layout.activity_care_taker);
 
         ButterKnife.bind(this);
+
+        careTakerViewModel = ViewModelProviders.of(this).get(CareTakerAvailableVM.class);
+        careTakerViewModel.refreshPage();
 
         careTakerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         careTakerRecyclerView.setAdapter(careTakerAdapter);
