@@ -4,7 +4,6 @@ import com.example.cs2102.constants.Strings;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -32,11 +31,11 @@ public class DataApiService {
         return dataApiServiceInstance;
     }
 
-    public Observable<List<CareTaker>> getCareTakers() {
+    public Single<List<CareTaker>> getCareTakers() {
         return dataApi.getCareTakers();
     }
 
-    public Observable<List<PetOwner>> getPetOwners() {
+    public Single<List<PetOwner>> getPetOwners() {
         return dataApi.getPetOwners();
     }
 
@@ -46,5 +45,13 @@ public class DataApiService {
 
     public Single<User> getUsername(String uName) {
         return dataApi.getUsername(uName);
+    }
+
+    public Single<PetOwner> addPetOwner(String username, String password, String email, String number, String address, String petName, String petType) {
+        return dataApi.addPetOwner(username, password, Strings.PET_OWNER, email, number, address, petName, petType);
+    }
+
+    public Single<CareTaker> addCareTaker(String username, String password, String email, String number, String address, String contract) {
+        return dataApi.addCareTaker(username, password, Strings.CARE_TAKER, email, number, address, contract);
     }
 }

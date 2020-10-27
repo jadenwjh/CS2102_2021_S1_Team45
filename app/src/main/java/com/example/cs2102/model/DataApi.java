@@ -4,9 +4,7 @@ import com.example.cs2102.constants.Strings;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
-import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -23,7 +21,7 @@ public interface DataApi {
     Single<User> getUsername(@Query("username") String username);
 
     @POST(Strings.PET_OWNERS)
-    Call<PetOwner> addPetOwner(@Field("username") String username,
+    Single<PetOwner> addPetOwner(@Field("username") String username,
                        @Field("password") String password,
                        @Field("type") String type,
                        @Field("email") String email,
@@ -33,7 +31,7 @@ public interface DataApi {
                        @Field("petType") String petType);
 
     @POST(Strings.CARE_TAKERS)
-    Call<CareTaker> addCareTaker(@Field("username") String username,
+    Single<CareTaker> addCareTaker(@Field("username") String username,
                                @Field("password") String password,
                                @Field("type") String type,
                                @Field("email") String email,
@@ -42,12 +40,12 @@ public interface DataApi {
                                @Field("contract") String contract);
 
     @GET(Strings.PET_OWNERS_REQUESTS)
-    Observable<List<PetOwner>> getPetOwners();
+    Single<List<PetOwner>> getPetOwners();
 
     @GET(Strings.PETS)
     Single<List<Pet>> getPets();
 
     @GET(Strings.CARE_TAKERS_AVAILABLE)
-    Observable<List<CareTaker>> getCareTakers();
+    Single<List<CareTaker>> getCareTakers();
 
 }

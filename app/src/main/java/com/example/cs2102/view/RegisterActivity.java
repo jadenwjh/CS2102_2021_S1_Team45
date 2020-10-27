@@ -3,14 +3,16 @@ package com.example.cs2102.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
+import com.example.cs2102.constants.Strings;
+import com.example.cs2102.viewModel.RegisterVM;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,12 +30,15 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     private Fragment careTakerFragment = fm.findFragmentByTag("CareTakerSignUp");
     private Fragment petOwnerFragment = fm.findFragmentByTag("PetOwnerSignUp");
 
+    private RegisterVM registerViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
 
+        registerViewModel = ViewModelProviders.of(this).get(RegisterVM.class);
         switchFragment(1);
 
         petOwner.setOnClickListener(view -> switchFragment(1));
@@ -74,16 +79,14 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
 
     @Override
     public void onRegisterCareTaker(String username, String password, String email, String number, String address, String contract) {
-        Toast.makeText(this, "registered as CT", Toast.LENGTH_SHORT).show();
-        //Register
-        //VM methods
+        registerViewModel.registerCareTaker(username, password, email, number, address, contract);
+        registerViewModel.displayRegisterOutcome(this, Strings.CARE_TAKER);
     }
 
     @Override
     public boolean onCheckCareTakerUsernameTaken(String username) {
-        Toast.makeText(this, "Username is taken", Toast.LENGTH_SHORT).show();
-        //VM methods
-        return true;
+        registerViewModel.fetchUsername(username);
+        return registerViewModel.displayUsernameTaken(this);
     }
 
     @Override
@@ -95,15 +98,13 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
 
     @Override
     public boolean onCheckPetOwnerUsernameTaken(String username) {
-        Toast.makeText(this, "Username is taken", Toast.LENGTH_SHORT).show();
-        //VM methods
-        return false;
+        registerViewModel.fetchUsername(username);
+        return registerViewModel.displayUsernameTaken(this);
     }
 
     @Override
     public void onRegisterPetOwner(String username, String password, String email, String number, String address, String petName, String petType) {
-        Toast.makeText(this, "registered as PO", Toast.LENGTH_SHORT).show();
-        //Register
-        //VM methods
+        registerViewModel.registerPetOwner(username, password, email, number, address, petName, petType);
+        registerViewModel.displayRegisterOutcome(this, Strings.PET_OWNER);
     }
 }

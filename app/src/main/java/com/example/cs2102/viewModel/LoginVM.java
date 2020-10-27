@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.cs2102.model.DataApiService;
 import com.example.cs2102.model.User;
 
-import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -15,7 +13,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class LoginVM extends ViewModel {
 
-    public MutableLiveData<List<User>> users = new MutableLiveData<List<User>>();
     public MutableLiveData<Boolean> loadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
     public MutableLiveData<User> userProfile = new MutableLiveData<User>();
