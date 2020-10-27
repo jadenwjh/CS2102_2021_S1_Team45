@@ -47,11 +47,9 @@
         android:id="@+id/loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="304dp"
-        android:layout_marginBottom="516dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/register_form"
-        app:layout_constraintEnd_toEndOf="@+id/register_form" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

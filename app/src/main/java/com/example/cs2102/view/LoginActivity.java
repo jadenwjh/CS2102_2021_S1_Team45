@@ -101,10 +101,10 @@ public class LoginActivity extends AppCompatActivity {
     private void startUserPage(User user) {
         String type = user.getType();
         switch (type) {
-//            case Strings.ADMIN:
-//                startActivity(new Intent(this, AdminActivity.class));
-//                finish();
-//                break;
+            case Strings.ADMIN:
+                startActivity(new Intent(this, AdminActivity.class));
+                finish();
+                break;
             case Strings.PET_OWNER:
                 startActivity(new Intent(this, PetOwnerHomepage.class));
                 finish();

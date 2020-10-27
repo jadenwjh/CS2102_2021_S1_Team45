@@ -11,8 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <activity android:name=".view.RegisterActivity"></activity>
-        <activity android:name=".view.PetOwnerHomepage" />
+        <activity android:name=".view.AdminActivity"></activity>
         <activity
             android:name=".view.LoginActivity"
             android:label="@string/title_activity_login">
@@ -23,6 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.CareTakerHomepage" />
+        <activity android:name=".view.RegisterActivity" />
+        <activity android:name=".view.PetOwnerHomepage" />
     </application>
 
 </manifest>
