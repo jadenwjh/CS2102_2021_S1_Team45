@@ -17,5 +17,6 @@ public class Strings {
     public static final String PET_OWNERS_REQUESTS = "";
     public static final String CARE_TAKERS_AVAILABLE = "";
 
+
     public static final String PETS = "";
 }

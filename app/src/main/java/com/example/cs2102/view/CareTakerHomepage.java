@@ -12,45 +12,45 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
-import com.example.cs2102.viewModel.CareTakerAvailableVM;
+import com.example.cs2102.viewModel.CareTakerHomepageVM;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CareTakerAvailableActivity extends AppCompatActivity {
+public class CareTakerHomepage extends AppCompatActivity {
 
-    @BindView(R.id.careTakerList)
-    RecyclerView careTakerRecyclerView;
+    @BindView(R.id.petOwnerList)
+    RecyclerView petOwnerRecyclerView;
 
-    @BindView(R.id.careTakerError)
+    @BindView(R.id.petOwnerError)
     TextView listError;
 
-    @BindView(R.id.careTakerLoading)
+    @BindView(R.id.petOwnerLoading)
     ProgressBar loadingView;
 
-    @BindView(R.id.careTakerRefresh)
+    @BindView(R.id.petOwnerRefresh)
     SwipeRefreshLayout refreshLayout;
 
-    private CareTakerAvailableVM careTakerViewModel;
-    private CareTakerAdapter careTakerAdapter = new CareTakerAdapter(new ArrayList<>());
+    private CareTakerHomepageVM petOwnerViewModel;
+    private PetOwnerAdapter petOwnerAdapter = new PetOwnerAdapter(new ArrayList<>());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_care_taker);
+        setContentView(R.layout.activity_pet_owner);
 
         ButterKnife.bind(this);
 
-        careTakerViewModel = ViewModelProviders.of(this).get(CareTakerAvailableVM.class);
-        careTakerViewModel.refreshPage();
+        petOwnerViewModel = ViewModelProviders.of(this).get(CareTakerHomepageVM.class);
+        petOwnerViewModel.refreshPage();
 
-        careTakerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        careTakerRecyclerView.setAdapter(careTakerAdapter);
+        petOwnerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        petOwnerRecyclerView.setAdapter(petOwnerAdapter);
 
         refreshLayout.setOnRefreshListener(() -> {
-            careTakerViewModel.refreshPage();
+            petOwnerViewModel.refreshPage();
             refreshLayout.setRefreshing(false);
         });
 
@@ -58,23 +58,23 @@ public class CareTakerAvailableActivity extends AppCompatActivity {
     }
 
     private void observerViewModel() {
-        careTakerViewModel.careTakers.observe(this, careTakers -> {
-            if (careTakers != null) {
-                careTakerRecyclerView.setVisibility(View.VISIBLE);
-                careTakerAdapter.updateCareTakers(careTakers);
+        petOwnerViewModel.petOwners.observe(this, petOwners -> {
+            if (petOwners != null) {
+                petOwnerRecyclerView.setVisibility(View.VISIBLE);
+                petOwnerAdapter.updatePetOwners(petOwners);
             }
         });
-        careTakerViewModel.loadError.observe(this, isError -> {
+        petOwnerViewModel.loadError.observe(this, isError -> {
             if (isError != null) {
                 listError.setVisibility(isError ? View.VISIBLE : View.GONE);
             }
         });
-        careTakerViewModel.loading.observe(this, isLoading -> {
+        petOwnerViewModel.loading.observe(this, isLoading -> {
             if (isLoading != null) {
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
                 if(isLoading) {
                     listError.setVisibility(View.GONE);
-                    careTakerRecyclerView.setVisibility(View.GONE);
+                    petOwnerRecyclerView.setVisibility(View.GONE);
                 }
             }
         });

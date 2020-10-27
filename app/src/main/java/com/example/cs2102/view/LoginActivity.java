@@ -93,11 +93,11 @@ public class LoginActivity extends AppCompatActivity {
 //                finish();
 //                break;
             case Strings.PET_OWNER:
-                startActivity(new Intent(this, CareTakerAvailableActivity.class));
+                startActivity(new Intent(this, PetOwnerHomepage.class));
                 finish();
                 break;
             case Strings.CARE_TAKER:
-                startActivity(new Intent(this, PetOwnerRequestsActivity.class));
+                startActivity(new Intent(this, CareTakerHomepage.class));
                 finish();
                 break;
         }

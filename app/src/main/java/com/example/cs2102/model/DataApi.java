@@ -4,6 +4,7 @@ import com.example.cs2102.constants.Strings;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -14,12 +15,12 @@ import retrofit2.http.Query;
 public interface DataApi {
 
     @GET(Strings.USERS)
-    Single<List<User>> getUsers();
-
-    @GET(Strings.USERS)
-    Call<User> verifyUser(@Query("username") String username,
+    Single<User> verifyUser(@Query("username") String username,
                            @Query("password") String password,
                            @Query("type") String type);
+
+    @GET(Strings.USERS)
+    Single<User> getUsername(@Query("username") String username);
 
     @POST(Strings.PET_OWNERS)
     Call<PetOwner> addPetOwner(@Field("username") String username,
@@ -41,11 +42,12 @@ public interface DataApi {
                                @Field("contract") String contract);
 
     @GET(Strings.PET_OWNERS_REQUESTS)
-    Single<List<PetOwner>> getPetOwners();
+    Observable<List<PetOwner>> getPetOwners();
 
     @GET(Strings.PETS)
     Single<List<Pet>> getPets();
 
     @GET(Strings.CARE_TAKERS_AVAILABLE)
-    Single<List<CareTaker>> getCareTakers();
+    Observable<List<CareTaker>> getCareTakers();
+
 }
