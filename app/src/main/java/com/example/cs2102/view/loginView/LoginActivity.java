@@ -1,6 +1,8 @@
 package com.example.cs2102.view.loginView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,10 +20,9 @@ import com.example.cs2102.R;
 import com.example.cs2102.constants.Strings;
 import com.example.cs2102.model.User;
 import com.example.cs2102.view.adminView.AdminActivity;
-import com.example.cs2102.view.careTakerView.CareTakerHomepage;
+import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepage;
 import com.example.cs2102.view.registerView.RegisterActivity;
-import com.example.cs2102.viewModel.LoginVM;
 
 import java.util.regex.Pattern;
 
@@ -48,7 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.loading)
     ProgressBar loadingBar;
 
-    private LoginVM loginViewModel;
+    private LoginViewModel loginViewModel;
+    public SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        loginViewModel = ViewModelProviders.of(this).get(LoginVM.class);
+        sharedPreferences = getSharedPreferences(Strings.PROFILE, Context.MODE_PRIVATE);
+        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         generateMenu();
 
         login.setOnClickListener(v -> {
@@ -67,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
             checkValidity(pw);
             loginViewModel.loginAttempt(uName, pw, t);
             if (loginViewModel.userProfile.getValue() != null) {
+                User currentUser = loginViewModel.userProfile.getValue();
+                sharedPreferences.edit().putString(Strings.PROFILE, currentUser.getUserID()).apply();
                 startUserPage(loginViewModel.userProfile.getValue());
             }
         });
@@ -114,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
                 break;
             case Strings.CARE_TAKER:
-                startActivity(new Intent(this, CareTakerHomepage.class));
+                startActivity(new Intent(this, CareTakerHomepageActivity.class));
                 finish();
                 break;
         }

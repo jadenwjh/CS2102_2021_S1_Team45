@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.constants.Strings;
-import com.example.cs2102.viewModel.RegisterVM;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     private CareTakerSignUpFragment careTakerFragment;
     private PetOwnerSignUpFragment petOwnerFragment;
 
-    private RegisterVM registerViewModel;
+    private RegisterViewModel registerViewModel;
     private static final String CURRENT_SIGN_UP = "RegisterSignUpFragment";
 
     @Override
@@ -44,8 +43,8 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
 
         if (savedInstanceState == null) {
             ft = fm.beginTransaction();
-            careTakerFragment = new CareTakerSignUpFragment();
-            petOwnerFragment = new PetOwnerSignUpFragment();
+            careTakerFragment = CareTakerSignUpFragment.newInstance();
+            petOwnerFragment = PetOwnerSignUpFragment.newInstance();
             //default sign up page
             ft.add(R.id.register_form, petOwnerFragment, CURRENT_SIGN_UP).commit();
         }
@@ -63,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
             }
         });
 
-        registerViewModel = ViewModelProviders.of(this).get(RegisterVM.class);
+        registerViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
 
         petOwner.setOnClickListener(view -> switchFragment(Strings.PET_OWNER_SIGN_UP));
 

@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.careTakerView.CareTakerHomepage" />
+        <activity android:name=".view.careTakerView.CareTakerHomepageActivity" />
         <activity android:name=".view.registerView.RegisterActivity" />
         <activity android:name=".view.petOwnerView.PetOwnerHomepage" />
         <activity android:name=".view.adminView.AdminActivity" />

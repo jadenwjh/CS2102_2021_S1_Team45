@@ -1,11 +1,13 @@
 package com.example.cs2102.view.careTakerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
@@ -16,11 +18,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PetOwnerAdapter extends RecyclerView.Adapter<PetOwnerAdapter.PetOwnerViewHolder> {
+public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdapter.BidsReceivedViewHolder> {
 
     private List<PetOwner> petOwners;
 
-    public PetOwnerAdapter(List<PetOwner> petOwners) {
+    public CareTakerBidsAdapter(List<PetOwner> petOwners) {
         this.petOwners = petOwners;
     }
 
@@ -30,15 +32,22 @@ public class PetOwnerAdapter extends RecyclerView.Adapter<PetOwnerAdapter.PetOwn
         notifyDataSetChanged();
     }
 
+    private CareTakerBidsAdapter.BidsListener bidsListener;
+
+    public interface BidsListener {
+        //TODO: implement onBidSelected in either Fragment or Activity
+        void onBidSelected(PetOwner petOwner); //can be sent to fragment or the activity or show another fragment
+    }
+
     @NonNull
     @Override
-    public PetOwnerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BidsReceivedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pet_owner, parent, false);
-        return new PetOwnerViewHolder(view);
+        return new BidsReceivedViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PetOwnerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BidsReceivedViewHolder holder, int position) {
         holder.bind(petOwners.get(position));
     }
 
@@ -47,7 +56,10 @@ public class PetOwnerAdapter extends RecyclerView.Adapter<PetOwnerAdapter.PetOwn
         return petOwners.size();
     }
 
-    static class PetOwnerViewHolder extends RecyclerView.ViewHolder{
+    class BidsReceivedViewHolder extends RecyclerView.ViewHolder{
+
+        @BindView(R.id.bid_card)
+        CardView petOwnerBid;
 
         @BindView(R.id.pet_owner_name)
         TextView petOwnerName;
@@ -55,9 +67,17 @@ public class PetOwnerAdapter extends RecyclerView.Adapter<PetOwnerAdapter.PetOwn
         @BindView(R.id.pet_owner_pet_name)
         TextView petOwnerPet;
 
-        public PetOwnerViewHolder(@NonNull View itemView) {
+        public BidsReceivedViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            petOwnerBid.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    PetOwner petOwner = petOwners.get(position);
+                    bidsListener.onBidSelected(petOwner);
+                }
+            });
         }
 
         void bind(PetOwner petOwner) {

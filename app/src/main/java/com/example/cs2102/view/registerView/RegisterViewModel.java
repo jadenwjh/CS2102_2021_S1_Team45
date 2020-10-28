@@ -1,4 +1,4 @@
-package com.example.cs2102.viewModel;
+package com.example.cs2102.view.registerView;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class RegisterVM extends ViewModel {
+public class RegisterViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> isUsernameTaken = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> registered = new MutableLiveData<Boolean>();

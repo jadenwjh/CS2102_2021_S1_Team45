@@ -16,9 +16,40 @@ import com.example.cs2102.R;
 
 import java.util.Objects;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class PetOwnerSignUpFragment extends Fragment {
 
+    @BindView(R.id.username)
+    EditText username;
+
+    @BindView(R.id.password)
+    EditText password;
+
+    @BindView(R.id.email)
+    EditText email;
+
+    @BindView(R.id.number)
+    EditText number;
+
+    @BindView(R.id.address)
+    EditText address;
+
+    @BindView(R.id.pet_name)
+    EditText petName;
+
+    @BindView(R.id.pet_type)
+    EditText petType;
+
+    @BindView(R.id.register)
+    Button register;
+
     private RegisterPOListener registerListener;
+
+    public static PetOwnerSignUpFragment newInstance() {
+        return new PetOwnerSignUpFragment();
+    }
 
     public interface RegisterPOListener {
         void onExitPetOwnerRegister();
@@ -41,14 +72,7 @@ public class PetOwnerSignUpFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        EditText username = Objects.requireNonNull(getView()).findViewById(R.id.username);
-        EditText password = Objects.requireNonNull(getView()).findViewById(R.id.password);
-        EditText email = Objects.requireNonNull(getView()).findViewById(R.id.email);
-        EditText number = Objects.requireNonNull(getView()).findViewById(R.id.number);
-        EditText address = Objects.requireNonNull(getView()).findViewById(R.id.address);
-        EditText petName = Objects.requireNonNull(getView()).findViewById(R.id.pet_name);
-        EditText petType = Objects.requireNonNull(getView()).findViewById(R.id.pet_type);
-        Button register = Objects.requireNonNull(getView()).findViewById(R.id.register);
+        ButterKnife.bind(this,view);
 
         register.setOnClickListener(currView -> {
             String uname = username.getText().toString();

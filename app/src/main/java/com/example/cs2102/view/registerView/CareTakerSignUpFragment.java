@@ -14,9 +14,31 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cs2102.R;
 
-import java.util.Objects;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class CareTakerSignUpFragment extends Fragment {
+
+    @BindView(R.id.username)
+    EditText username;
+
+    @BindView(R.id.password)
+    EditText password;
+
+    @BindView(R.id.email)
+    EditText email;
+
+    @BindView(R.id.number)
+    EditText number;
+
+    @BindView(R.id.address)
+    EditText address;
+
+    @BindView(R.id.contract)
+    EditText contract;
+
+    @BindView(R.id.register)
+    Button register;
 
     private RegisterCTListener registerListener;
 
@@ -24,6 +46,10 @@ public class CareTakerSignUpFragment extends Fragment {
         void onExitCareTakerRegister();
         boolean onCheckCareTakerUsernameTaken(String username);
         void onRegisterCareTaker(String username, String password, String email, String number, String address, String contract);
+    }
+
+    public static CareTakerSignUpFragment newInstance() {
+        return new CareTakerSignUpFragment();
     }
 
     @Nullable
@@ -35,13 +61,7 @@ public class CareTakerSignUpFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        EditText username = Objects.requireNonNull(getView()).findViewById(R.id.username);
-        EditText password = Objects.requireNonNull(getView()).findViewById(R.id.password);
-        EditText email = Objects.requireNonNull(getView()).findViewById(R.id.email);
-        EditText number = Objects.requireNonNull(getView()).findViewById(R.id.number);
-        EditText address = Objects.requireNonNull(getView()).findViewById(R.id.address);
-        EditText contract = Objects.requireNonNull(getView()).findViewById(R.id.contract);
-        Button register = Objects.requireNonNull(getView()).findViewById(R.id.register);
+        ButterKnife.bind(this,view);
 
         register.setOnClickListener(currView -> {
             String uname = username.getText().toString();

@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
-import com.example.cs2102.viewModel.PetOwnerHomepageVM;
 
 import java.util.ArrayList;
 
@@ -33,7 +32,7 @@ public class PetOwnerHomepage extends AppCompatActivity {
     @BindView(R.id.careTakerRefresh)
     SwipeRefreshLayout refreshLayout;
 
-    private PetOwnerHomepageVM careTakerViewModel;
+    private PetOwnerHomepageViewModel careTakerViewModel;
     private CareTakerAdapter careTakerAdapter = new CareTakerAdapter(new ArrayList<>());
 
     @Override
@@ -43,7 +42,7 @@ public class PetOwnerHomepage extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        careTakerViewModel = ViewModelProviders.of(this).get(PetOwnerHomepageVM.class);
+        careTakerViewModel = ViewModelProviders.of(this).get(PetOwnerHomepageViewModel.class);
         careTakerViewModel.refreshPage();
 
         careTakerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
