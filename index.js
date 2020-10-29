@@ -62,7 +62,7 @@ app.post("/Users/register", async (req, res) => {
         `
         CALL addPetOwner('${req.body.username}',
         '${req.body.email}', 
-        '${req.body.password}'
+        '${req.body.password}',
         '${req.body.profile}', 
         '${req.body.address}', 
         ${req.body.phoneNum}, 
@@ -76,14 +76,14 @@ app.post("/Users/register", async (req, res) => {
         `
         CALL addCareTaker('${req.body.username}',
         '${req.body.email}', 
-        '${req.body.password}'
+        '${req.body.password}',
         '${req.body.profile}', 
         '${req.body.address}', 
         ${req.body.phoneNum}, 
         ${req.body.creditCard}, 
         ${req.body.bankAcc},
         ${req.body.isPartTime},
-        ${req.body.admin});
+        '${req.body.admin}');
         `
       );
       if (req.body.isPartTime === false) {
@@ -101,6 +101,9 @@ app.post("/Users/register", async (req, res) => {
     res.json(req.body);
 
   } catch (err) {
+    console.log(queryStr);
+    console.log(String(req.body.acctype));
+    console.log()
     console.error(err.message);
   }
 });
@@ -376,6 +379,20 @@ app.get("/CareTaker/:caretaker", async (req, res) => {
   }
 });
 
+// Get available days
+app.get("/CareTaker/available/:caretaker", async (req, res) => {
+  try {
+    const getAvail = await pool.query(
+      `SELECT *
+      FROM Availability 
+      WHERE caretaker = '${req.params.caretaker}';`
+    );
+    res.json(getAvail.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Get own ratings and reviews
 app.get("/CareTaker/RatingsReviews/:caretaker", async (req, res) => {
   try {
@@ -485,15 +502,15 @@ app.post("/CareTaker/available", async (req, res) => {
 // Add admin
 app.post("/Admin", async (req, res) => {
   try {
-    const newAdmin = await pool.query(`CALL addPCSadmin('${req.body.username}',
+    const _ = await pool.query(`CALL addPCSadmin('${req.body.username}',
     '${req.body.email}', 
-    '${req.body.password}'
+    '${req.body.password}',
     '${req.body.profile}', 
     '${req.body.address}', 
     ${req.body.phoneNum});`
     );
 
-    res.json(newAdmin.rows[0]);
+    res.json(req.body);
   } catch (err) {
     console.error(err.message);
   } 
