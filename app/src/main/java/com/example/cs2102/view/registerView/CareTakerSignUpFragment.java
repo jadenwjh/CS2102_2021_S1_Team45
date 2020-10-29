@@ -44,7 +44,6 @@ public class CareTakerSignUpFragment extends Fragment {
 
     public interface RegisterCTListener {
         void onExitCareTakerRegister();
-        boolean onCheckCareTakerUsernameTaken(String username);
         void onRegisterCareTaker(String username, String password, String email, String number, String address, String contract);
     }
 
@@ -71,10 +70,7 @@ public class CareTakerSignUpFragment extends Fragment {
             String add = address.getText().toString();
             String con = contract.getText().toString();
 
-            if (!registerListener.onCheckCareTakerUsernameTaken(uname)) {
-                registerListener.onRegisterCareTaker(uname, pw, mail, num, add, con);
-                registerListener.onExitCareTakerRegister();
-            }
+            registerListener.onRegisterCareTaker(uname, pw, mail, num, add, con);
         });
     }
 

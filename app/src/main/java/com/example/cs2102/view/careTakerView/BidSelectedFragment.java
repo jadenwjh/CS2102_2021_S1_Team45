@@ -1,5 +1,6 @@
 package com.example.cs2102.view.careTakerView;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +97,17 @@ public class BidSelectedFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof BidSelectedFragmentListener) {
+            bidSelectedFragmentListener = (BidSelectedFragmentListener) context;
+        } else {
+            throw new ClassCastException("RegisterPOListener not implemented");
+        }
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
@@ -39,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        registerViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
         FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
@@ -51,18 +51,19 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
 
         ButterKnife.bind(this);
 
-        registerViewModel.loading.observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    loadingBar.setVisibility(View.VISIBLE);
-                } else {
-                    loadingBar.setVisibility(View.GONE);
-                }
+        registerViewModel.loading.observe(this, aBoolean -> {
+            if (aBoolean) {
+                loadingBar.setVisibility(View.VISIBLE);
+            } else {
+                loadingBar.setVisibility(View.GONE);
             }
         });
 
-        registerViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
+        registerViewModel.registered.observe(this, aBoolean -> {
+            if (aBoolean) {
+                finish();
+            }
+        });
 
         petOwner.setOnClickListener(view -> switchFragment(Strings.PET_OWNER_SIGN_UP));
 
@@ -85,20 +86,13 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     }
 
     @Override
-    public void onExitCareTakerRegister() {
-        finish();
+    public void onRegisterPetOwner(String username, String password, String email, String number, String address, String petName, String petType) {
+        registerViewModel.registerPetOwner(username, password, email, number, address, petName, petType);
     }
 
     @Override
     public void onRegisterCareTaker(String username, String password, String email, String number, String address, String contract) {
         registerViewModel.registerCareTaker(username, password, email, number, address, contract);
-        registerViewModel.displayRegisterOutcome(this, Strings.CARE_TAKER);
-    }
-
-    @Override
-    public boolean onCheckCareTakerUsernameTaken(String username) {
-        registerViewModel.fetchUsername(username);
-        return registerViewModel.displayUsernameTaken(this);
     }
 
     @Override
@@ -107,14 +101,7 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
     }
 
     @Override
-    public boolean onCheckPetOwnerUsernameTaken(String username) {
-        registerViewModel.fetchUsername(username);
-        return registerViewModel.displayUsernameTaken(this);
-    }
-
-    @Override
-    public void onRegisterPetOwner(String username, String password, String email, String number, String address, String petName, String petType) {
-        registerViewModel.registerPetOwner(username, password, email, number, address, petName, petType);
-        registerViewModel.displayRegisterOutcome(this, Strings.PET_OWNER);
+    public void onExitCareTakerRegister() {
+        finish();
     }
 }

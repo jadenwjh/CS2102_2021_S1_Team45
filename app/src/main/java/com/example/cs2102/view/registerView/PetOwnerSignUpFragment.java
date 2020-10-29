@@ -14,8 +14,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cs2102.R;
 
-import java.util.Objects;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -53,7 +51,6 @@ public class PetOwnerSignUpFragment extends Fragment {
 
     public interface RegisterPOListener {
         void onExitPetOwnerRegister();
-        boolean onCheckPetOwnerUsernameTaken(String username);
         void onRegisterPetOwner(String username, String password, String email, String number, String address, String petName, String petType);
     }
 
@@ -83,10 +80,7 @@ public class PetOwnerSignUpFragment extends Fragment {
             String pn = petName.getText().toString();
             String pt = petType.getText().toString();
 
-            if (!registerListener.onCheckPetOwnerUsernameTaken(uname)) {
-                registerListener.onRegisterPetOwner(uname, pw, mail, num, add, pn, pt);
-                registerListener.onExitPetOwnerRegister();
-            }
+            registerListener.onRegisterPetOwner(uname, pw, mail, num, add, pn, pt);
         });
     }
 
