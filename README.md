@@ -336,8 +336,23 @@
     - `category` : string, one of the existing pet types
 
     ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/PetOwner/Pets
 
-    # TODO
+    Body:
+    ```
+    {
+    "petowner": "daleksidze6",
+    "petname": "Gabbey",
+    "profile": "Heloderma horridum",
+    "specialreq": "reinvent web-enabled convergence",
+    "category": "bird"
+    }
+    ```
+
+    Output:
+
+    `{"petowner": "daleksidze6","petname": "Gabbey","profile": "Heloderma horridum","specialreq": "reinvent web-enabled convergence","category": "bird"}`
+
 
 
 &nbsp;
@@ -355,6 +370,23 @@
     - `specialReq` : string
     - `category` : string, one of the existing pet types
 
+    ### Example:
+    - PUT https://shielded-oasis-35437.herokuapp.com/petowner/pets/daleksidze6/Gabbey
+
+    Body:
+    ```
+    {
+    "petname": "Gabbey",
+    "profile": "A horrendous birb!!!",
+    "specialReq": "entertain with classical music",
+    "category": "bird"
+    }
+    ```
+
+    Output:
+
+    `"Pet Gabbey belonging to daleksidze6 was updated"`
+
 
 
 &nbsp;
@@ -363,6 +395,13 @@
     ### Params:
     - `petowner` : string
     - `petname` : string
+
+    ### Example:
+    - DELETE https://shielded-oasis-35437.herokuapp.com/petowner/pets/daleksidze6/Gabbey
+
+    Output:
+    
+    `"Pet Gabbey belonging to daleksidze6 was deleted"`
 
 
 

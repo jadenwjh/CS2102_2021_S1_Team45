@@ -185,50 +185,51 @@ app.post("/PetOwner/findCareTaker", async (req, res) => {
     const availCareTakers = await pool.query(
       `SELECT b.caretaker, u.profile, b.rating, '${req.body.sdate}', '${req.body.edate}', atc.feeperday
       FROM Bids b 
-          INNER JOIN User u ON b.caretaker = u.username
-          INNER JOIN AbleToCare atc ON b.caretaker = atc.caretaker 
+      INNER JOIN User u ON b.caretaker = u.username
+      INNER JOIN AbleToCare atc ON b.caretaker = atc.caretaker 
       WHERE b.caretaker IN (
         SELECT caretaker
         FROM (SELECT b.caretaker, COUNT(*)
-        FROM Bids b
-        WHERE status = 'a'
-        AND avail BETWEEN '${req.body.sdate}'  AND '${req.body.edate}' 
-        AND b.caretaker IN (	SELECT DISTINCT caretaker 
-                  FROM  Availability a
-                  WHERE avail BETWEEN '${req.body.sdate}'  AND '${req.body.edate}' ) 
-      GROUP BY b.caretaker 
-      
-      INTERSECT 
-      
-      SELECT DISTINCT caretaker, 1
-      FROM AbleToCare 
-      WHERE category IN (
-        SELECT category
-        FROM Pets
-        WHERE petname = '${req.body.petname}'  
-        AND  petowner = '${req.body.petowner}' ) AS join1
-      
+          FROM Bids b
+          WHERE status = 'a'
+          AND avail BETWEEN '${req.body.sdate}'  AND '${req.body.edate}' 
+          AND b.caretaker IN (	SELECT DISTINCT caretaker 
+            FROM  Availability a
+            WHERE avail BETWEEN '${req.body.sdate}'  AND '${req.body.edate}' ) 
+          GROUP BY b.caretaker 
+
+        INTERSECT 
+
+        SELECT DISTINCT caretaker, 1
+        FROM AbleToCare 
+        WHERE category IN (
+          SELECT category
+          FROM Pets
+          WHERE petname = '${req.body.petname}'  
+          AND  petowner = '${req.body.petowner}' ) ) AS join1
+
       NATURAL JOIN
-      
-      (SELECT caretaker, lm FROM ( SELECT DISTINCT caretaker, AVG(rating), 
-        CASE  
-            WHEN AVG(rating) > 4.7 THEN 5
-            WHEN AVG(rating) <= 4.7 AND AVG(rating) > 4 THEN 4
-            WHEN AVG(rating) <= 4 THEN 3
-        END AS lm 
+
+      (SELECT caretaker, lm 
+        FROM (SELECT DISTINCT caretaker, AVG(rating), 
+          CASE  
+              WHEN AVG(rating) > 4.7 THEN 5
+              WHEN AVG(rating) <= 4.7 AND AVG(rating) > 4 THEN 4
+              WHEN AVG(rating) <= 4 THEN 3
+          END AS lm 
         FROM Bids 
         WHERE status = 'a'
         GROUP BY caretaker ) AS t1 
-      
+
       INNER JOIN 
-      
+
       (SELECT username FROM PartTimers ) AS t2
       ON t1.caretaker = t2.username 
-      
+
       UNION 
-      
+
       SELECT username, '5' as lm 
-      FROM FullTimers ) AS join 2 
+      FROM FullTimers ) AS join2 
       WHERE join1.caretaker = join2.caretaker 
       AND join1.count < join2.lm
       ); `
@@ -333,7 +334,7 @@ app.put("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
       WHERE petowner = '${req.params.petowner}' AND petname = '${req.params.petname}';`
     );
 
-    res.json(`Pet '${req.params.PetName}' belonging to ${req.params.petowner} was updated`);
+    res.json(`Pet ${req.params.petname} belonging to ${req.params.petowner} was updated`);
   } catch (err) {
     console.error(err.message);
   }
@@ -367,6 +368,32 @@ app.get("/CareTaker/:caretaker", async (req, res) => {
       NATURAL JOIN Consumers
       INNER JOIN Pets on Users.username = Pets.petowner
       WHERE Users.username = '${req.params.caretaker}';`
+    );
+    res.json(getCareTakerInfo.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Get AbleToCare info
+app.get("/CareTaker/AbleToCare/:caretaker", async (req, res) => {
+  try {
+    const abletocare = await pool.query(
+      `SELECT * FROM AbleToCare 
+      WHERE caretaker = '${req.body.caretaker}';`
+    );
+    res.json(getCareTakerInfo.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Add AbleToCare
+app.post("/CareTaker/AbleToCare", async (req, res) => {
+  try {
+    const abletocare = await pool.query(
+      `INSERT INTO AbleToCare (caretaker, category, feeperday)
+      VALUES ('${req.body.caretaker}', '${req.body.category}', ${req.body.feeperday});`
     );
     res.json(getCareTakerInfo.rows);
   } catch (err) {
