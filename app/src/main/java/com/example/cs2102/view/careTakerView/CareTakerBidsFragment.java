@@ -1,26 +1,22 @@
 package com.example.cs2102.view.careTakerView;
 
-import androidx.lifecycle.ViewModelProviders;
-
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.cs2102.R;
-import com.example.cs2102.constants.Strings;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerBidsViewModel;
 
 import java.util.ArrayList;
@@ -69,6 +65,17 @@ public class CareTakerBidsFragment extends Fragment {
         refreshLayout.setOnRefreshListener(() -> {
             bidsVM.refreshBids(currentCareTakerUsername);
             refreshLayout.setRefreshing(false);
+        });
+
+        bidsVM.loading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    loadingView.setVisibility(View.VISIBLE);
+                } else {
+                    loadingView.setVisibility(View.GONE);
+                }
+            }
         });
     }
 

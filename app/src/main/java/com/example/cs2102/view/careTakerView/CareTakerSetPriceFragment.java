@@ -1,17 +1,7 @@
 package com.example.cs2102.view.careTakerView;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +10,17 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.cs2102.R;
 import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerSetPriceViewModel;
-import com.example.cs2102.view.registerView.CareTakerSignUpFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,8 +66,6 @@ public class CareTakerSetPriceFragment extends Fragment implements CareTakerSetP
 
     public interface SetPetPriceListener {
         void onExitSetPetPrice();
-        void onUpdatePrice(String careTakerUsername, String petType, double price);
-        void onRefreshPrices(String careTakerUsername);
     }
 
     private static String currentCareTakerUsername;
@@ -106,15 +101,15 @@ public class CareTakerSetPriceFragment extends Fragment implements CareTakerSetP
         pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
 
         refreshLayout.setOnRefreshListener(() -> {
-            setPetPriceListener.onRefreshPrices(currentCareTakerUsername);
+            pricesVM.refreshPrices(currentCareTakerUsername);
             refreshLayout.setRefreshing(false);
         });
 
         confirmPrice.setOnClickListener(v -> {
             double price = Double.parseDouble(String.valueOf(setPrice.getText()));
             String currentPetType = petType.getTag().toString();
-            setPetPriceListener.onUpdatePrice(currentCareTakerUsername, currentPetType, price);
-            setPetPriceListener.onRefreshPrices(currentCareTakerUsername);
+            pricesVM.updatePetTypeCost(currentCareTakerUsername, currentPetType, price);
+            pricesVM.refreshPrices(currentCareTakerUsername);
         });
     }
 

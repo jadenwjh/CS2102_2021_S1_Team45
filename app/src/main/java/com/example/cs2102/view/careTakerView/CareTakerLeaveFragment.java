@@ -1,26 +1,25 @@
 package com.example.cs2102.view.careTakerView;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerLeaveViewModel;
 
-import java.sql.Date;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -36,6 +35,9 @@ public class CareTakerLeaveFragment extends Fragment {
 
     @BindView(R.id.apply_leave)
     Button applyLeave;
+
+    @BindView(R.id.loading)
+    ProgressBar loading;
 
     private CareTakerLeaveViewModel careTakerLeaveViewModel;
 
@@ -84,6 +86,17 @@ public class CareTakerLeaveFragment extends Fragment {
         applyLeave.setOnClickListener(v -> {
             String date = dateSelected.getText().toString();
             careTakerLeaveViewModel.requestToApplyLeave(currentCareTakerUsername, date);
+        });
+
+        careTakerLeaveViewModel.loading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    loading.setVisibility(View.VISIBLE);
+                } else {
+                    loading.setVisibility(View.GONE);
+                }
+            }
         });
     }
 

@@ -1,6 +1,5 @@
 package com.example.cs2102.view.careTakerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
     private CareTakerBidsAdapter.BidsListener bidsListener;
 
     public interface BidsListener {
-        //TODO: implement onBidSelected in either Fragment or Activity
         void onBidSelected(PetOwner petOwner); //can be sent to fragment or the activity or show another fragment
     }
 

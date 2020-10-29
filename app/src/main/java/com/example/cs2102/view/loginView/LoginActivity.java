@@ -50,15 +50,15 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar loadingBar;
 
     private LoginViewModel loginViewModel;
-    public SharedPreferences sharedPreferences;
+    private SharedPreferences userProfileSharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userProfileSharedPref = getSharedPreferences(Strings.PROFILE, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        sharedPreferences = getSharedPreferences(Strings.PROFILE, Context.MODE_PRIVATE);
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         generateMenu();
 
@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             loginViewModel.loginAttempt(uName, pw, t);
             if (loginViewModel.userProfile.getValue() != null) {
                 User currentUser = loginViewModel.userProfile.getValue();
-                sharedPreferences.edit().putString(Strings.PROFILE, currentUser.getUserID()).apply();
+                userProfileSharedPref.edit().putString(Strings.PROFILE, currentUser.getUserID()).apply();
                 startUserPage(loginViewModel.userProfile.getValue());
             }
         });

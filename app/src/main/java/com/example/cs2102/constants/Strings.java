@@ -3,6 +3,9 @@ package com.example.cs2102.constants;
 public class Strings {
 
     public static final String PROFILE = "UserProfile";
+    public static final String LEAVES = "Leaves";
+    public static final String BIDS = "Bids";
+    public static final String PRICES = "Prices";
 
     public static final String ADMIN = "Admin";
     public static final String PET_OWNER = "PetOwner";

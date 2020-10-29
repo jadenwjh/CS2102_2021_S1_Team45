@@ -22,5 +22,8 @@
     <string name="register">Register</string>
     <string name="confirm">Confirm</string>
     <string name="contract">State contract</string>
+    <string name="leaves">Leaves</string>
+    <string name="bids">Bids</string>
+    <string name="prices">Prices</string>
 
 </resources>
