@@ -223,7 +223,7 @@
 
         Output:
 
-        # TODO 
+        `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-04T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}]`
 
 &nbsp;
 - ## Leave rating and reviews for caretaker <div style="text-align: right">`POST /PetOwner/RatingsReviews`  </div>
@@ -246,11 +246,20 @@
     - POST https://shielded-oasis-35437.herokuapp.com/PetOwner/RatingsReviews
 
         Body:
+        ```
+        {
+            "petowner": "daleksidze6",
+            "petname": "Gabbey",
+            "caretaker": "jgastickep2",
+            "avail": "2020-06-05",
+            "rating": 5,
+            "review": "very good!!!"
+        }
+        ```
 
         Output:
+        `"Ratings and reviews updated"`
 
-
-        # TODO
 
 
 &nbsp;
@@ -301,8 +310,23 @@
 
     ### Example
     - POST https://shielded-oasis-35437.herokuapp.com/PetOwner/Bids
-    # TODO
+    
+    Body:
+    ```
+    {
+    "petowner": "daleksidze6",
+    "petname": "Gabbey",
+    "caretaker": "jgastickep2",
+    "sdate": "2020-06-01",
+    "edate": "2020-06-05",
+    "transferType": "f2f",
+    "paymentType": "cash",
+    "price": 100
+    }
+    ```
 
+    Output:
+    `{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","sdate":"2020-06-01","edate":"2020-06-05","transferType":"f2f","paymentType":"cash","price":100}`
 
 &nbsp;
 ## Manage Pets
@@ -436,6 +460,13 @@
     ### Params:
     - `caretaker` : string
 
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/available/jgastickep2
+
+    Output:
+
+    `[{"caretaker":"jgastickep2","avail":"2019-12-31T16:00:00.000Z"},{"caretaker":"jgastickep2","avail":"2020-01-01T16:00:00.000Z"}, ...]`
+
 
 &nbsp;
 - ## Get own ratings and reviews <div style="text-align: right">`GET /CareTaker/RatingsReviews/:caretaker`
@@ -449,6 +480,13 @@
     ### Params:
     - `caretaker` : string
 
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/bids/jgastickep2
+
+    Output:
+
+    `{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-05-31T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}`
+
 &nbsp;
 - ## Respond to a bid <div style="text-align: right">`PUT /CareTaker/Bids`
 
@@ -460,7 +498,21 @@
     - `approveReject` : single character string, 'a' = accept, 'p' = pending, 'r' = reject
 
     ### Example:
+    - PUT https://shielded-oasis-35437.herokuapp.com/caretaker/bids
 
+    Body:
+    ```
+    {
+    "petowner": "daleksidze6",
+    "petname": "Gabbey",
+    "caretaker": "jgastickep2",
+    "avail": "2020-06-05",
+    "approveReject": "a"
+    }
+    ```
+    Output:
+
+    `{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-05","approveReject":"a"}`
 
 
 &nbsp;

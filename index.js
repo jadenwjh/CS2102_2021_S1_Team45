@@ -154,10 +154,10 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
 app.post("/PetOwner/RatingsReviews", async (req, res) => {
   try {
     const _ = await pool.query(
-      `CALL rateCareTaker('${req.params.petowner}', '${req.params.petname}',
-      '${req.params.caretaker}', '${req.params.avail}', ${req.params.rating}, '${req.params.review}');`
+      `CALL rateCareTaker('${req.body.petowner}', '${req.body.petname}',
+      '${req.body.caretaker}', '${req.body.avail}', ${req.body.rating}, '${req.body.review}');`
     );
-    res.json(getRating.rows);
+    res.json("Ratings and reviews updated");
   } catch (err) {
     console.error(err.message);
   }
@@ -382,7 +382,7 @@ app.get("/CareTaker/AbleToCare/:caretaker", async (req, res) => {
       `SELECT * FROM AbleToCare 
       WHERE caretaker = '${req.params.caretaker}';`
     );
-    res.json(getCareTakerInfo.rows);
+    res.json(abletocare.rows);
   } catch (err) {
     console.error(err.message);
   }
@@ -395,7 +395,7 @@ app.post("/CareTaker/AbleToCare", async (req, res) => {
       `INSERT INTO AbleToCare (caretaker, category, feeperday)
       VALUES ('${req.body.caretaker}', '${req.body.category}', ${req.body.feeperday});`
     );
-    res.json(getCareTakerInfo.rows);
+    res.json(abletocare.rows);
   } catch (err) {
     console.error(err.message);
   }
