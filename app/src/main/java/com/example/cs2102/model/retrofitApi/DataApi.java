@@ -16,12 +16,13 @@ import retrofit2.http.Query;
 
 public interface DataApi {
 
-    @GET(Strings.USERS)
+    @POST(Strings.LOGIN)
     Single<User> verifyUser(@Query("username") String username,
                             @Query("password") String password,
                             @Query("type") String type);
 
-    @GET(Strings.USERS)
+    // missing
+    @GET(Strings.LOGIN)
     Single<User> getUsername(@Query("username") String username);
 
     @POST(Strings.PET_OWNERS)

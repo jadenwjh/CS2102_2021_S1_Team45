@@ -17,9 +17,9 @@ public class Strings {
     public static final String PET_OWNER_SIGN_UP = "PetOwnerSignUp";
     public static final String CARE_TAKER_SIGN_UP = "CareTakerSignUp";
 
-    public static final String BASE_URL = "zzz";
+    public static final String BASE_URL = "https://shielded-oasis-35437.herokuapp.com/";
 
-    public static final String USERS = "zzz";
+    public static final String LOGIN = "/Users/login";
     public static final String ADMINS = "zzz";
     public static final String PET_OWNERS = "zzz";
     public static final String CARE_TAKERS = "zzz";
