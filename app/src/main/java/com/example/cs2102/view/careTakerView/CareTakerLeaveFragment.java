@@ -1,7 +1,6 @@
 package com.example.cs2102.view.careTakerView;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
@@ -48,12 +46,6 @@ public class CareTakerLeaveFragment extends Fragment {
         return new CareTakerLeaveFragment();
     }
 
-    private ApplyLeaveListener applyLeaveListener;
-
-    public interface ApplyLeaveListener {
-        void onExitApplyLeave();
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -73,14 +65,11 @@ public class CareTakerLeaveFragment extends Fragment {
 
         datePicker.setMinDate(Calendar.DATE);
 
-        datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
-            @Override
-            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        datePicker.setOnDateChangedListener((view1, year, monthOfYear, dayOfMonth) -> {
 
-                @SuppressLint("DefaultLocale")
-                String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
-                dateSelected.setText(date);
-            }
+            @SuppressLint("DefaultLocale")
+            String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
+            dateSelected.setText(date);
         });
 
         applyLeave.setOnClickListener(v -> {
@@ -88,14 +77,11 @@ public class CareTakerLeaveFragment extends Fragment {
             careTakerLeaveViewModel.requestToApplyLeave(currentCareTakerUsername, date);
         });
 
-        careTakerLeaveViewModel.loading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    loading.setVisibility(View.VISIBLE);
-                } else {
-                    loading.setVisibility(View.GONE);
-                }
+        careTakerLeaveViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                loading.setVisibility(View.VISIBLE);
+            } else {
+                loading.setVisibility(View.GONE);
             }
         });
     }
@@ -104,17 +90,6 @@ public class CareTakerLeaveFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof ApplyLeaveListener) {
-            applyLeaveListener = (ApplyLeaveListener) context;
-        } else {
-            throw new ClassCastException("ApplyLeaveListener not implemented");
-        }
     }
 
     @Override

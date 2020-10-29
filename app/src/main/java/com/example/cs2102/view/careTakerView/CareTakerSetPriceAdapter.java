@@ -38,6 +38,10 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
         void onPriceCardSelected(PetTypeCost petTypeCost); //set textViews upper and lower bound of fragment
     }
 
+    public void setPricesListener(PricesListener listenerImpl) {
+        this.pricesListener = listenerImpl;
+    }
+
     @NonNull
     @Override
     public CareTakerSetPriceAdapter.PricesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

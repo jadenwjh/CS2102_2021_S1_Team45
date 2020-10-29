@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +47,16 @@ public class CareTakerBidsFragment extends Fragment {
         return new CareTakerBidsFragment();
     }
 
+    private CareTakerBidsFragmentListener careTakerBidsFragmentListener;
+
+    public interface CareTakerBidsFragmentListener {
+        void onBidSelectedFromBidsFragment(BidSelectedFragment selectedBid);
+    }
+
+    public void setCareTakerBidsFragmentListener(CareTakerBidsFragmentListener listenerImpl) {
+        this.careTakerBidsFragmentListener = listenerImpl;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -62,19 +71,21 @@ public class CareTakerBidsFragment extends Fragment {
         bidsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         bidsRecyclerView.setAdapter(careTakerBidsAdapter);
 
+        careTakerBidsAdapter.setBidsListener(petOwner -> {
+            BidSelectedFragment currentBid = BidSelectedFragment.newInstance(currentCareTakerUsername, petOwner);
+            careTakerBidsFragmentListener.onBidSelectedFromBidsFragment(currentBid);
+        });
+
         refreshLayout.setOnRefreshListener(() -> {
             bidsVM.refreshBids(currentCareTakerUsername);
             refreshLayout.setRefreshing(false);
         });
 
-        bidsVM.loading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    loadingView.setVisibility(View.VISIBLE);
-                } else {
-                    loadingView.setVisibility(View.GONE);
-                }
+        bidsVM.loading.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                loadingView.setVisibility(View.VISIBLE);
+            } else {
+                loadingView.setVisibility(View.GONE);
             }
         });
     }

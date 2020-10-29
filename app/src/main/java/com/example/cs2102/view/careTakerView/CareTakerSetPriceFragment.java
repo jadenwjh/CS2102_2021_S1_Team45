@@ -1,6 +1,5 @@
 package com.example.cs2102.view.careTakerView;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
-import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerSetPriceViewModel;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CareTakerSetPriceFragment extends Fragment implements CareTakerSetPriceAdapter.PricesListener {
+public class CareTakerSetPriceFragment extends Fragment {
 
     @BindView(R.id.careTakerPricesRefresh)
     SwipeRefreshLayout refreshLayout;
@@ -54,24 +54,10 @@ public class CareTakerSetPriceFragment extends Fragment implements CareTakerSetP
     @BindView(R.id.confirm_price)
     Button confirmPrice;
 
-    private CareTakerSetPriceFragment.SetPetPriceListener setPetPriceListener;
-
-    @Override
-    public void onPriceCardSelected(PetTypeCost petTypeCost) {
-        petType.setText(petTypeCost.getType());
-        lowerBound.setText(String.valueOf(petTypeCost.getLowerBound()));
-        upperBound.setText(String.valueOf(petTypeCost.getUpperBound()));
-        setPrice.setText(String.valueOf(petTypeCost.getCurrentCost()));
-    }
-
-    public interface SetPetPriceListener {
-        void onExitSetPetPrice();
-    }
-
     private static String currentCareTakerUsername;
 
     private CareTakerSetPriceViewModel pricesVM;
-    private CareTakerSetPriceAdapter careTakerSetPriceAdapter;
+    private CareTakerSetPriceAdapter careTakerSetPriceAdapter = new CareTakerSetPriceAdapter(new ArrayList<>());
 
     public static CareTakerSetPriceFragment newInstance(String username) {
         currentCareTakerUsername = username;
@@ -100,6 +86,13 @@ public class CareTakerSetPriceFragment extends Fragment implements CareTakerSetP
         pricesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
 
+        careTakerSetPriceAdapter.setPricesListener(petTypeCost -> {
+            petType.setText(petTypeCost.getType());
+            lowerBound.setText(String.valueOf(petTypeCost.getLowerBound()));
+            upperBound.setText(String.valueOf(petTypeCost.getUpperBound()));
+            setPrice.setText(String.valueOf(petTypeCost.getCurrentCost()));
+        });
+
         refreshLayout.setOnRefreshListener(() -> {
             pricesVM.refreshPrices(currentCareTakerUsername);
             refreshLayout.setRefreshing(false);
@@ -117,17 +110,6 @@ public class CareTakerSetPriceFragment extends Fragment implements CareTakerSetP
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof SetPetPriceListener) {
-            setPetPriceListener = (SetPetPriceListener) context;
-        } else {
-            throw new ClassCastException("RegisterCTListener not implemented");
-        }
     }
 
     @Override

@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
@@ -49,6 +48,10 @@ public class BidSelectedFragment extends Fragment {
         void onBidAcceptedExitFragment();
     }
 
+    public void setBidSelectedFragmentListener(BidSelectedFragmentListener listenerImpl) {
+        this.bidSelectedFragmentListener = listenerImpl;
+    }
+
     public static BidSelectedFragment newInstance(String uName, PetOwner current) {
         petOwner = current;
         username = uName;
@@ -75,14 +78,11 @@ public class BidSelectedFragment extends Fragment {
             bidSelectedFragmentListener.onBidAcceptedExitFragment();
         });
 
-        bidSelectedViewModel.loading.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    loading.setVisibility(View.VISIBLE);
-                } else {
-                    loading.setVisibility(View.GONE);
-                }
+        bidSelectedViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                loading.setVisibility(View.VISIBLE);
+            } else {
+                loading.setVisibility(View.GONE);
             }
         });
     }

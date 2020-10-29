@@ -37,6 +37,10 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
         void onBidSelected(PetOwner petOwner); //can be sent to fragment or the activity or show another fragment
     }
 
+    public void setBidsListener(BidsListener listenerImpl) {
+        this.bidsListener = listenerImpl;
+    }
+
     @NonNull
     @Override
     public BidsReceivedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
