@@ -13,7 +13,9 @@ DROP TABLE IF EXISTS PCSadmins;
 DROP TABLE IF EXISTS Consumers;
 DROP TABLE IF EXISTS Users;
 
-
+-- ==========
+-- | Tables |
+-- ==========
 CREATE TABLE Users (
 	username VARCHAR PRIMARY KEY,
 	email VARCHAR,
@@ -117,25 +119,34 @@ CREATE TABLE InvalidatedBids (
 	
 );
 
+
+-- ============================
+-- |   Procedures/Functions   |
+-- ============================
+
+-- Registration
+-- ============
+
+
 CREATE OR REPLACE PROCEDURE
-addPCSadmin(username VARCHAR, email VARCHAR, profile VARCHAR,
+addPCSadmin(username VARCHAR, email VARCHAR, password VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER) AS 
 $$ 
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
-			INSERT INTO Users VALUES(username, email, profile, address, phone);
+			INSERT INTO Users VALUES(username, email, password, profile, address, phone);
 		END IF;
 		INSERT INTO PCSadmins VALUES(username);
 	END; $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE
-addPetOwner(username VARCHAR, email VARCHAR, profile VARCHAR,
+addPetOwner(username VARCHAR, email VARCHAR, password VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER, creditcard INTEGER, bankacc INTEGER) AS 
 $$ 
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
-			INSERT INTO Users VALUES(username, email, profile, address, phone);
+			INSERT INTO Users VALUES(username, email, password, profile, address, phone);
 		END IF;
 		IF username NOT IN (SELECT C.username FROM Consumers C) THEN
 			INSERT INTO Consumers VALUES(username, creditcard, bankacc);
@@ -145,12 +156,12 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE
-addCareTaker(username VARCHAR, email VARCHAR, profile VARCHAR,
+addCareTaker(username VARCHAR, email VARCHAR, password VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER, creditcard INTEGER, bankacc INTEGER, isPartTime BOOLEAN, manager VARCHAR) AS 
 $$ 
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
-			INSERT INTO Users VALUES(username, email, profile, address, phone);
+			INSERT INTO Users VALUES(username, email, password, profile, address, phone);
 		END IF;
 		IF username NOT IN (SELECT C.username FROM Consumers C) THEN
 			INSERT INTO Consumers VALUES(username, creditcard, bankacc);
@@ -177,6 +188,27 @@ $$
 	END; $$
 LANGUAGE plpgsql;
 
+
+-- Checking/Updating fees per day
+-- ==============================
+
+-- Trigger for base fees for pet types
+DROP TRIGGER IF EXISTS updateFeePerDay ON PetTypes; 
+CREATE OR REPLACE FUNCTION updateBasePrice()
+RETURNS TRIGGER AS $$ 
+	BEGIN 
+		UPDATE AbleToCare SET feeperday = NEW.baseprice
+		WHERE category=NEW.category 
+			AND (feeperday<NEW.baseprice OR feeperday>(SELECT computeMaxPriceMultiplier(caretaker))*NEW.baseprice);
+		RETURN NEW; 
+	END; $$ 
+LANGUAGE plpgsql; 
+
+CREATE TRIGGER updateFeePerDay
+AFTER UPDATE ON PetTypes
+FOR EACH ROW EXECUTE PROCEDURE updateBasePrice();
+
+-- Caretakers' price setting
 CREATE OR REPLACE FUNCTION mapAvgRatingToMultiplier(avgratings NUMERIC)
 RETURNS NUMERIC AS $$
 	BEGIN
@@ -244,6 +276,11 @@ CREATE TRIGGER checkIsValidFee
 BEFORE INSERT OR UPDATE ON AbleToCare
 FOR EACH ROW EXECUTE PROCEDURE isValidFee();
 
+
+
+-- Check max pets allowed by caretaker
+-- ===================================
+
 CREATE OR REPLACE FUNCTION computeMaxPet(ctname VARCHAR)
 RETURNS INTEGER AS $$
 	DECLARE avgratings NUMERIC;
@@ -302,7 +339,11 @@ RETURNS INTEGER AS $$
 	END; $$
 LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS isAvailable(ctname VARCHAR, datebooked DATE, maxpetslots INTEGER);
+
+
+-- Check caretaker availability
+-- ============================
+
 CREATE OR REPLACE FUNCTION isAvailable(ctname VARCHAR, datebooked DATE, maxpet INTEGER DEFAULT NULL)
 RETURNS BOOLEAN AS $$
 	BEGIN
@@ -324,6 +365,59 @@ RETURNS NUMERIC AS $$
 		RETURN (SELECT P.baseprice FROM PetTypes P WHERE P.category=petcategory);
 	END; $$
 LANGUAGE plpgsql;
+
+
+
+-- Managing bids
+-- =============
+
+CREATE OR REPLACE PROCEDURE enterBid(petowner VARCHAR, petname VARCHAR, 
+			caretaker VARCHAR, sdate DATE, edate DATE, transfertype VARCHAR, 
+			paymenttype VARCHAR, price NUMERIC) AS $$
+	DECLARE availdate DATE;
+	BEGIN 
+		availdate := sdate;
+		WHILE availdate <= edate LOOP 
+			INSERT INTO Bids VALUES(petowner, petname, caretaker, availdate,
+					edate, transfertype, paymenttype, price, FALSE,'p', NULL, NULL);
+			availdate := availdate + 1;
+		END LOOP;
+	END; $$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE PROCEDURE approveRejectBid(POname VARCHAR, nameOfPet VARCHAR, 
+			CTname VARCHAR, availdate DATE, approvereject CHAR(1)) AS $$
+	DECLARE enddate DATE;
+	BEGIN 
+		enddate := (SELECT B.edate 
+								FROM Bids B 
+								WHERE B.petowner=POname AND B.petname=nameOfPet 
+									AND B.caretaker=CTname AND B.avail=availDate);
+		UPDATE Bids SET status=approvereject
+			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname
+				AND edate = enddate;
+	END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE PROCEDURE rateCareTaker(POname VARCHAR, nameOfPet VARCHAR,
+			CTname VARCHAR, availdate DATE, givenrating INTEGER, givenreview VARCHAR) AS $$
+	DECLARE enddate DATE;
+	BEGIN 
+		enddate := (SELECT B.edate 
+					FROM Bids B 
+					WHERE B.petowner=POname AND B.petname=nameOfPet 
+						AND B.caretaker=CTname AND B.avail=availdate);
+		/*Only update ratings and reviews of those where avail=edate*/
+		UPDATE Bids SET rating=givenrating
+			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname 
+				AND edate=enddate AND avail=edate;
+		UPDATE Bids SET review=givenreview
+			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname 
+				AND edate=enddate AND avail=edate;
+	END; $$
+LANGUAGE plpgsql;
+
 
 DROP TRIGGER IF EXISTS checkIsValidBid ON Bids; 
 CREATE OR REPLACE FUNCTION isValidBid()
@@ -446,6 +540,22 @@ CREATE TRIGGER checkIsValidBid
 BEFORE INSERT OR UPDATE ON Bids
 FOR EACH ROW EXECUTE PROCEDURE isValidBid();
 
+
+
+-- Managing leaves
+-- ===============
+
+CREATE OR REPLACE PROCEDURE applyLeave(ctname VARCHAR, startdate DATE, enddate DATE) AS $$
+	DECLARE leaveDate DATE;
+	BEGIN 
+		leaveDate := startdate;
+		WHILE leaveDate<= enddate LOOP 
+			DELETE FROM Availability WHERE caretaker=ctname AND avail=leaveDate;
+			leaveDate := leaveDate + 1;
+		END LOOP;
+	END; $$
+LANGUAGE plpgsql;
+
 DROP TRIGGER IF EXISTS checkIsValidLeave ON Availability;
 CREATE OR REPLACE FUNCTION isValidLeave()
 RETURNS TRIGGER AS $$
@@ -522,77 +632,3 @@ LANGUAGE plpgsql;
 CREATE TRIGGER checkIsValidLeave
 BEFORE DELETE ON Availability
 FOR EACH ROW EXECUTE PROCEDURE isValidLeave();
-
-DROP TRIGGER IF EXISTS updateFeePerDay ON PetTypes; 
-CREATE OR REPLACE FUNCTION updateBasePrice()
-RETURNS TRIGGER AS $$ 
-	BEGIN 
-		UPDATE AbleToCare SET feeperday = NEW.baseprice
-		WHERE category=NEW.category 
-			AND (feeperday<NEW.baseprice OR feeperday>(SELECT computeMaxPriceMultiplier(caretaker))*NEW.baseprice);
-		RETURN NEW; 
-	END; $$ 
-LANGUAGE plpgsql; 
-
-CREATE TRIGGER updateFeePerDay
-AFTER UPDATE ON PetTypes
-FOR EACH ROW EXECUTE PROCEDURE updateBasePrice();
-
-
-CREATE OR REPLACE PROCEDURE enterBid(petowner VARCHAR, petname VARCHAR, 
-			caretaker VARCHAR, sdate DATE, edate DATE, transfertype VARCHAR, 
-			paymenttype VARCHAR, price NUMERIC) AS $$
-	DECLARE availdate DATE;
-	BEGIN 
-		availdate := sdate;
-		WHILE availdate <= edate LOOP 
-			INSERT INTO Bids VALUES(petowner, petname, caretaker, availdate,
-					edate, transfertype, paymenttype, price, FALSE,'p', NULL, NULL);
-			availdate := availdate + 1;
-		END LOOP;
-	END; $$
-LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE PROCEDURE approveRejectBid(POname VARCHAR, nameOfPet VARCHAR, 
-			CTname VARCHAR, availdate DATE, approvereject CHAR(1)) AS $$
-	DECLARE enddate DATE;
-	BEGIN 
-		enddate := (SELECT B.edate 
-								FROM Bids B 
-								WHERE B.petowner=POname AND B.petname=nameOfPet 
-									AND B.caretaker=CTname AND B.avail=availDate);
-		UPDATE Bids SET status=approvereject
-			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname
-				AND edate = enddate;
-	END; $$
-LANGUAGE plpgsql;
-
-CREATE OR REPLACE PROCEDURE rateCareTaker(POname VARCHAR, nameOfPet VARCHAR,
-			CTname VARCHAR, availdate DATE, givenrating INTEGER, givenreview VARCHAR) AS $$
-	DECLARE enddate DATE;
-	BEGIN 
-		enddate := (SELECT B.edate 
-					FROM Bids B 
-					WHERE B.petowner=POname AND B.petname=nameOfPet 
-						AND B.caretaker=CTname AND B.avail=availdate);
-		/*Only update ratings and reviews of those where avail=edate*/
-		UPDATE Bids SET rating=givenrating
-			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname 
-				AND edate=enddate AND avail=edate;
-		UPDATE Bids SET review=givenreview
-			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname 
-				AND edate=enddate AND avail=edate;
-	END; $$
-LANGUAGE plpgsql;
-
-CREATE OR REPLACE PROCEDURE applyLeave(ctname VARCHAR, startdate DATE, enddate DATE) AS $$
-	DECLARE leaveDate DATE;
-	BEGIN 
-		leaveDate := startdate;
-		WHILE leaveDate<= enddate LOOP 
-			DELETE FROM Availability WHERE caretaker=ctname AND avail=leaveDate;
-			leaveDate := leaveDate + 1;
-		END LOOP;
-	END; $$
-LANGUAGE plpgsql;

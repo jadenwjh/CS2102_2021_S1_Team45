@@ -363,14 +363,14 @@ app.delete("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
 // Get all of the caretaker's own information
 app.get("/CareTaker/:caretaker", async (req, res) => {
   try {
-    const getPetOwnerInfo = await pool.query(
+    const getCareTakerInfo = await pool.query(
       `SELECT *
       FROM Users 
       NATURAL JOIN Consumers
       INNER JOIN Pets on Users.username = Pets.petowner
-      WHERE Users.username = '${req.params.petowner}';`
+      WHERE Users.username = '${req.params.caretaker}';`
     );
-    res.json(getPetOwnerInfo.rows);
+    res.json(getCareTakerInfo.rows);
   } catch (err) {
     console.error(err.message);
   }
@@ -481,6 +481,23 @@ app.post("/CareTaker/available", async (req, res) => {
 |      PCS admin      |
 =======================
 */ 
+
+// Add admin
+app.post("/Admin", async (req, res) => {
+  try {
+    const newAdmin = await pool.query(`CALL addPCSadmin('${req.body.username}',
+    '${req.body.email}', 
+    '${req.body.password}'
+    '${req.body.profile}', 
+    '${req.body.address}', 
+    ${req.body.phoneNum});`
+    );
+
+    res.json(newAdmin.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  } 
+});
 
 // Get pettype price
 app.get("/Admin/PetTypes", async (req, res) => {
