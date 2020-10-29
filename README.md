@@ -400,7 +400,7 @@
     - DELETE https://shielded-oasis-35437.herokuapp.com/petowner/pets/daleksidze6/Gabbey
 
     Output:
-    
+
     `"Pet Gabbey belonging to daleksidze6 was deleted"`
 
 
@@ -416,6 +416,19 @@
     ### Params:
     - `caretaker` : string
 
+&nbsp;
+- ## Get own AbleToCare info `GET /CareTaker/AbleToCare/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+&nbsp;
+- ## Add AbleToCare info `POST /CareTaker/AbleToCare`
+
+    ### Body:
+    - `caretaker` : string
+    - `category` : string, pet type
+    - `feeperday` : float, fee that the caretaker wanna charge
 
 &nbsp;
 - ## Get all available days `GET /CareTaker/available/:caretaker`
@@ -504,6 +517,10 @@
 
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/PetTypes
+
+    Output:
+
+    `[{"category": "cat","baseprice": 40},{ "category": "dog", "baseprice": 45},{"category": "bird","baseprice": 20},{ "category": "rabbit", "baseprice": 25},{"category": "hamster","baseprice": 10}]`
 
 
 &nbsp;
