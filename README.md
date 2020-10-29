@@ -4,202 +4,496 @@
 
 ### Deployed on heroku.com at https://shielded-oasis-35437.herokuapp.com/
 
-I might integrate swagger or a similar API generator but for now, I'm lazy and will just list it here:
-
 &nbsp;
-
-> **NOTE**: For requests bodies, when applicable, all keys in `()` must be present, while at least 1 key in `{}` needs to be present
+> **NOTE**: Contents inside request body should always be in application/json format
 
 &nbsp;
 
 # Debug
 
-- Show all tables:           `GET /debug`
-- Show all contents of a table:       `GET /debug/:table`
+- ## Show all tables:      `GET /debug`
+
+&nbsp;
+
+- ## Show all contents of a table:      `GET /debug/:table`
+
+    ### Params:
+    - `table` : name of the table to show
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/debug/pcsadmins
+
+        Output:
+
+        `[{"username":"pdepport0"},{"username":"rwardington1"}]`
+
+&nbsp;
+
+- ## Insert into a table:      `POST /debug/:table`
+    
+    ### Params:
+    - `table` : name of the table to show
+
+    ### Body:
+    For all values needed:
+    - `{column_name}` : column_value 
+
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/debug/pettypes
+
+        Body:
+
+        ```
+        {
+            "category": "Meowth", 
+            "baseprice": 100
+        }
+        ```
+
+        Output:
+
+        `{"category": "Meowth", "baseprice": 100}`
+
+&nbsp;
+
+- ## Delete from a table:       `DELETE /debug/:table`
+    
+    ### Params:
+
+    - `table` : name of the table to show
+
+    ### Body:
+
+    For all values needed to identify a row / rows, 
+
+    - `{column_name}` : `{column_value}`
+
+
+    ### Example:
+
+    - DELETE https://shielded-oasis-35437.herokuapp.com/debug/pettypes
+
+        Body:
+
+        ```
+        {
+            "category": "Meowth"
+        }
+        ```
+
+        Output:
+
+        `{"category": "Meowth", "baseprice": 100}`
+
 
 --------------------------------------------------------------------------------------------
 &nbsp;
 
-# Basic CRUD
+# App-specific queries
 
 
-## Users
+&nbsp;
 
-- Show all:              `GET /Users`
-- Show 1 :                `GET /Users/:username`
-- Create:               `POST /Users`
-    - body: (username, email, profile, address, phoneNum)
-- Update:               `PUT /Users/:username`
-    - body: {email, profile, address, phoneNum}
-- Delete:               `DELETE /Users/:username`
+## Login/Register
+--------------------
 
---------------------------------------------------------------------------------------------
+- ## login:              `POST /Users/login`
 
-## Consumers
+    ### Body:
 
-- Show all:               `GET /Consumers`
-- Show 1 :                 `GET /Consumers/:username`
-- Create:                `POST /Consumers`
-    - body: (username, creditCard, bankAcc)
-- Update:                `PUT /Consumers/:username`
-    - body: {creditCard, bankAcc}
-- Delete:                 `DELETE /Consumers/:username`
+    - `username`: string, username
 
---------------------------------------------------------------------------------------------
+    - `password`: string, user password
 
-## PCSAdmins
+    - `acctype`: string, one of ['petowner', 'caretaker', 'both'], case insensitive
 
-- Show all:                `GET /PCSAdmins`
-- Show 1 :                  `GET /PCSAdmins/:username`
-- Create:                 `POST /PCSAdmins`
-    - body: (username)
-- Delete:                 `DELETE /PCSAdmins/:username`
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/Users/login
 
---------------------------------------------------------------------------------------------
+        Body:
 
-## PetOwners
+        ```
+        {
+        "username": "rwardington1",
+        "password": "5CKVY4dgk",
+        "acctype": "petowner"
+        }   
+        ```
 
-- Show all:                `GET /PetOwners`
-- Show 1 :                  `GET /PetOwners/:username`
-- Create:                 `POST /PetOwners`
-    - body: (username)
-- Delete:                 `DELETE /PetOwners/:username`
+        Output:
 
---------------------------------------------------------------------------------------------
+        `[{"username": "rwardington1", "password": "5CKVY4dgk"}]`
 
-## Caretakers
 
-- Show all:                `GET /CareTakers`
-- Show 1 :                  `GET /CareTakers/:username`
-- Create:                 `POST /CareTakers`
-    - body: (username, maxslots)
-- Delete:                 `DELETE /CareTakers/:username`
+&nbsp;
 
---------------------------------------------------------------------------------------------
+- ## Register:              `POST /Users/register`
+    ### Body
 
-## FullTimers
+    - `username` : string
 
-- Show all:                `GET /FullTimers`
-- Show 1 :                  `GET /FullTimers/:username`
-- Create:                 `POST /FullTimers`
-    - body: (username)
-- Delete:                 `DELETE /FullTimers/:username`
+    - `email` : string
 
---------------------------------------------------------------------------------------------
+    - `password` : string
 
-## PartTimers
+    - `profile` : string
 
-- Show all:                 `GET /PartTimers`
-- Show 1 :                   `GET /PartTimers/:username`
-- Create:                  `POST /PartTimers`
-- Update:                  `PUT /PartTimers/:username`
-    - body: (username)
-- Delete:                  `DELETE /PartTimers/:username`
+    - `address` : string
 
---------------------------------------------------------------------------------------------
+    - `phoneNum` : integer
 
-## Pets
+    - `creditCard` : integer
 
-- Show all:                 `GET /Pets`
-- Show all by a owner:           `GET /Pets/:petowner`
-- Show 1 :                   `GET /Pets/:petowner/:petname`
-- Create:                  `POST /Pets`
-    - body: (petowner, petname, profile, specialReq)
-- Update:                  `PUT /Pets/:petowner/:petname`
-    - body: {petname, profile, specialReq}
-- Delete:                  `DELETE /Pets/:petowner/:petname`
+    - `bankAcc` : integer. Note that SQL distinguishes integer from biginteger. Don't use any number above 2^31 - 1.
 
---------------------------------------------------------------------------------------------
+    - `acctype` : string, one of ['petowner', 'caretaker', 'both'], case insensitive
 
-## Availability
+    >   If `acctype` is not petowner, the following are required:
+ 
 
-- Show all:                 `GET /Availability`
-- Show all for a caretaker:          `GET /Availability/:caretaker`
-- Show 1 :                   `GET /Availability/:caretaker/:avail`
-- Create:                  `POST /Availability`
-    - body: {caretaker, avail}
-- Delete:                  `DELETE /Availability/:caretaker/:avail`
+    - `isPartTime` : boolean
 
---------------------------------------------------------------------------------------------
+    - `admin` :  string, username of an existing admin 
 
-## Unavailablity
+    ### Example
+     - POST https://shielded-oasis-35437.herokuapp.com/Users/register
 
-- Show all:                    `GET /Unavailability`
-- Show all for a caretaker:           `GET /Unavailability/:caretaker`
-- Show 1 :                      `GET /Unavailability/:caretaker/:avail`
-- Create:                  `POST /Unavailability`
-    - body: {caretaker, avail}
-- Delete:                   `DELETE /Unavailability/:caretaker/:avail`
+        Body:
 
---------------------------------------------------------------------------------------------
+        ```
+        {
+        'username': 'ccarnewp8',
+        'email': 'bkieldp8@xing.com',
+        'password': 'pqTDqBWnC',
+        'profile': 'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.',
+        'address': '52393 Killdeer Terrace',
+        'phoneNum': 89298662,
+        'creditCard': 70902008,
+        'bankAcc': 823127208,
+        'acctype': 'both',
+        'isPartTime': True,
+        'admin': 'pdepport0'
+        }
+        ```
 
-## PetTypes
+        Output: (same as input body)
 
-- Show all:                  `GET /PetTypes`
-- Show 1 :                    `GET /PetTypes/:category`
-- Create:                   `POST /PetTypes`
-    - body: (category, baseprice)
-- Update:                    `PUT /PetTypes/:username`
-    - body: (baseprice)
-- Delete:                   `DELETE /PetTypes/:username`
+        `{'username': 'ccarnewp8',
+        'email': 'bkieldp8@xing.com',
+        'password': 'pqTDqBWnC',
+        'profile': 'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.',
+        'address': '52393 Killdeer Terrace',
+        'phoneNum': 89298662,
+        'creditCard': 70902008,
+        'bankAcc': 823127208,
+        'acctype': 'both',
+        'isPartTime': True,
+        'admin': 'pdepport0'}`
 
---------------------------------------------------------------------------------------------
 
-## Manages
+&nbsp;
 
-- Show all:                 `GET /Manages`
-- Show all under an admin:          `GET /Manages/:admin`
-- Show 1 :                   `GET /Manages/:admin/:caretaker`
-- Create:                   `POST /Manages`
-    - body: (admin, caretaker)
-- Delete:                   `DELETE /Manages/:admin/:caretaker`
+## Pet Owner Operations
+--------------------
 
---------------------------------------------------------------------------------------------
+- ## Get user information:              `GET /PetOwner/:petowner`
 
-## Bids
+    ### Params:
 
-- Show all:                   `GET /Bids`
-- Show all by a petowner:              `GET /Bids/petowner/:petowner`
-- Show all by a petowner for a pet:           `GET /Bids/petowner/:petowner/:petname`
-- Show all for a caretaker:                  `GET /Bids/:caretaker`
-- Show all between a caretaker and a petowner: `GET /Bids/:caretaker/:petowner`
-- Show 1 :                    `GET /Bids/:caretaker/:petowner/:petname/:sdate`
-- Create:                   `POST /Bids`
-    - (
-      petowner, 
-      petname, 
-      caretaker, 
-      sdate,
-      edate,
-      transferType, 
-      paymentType,
-      price,
-      isPaid,
-      isWin,
-      review, 
-      rating
-    )
-- Update:                  `PUT /Bids/:caretaker/:petowner/:petname/:sdate`
-    - body: {
-      petowner, 
-      petname, 
-      caretaker, 
-      sdate,
-      edate,
-      transferType, 
-      paymentType,
-      price,
-      isPaid,
-      isWin,
-      review, 
-      rating
+    - `petowner`: string, petowner's username
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/ccarnewp8
+
+        Output:
+
+        `[{"username": "ccarnewp8","email": "bkieldp8@xing.com","password": "pqTDqBWnC","profile": "In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.","address": "52393 Killdeer Terrace","phonenum": 89298662,"creditcard": 70902008,"bankacc": 823127208,"petname": null,"petprofile": null,"specialreq": null,"category": null}]`
+
+        > Null values are due to the petowner not having any pets.
+
+&nbsp;
+- ## Get information about current bids:         `GET /PetOwner/Bids/:petowner`
+
+    ### Params:
+
+    - `petowner`: string, petowner's username
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/bids/ccarnewp8
+
+        Output:
+
+        # TODO 
+
+&nbsp;
+- ## Leave rating and reviews for caretaker   `POST /PetOwner/RatingsReviews`  
+
+    ### Body:
+
+    - `petowner`: string
+
+    - `petname` : string
+
+    - `caretaker` : string
+
+    - `avail` : string for date in the form of 'yyyy-mm-dd'
+
+    - `rating` : integer between 1 and 5 inclusive
+
+    - `review` : string
+
+    ### Example 
+    - POST https://shielded-oasis-35437.herokuapp.com/PetOwner/RatingsReviews
+
+        Body:
+
+        Output:
+
+
+        # TODO
+
+
+&nbsp;
+- ## Get past bid records               `GET /PetOwner/Bids/:petowner/history`
+
+    ### Params:
+    - `petowner`: string
+
+    ### Example 
+    - GET https://shielded-oasis-35437.herokuapp.com/PetOwner/Bids/:petowner/history
+
+    # TODO 
+
+&nbsp;
+- ## Get available caretakers           `POST /PetOwner/findCareTaker`
+
+    ### Body: 
+    - `petowner` : string
+    - `petname` : string
+    - `sdate` : string, start date in the format 'yyyy-mm-dd'
+    - `edate` : string, end date in the format 'yyyy-mm-dd'
+
+
+&nbsp;
+- ## Get caretaker rating and reviews `GET /PetOwner/RatingsReviews/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+    ### Example: 
+    - GET https://shielded-oasis-35437.herokuapp.com/PetOwner/RatingsReviews/:caretaker
+
+    # todo
+
+
+&nbsp;
+- ## Insert bid for a caretaker `POST /PetOwner/Bids`
+
+    ### Body: 
+    - `petowner` : string
+    - `petname` : string
+    - `caretaker` : string
+    - `sdate` : string, start date in the format 'yyyy-mm-dd'
+    - `edate` : string, end date in the format 'yyyy-mm-dd'
+    - `transferType` : string
+    - `paymentType` : string, 'creditcard' or 'cash'
+    - `price` : float
+
+    ### Example
+    - POST https://shielded-oasis-35437.herokuapp.com/PetOwner/Bids
+    # TODO
+
+
+&nbsp;
+## Manage Pets
+----------------
+
+
+&nbsp;
+- ## get all Pets owned by a petowner `GET /PetOwner/Pets/:petowner`
+
+    ### Params:
+    - `petowner` : string
+
+
+
+
+&nbsp;
+- ## get a Pet by petname and petowner `GET /PetOwner/Pets/:petowner/:petname`
+
+    ### Params:
+    - `petowner` : string
+
+
+&nbsp;
+- ## Create a pet `POST /PetOwner/Pets`
+
+    ### Body:
+    - `petowner` : string
+    - `petname` : string
+    - `profile` : string
+    - `specialReq` : string
+    - `category` : string, one of the existing pet types
+
+    ### Example:
+
+    # TODO
+
+
+&nbsp;
+- ## Update a pet's info   `PUT /PetOwner/Pets/:petowner/:petname`
+
+    ### Params:
+    - `petowner` : string
+    - `petname` : string
+
+    ### Body: 
+    > Note: the body can consist of any subset of the following:
+    - `petowner` : string
+    - `petname` : string
+    - `profile` : string
+    - `specialReq` : string
+    - `category` : string, one of the existing pet types
+
+
+
+&nbsp;
+- ## Delete a pet `DELETE /PetOwner/Pets/:petowner/:petname`
+
+    ### Params:
+    - `petowner` : string
+    - `petname` : string
+
+
+
+&nbsp;
+## Care Taker
+--------------
+
+
+&nbsp;
+- ## Get all of the caretaker's own information `GET /CareTaker/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+
+&nbsp;
+- ## Get all available days `GET /CareTaker/available/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+
+&nbsp;
+- ## Get own ratings and reviews `GET /CareTaker/RatingsReviews/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+&nbsp;
+- ## Get all bids for self `GET /CareTaker/Bids/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+&nbsp;
+- ## Respond to a bid `PUT /CareTaker/Bids`
+
+    ### Body:
+    - `petowner` : string
+    - `petname` : string
+    - `caretaker` : string
+    - `avail` : string, date of a bid
+    - `approveReject` : single character string, 'a' = accept, 'p' = pending, 'r' = reject
+
+    ### Example:
+
+
+
+&nbsp;
+- ## Get range of prices that can be set `GET /CareTaker/pricing/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+&nbsp;
+- ## Set price for a pettype `PUT /CareTaker/pricing`
+
+    ### Body:
+    - `caretaker` : string
+    - `petType` : string
+    - `price` : integer
+
+&nbsp;
+- ## For fulltimers: apply for leave  `POST /CareTaker/leaves`
+
+    ### Body:
+    - `username` : string
+    - `sdate` : string, start date in the format 'yyyy-mm-dd'
+    - `edate` : string, end date in the format 'yyyy-mm-dd'
+
+&nbsp;
+- ## For parttimers: Schedule available days `POST /CareTaker/available`
+
+    ### Body:
+    - `username` : string
+    - `sdate` : string, start date in the format 'yyyy-mm-dd'
+    - `edate` : string, end date in the format 'yyyy-mm-dd'
+
+
+
+&nbsp;
+## PCS Admin
+------------
+
+
+&nbsp;
+- ## Add an admin `POST /Admin`
+
+    ### Body:
+    - `username` : string
+    - `email` : string
+    - `password` : string
+    - `profile` : string
+    - `address` : string
+    - `phoneNum` : integer
+
+
+&nbsp;
+- ## Get pet type base prices `GET /Admin/PetTypes`
+
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/PetTypes
+
+
+&nbsp;
+- ## Set base price for a pet type `PUT /Admin/PetTypes`
+
+    ### Body:
+    - `basePrice` : float
+    - `category` : string, pet type whose base price to change
+
+    ### Example:
+    PUT https://shielded-oasis-35437.herokuapp.com/Admin/PetTypes
+
+    Body:
+    ```
+    {
+        "basePrice": 101,
+        "category": "meowth"
     }
-- Delete:                   `DELETE /Bids/:caretaker/:petowner/:petname/:sdate`
+    ```
 
+    Output: 
+    `PetType meowth was updated`
 
---------------------------------------------------------------------------------------------
 &nbsp;
+- ## Get all caretakers and their ratings `GET /Admin/summary`
 
-# Complex Queries
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/summary
 
-Not implemented yet. Stay tuned =D
+
+&nbsp;
+- ## Get all salaries (in progress)

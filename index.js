@@ -29,11 +29,11 @@ app.post("/Users/login", async (req, res) => {
   try {
     var accountType;
     if (req.body.acctype.toLowerCase()==="petowner") {
-      accountType = ["PetOwner", "PetOwner"];
+      accountType = ["PetOwners", "PetOwners"];
     } else if (req.body.acctype.toLowerCase()==="caretaker") {
-      accountType = ["CareTaker", "CareTaker"];
+      accountType = ["CareTakers", "CareTakers"];
     } else if (req.body.acctype.toLowerCase()==="both") {
-      accountType = ["PetOwner", "CareTaker"];
+      accountType = ["PetOwners", "CareTakers"];
     } else {
       throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker', 'both'], case insensitive.");
     }
@@ -118,11 +118,13 @@ app.post("/Users/register", async (req, res) => {
 app.get("/PetOwner/:petowner", async (req, res) => {
   try {
     const getPetOwnerInfo = await pool.query(
-      `SELECT *
-      FROM Users 
-      NATURAL JOIN Consumers
-      INNER JOIN Pets on Users.username = Pets.petowner
-      WHERE Users.username = '${req.params.petowner}';`
+      `SELECT U.username, U.email, U.password, U.profile, U.address, U.phonenum, 
+      C.creditcard, C.bankacc, 
+      P.petname, P.profile AS petprofile, P.specialreq, P.category
+      FROM Users AS U
+      NATURAL JOIN Consumers AS C
+      LEFT JOIN Pets AS P on U.username = P.petowner
+      WHERE U.username = '${req.params.petowner}';`
     );
     res.json(getPetOwnerInfo.rows);
   } catch (err) {
@@ -273,17 +275,6 @@ app.post("/PetOwner/Bids", async (req, res) => {
 =======================
 */ 
 
-//get all Pets
-app.get("/PetOwner/Pets", async (req, res) => {
-  try {
-    const getPets = await pool.query("SELECT * FROM Pets;");
-
-    res.json(getPets.rows);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
 //get all Pets owned by a petowner
 app.get("/PetOwner/Pets/:petowner", async (req, res) => {
   try {
@@ -313,8 +304,12 @@ app.get("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
 //create a Pet
 app.post("/PetOwner/Pets", async (req, res) => {
   try {
-    const query = `INSERT INTO Pets (petowner, petname, profile, specialReq)
-    VALUES ('${req.body.petowner}', '${req.body.petname}', '${req.body.profile}', '${req.body.specialReq}') 
+    const query = `INSERT INTO Pets (petowner, petname, profile, specialReq, category)
+    VALUES ('${req.body.petowner}', 
+    '${req.body.petname}', 
+    '${req.body.profile}', 
+    '${req.body.specialReq}', 
+    '${req.body.category}') 
     RETURNING *;`
     const newPet = await pool.query(query);
 
@@ -547,7 +542,9 @@ app.put("/Admin/PetTypes", async (req, res) => {
 app.get("/Admin/summary", async (req, res) => {
   try {
     const caretakerSummary = await pool.query(
-      `SELECT caretaker, AVG(rating) from Bids GROUP BY caretaker;`
+      `SELECT caretaker, AVG(rating) AS averageRating from Bids 
+      GROUP BY caretaker 
+      ORDER BY averageRating;`
     );
 
     res.json(caretakerSummary.rows);
@@ -582,9 +579,9 @@ app.get("/debug", async (req, res) => {
 
 
 //get all contents of a table
-app.get("/debug/:name", async (req, res) => {
+app.get("/debug/:table", async (req, res) => {
   try {
-    const getTable = await pool.query(`SELECT * FROM ${req.params.name};`);
+    const getTable = await pool.query(`SELECT * FROM ${req.params.table};`);
     res.json(getTable.rows);
   } catch (err) {
     console.error(err.message);
@@ -592,7 +589,7 @@ app.get("/debug/:name", async (req, res) => {
 });
 
 // Post an entry into a table
-app.post("/debug/:name", async (req, res) => {
+app.post("/debug/:table", async (req, res) => {
     try {
       var colArray = [];
       var valArray = [];
@@ -607,7 +604,7 @@ app.post("/debug/:name", async (req, res) => {
       }
   
       const addRow = await pool.query(
-        `INSERT INTO ${req.params.name} (${colArray}) VALUES (${valArray}) RETURNING *;`
+        `INSERT INTO ${req.params.table} (${colArray}) VALUES (${valArray}) RETURNING *;`
       );
   
       res.json(addRow.rows[0]);
@@ -615,6 +612,25 @@ app.post("/debug/:name", async (req, res) => {
       console.error(err.message);
     }
   });
+
+// Delete an entry from a table
+app.delete("/debug/:table", async (req, res) => {
+  try {
+    var delArray = [];
+
+    for (const [k, v] of Object.entries(req.body)) {
+      delArray.push(`${k} = '${v}'`);
+    }
+
+    const delFrom = await pool.query(
+      `DELETE ${req.params.table} WHERE ${delArray.join(" AND ")} RETURNING *;`
+    );
+
+    res.json(delFrom);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
 // /* 
 //     ###########################
