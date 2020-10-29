@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        loginViewModel.loading.setValue(false);
         generateMenu();
 
         login.setOnClickListener(v -> {

@@ -39,6 +39,7 @@ public class RegisterActivity extends AppCompatActivity implements CareTakerSign
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         registerViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
+        registerViewModel.loading.setValue(false);
         FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
