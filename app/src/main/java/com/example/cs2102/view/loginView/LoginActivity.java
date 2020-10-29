@@ -17,7 +17,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
-import com.example.cs2102.constants.Strings;
+import com.example.cs2102.widgets.Strings;
 import com.example.cs2102.model.User;
 import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
@@ -78,14 +78,11 @@ public class LoginActivity extends AppCompatActivity {
 
         signUp.setOnClickListener(view -> startRegisterPage());
 
-        loginViewModel.loading.observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    loadingBar.setVisibility(View.VISIBLE);
-                } else {
-                    loadingBar.setVisibility(View.INVISIBLE);
-                }
+        loginViewModel.loading.observe(this, aBoolean -> {
+            if (aBoolean) {
+                loadingBar.setVisibility(View.VISIBLE);
+            } else {
+                loadingBar.setVisibility(View.INVISIBLE);
             }
         });
     }

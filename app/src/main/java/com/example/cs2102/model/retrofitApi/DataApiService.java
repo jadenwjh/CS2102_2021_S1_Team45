@@ -1,6 +1,6 @@
 package com.example.cs2102.model.retrofitApi;
 
-import com.example.cs2102.constants.Strings;
+import com.example.cs2102.widgets.Strings;
 import com.example.cs2102.model.CareTaker;
 import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.PetTypeCost;
@@ -19,7 +19,7 @@ public class DataApiService {
 
     private static DataApiService dataApiServiceInstance;
 
-    private DataApiService() {};
+    private DataApiService() {}
 
     public DataApi dataApi =  new Retrofit.Builder()
             .baseUrl(Strings.BASE_URL)
@@ -74,7 +74,19 @@ public class DataApiService {
     }
 
     public Single<String> acceptBid(String username, String petName) {
-        return  dataApi.acceptBid(username, petName);
+        return dataApi.acceptBid(username, petName);
+    }
+
+    public Single<List<String>> careTakerFullTimeFree(String username) {
+        return dataApi.careTakerFullTimeFree(username);
+    }
+
+    public Single<String> setPartTimerFree(String username, String date) {
+        return dataApi.setPartTimeFree(username, date);
+    }
+
+    public Single<String> getCTContract(String username) {
+        return dataApi.getCareTakerContract(username);
     }
 
     public Single<List<PetOwner>> getPetOwners() {

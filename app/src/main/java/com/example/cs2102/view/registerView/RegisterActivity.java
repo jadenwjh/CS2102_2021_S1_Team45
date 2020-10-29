@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
-import com.example.cs2102.constants.Strings;
+import com.example.cs2102.widgets.Strings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

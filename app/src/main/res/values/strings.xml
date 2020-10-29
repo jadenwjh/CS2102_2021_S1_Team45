@@ -26,5 +26,7 @@
     <string name="bids">Bids</string>
     <string name="prices">Prices</string>
     <string name="accept_bid">Accept Bid</string>
+    <string name="select_date">Select Date</string>
+    <string name="availability">Availability</string>
 
 </resources>

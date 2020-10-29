@@ -1,24 +1,28 @@
 package com.example.cs2102.view.careTakerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerLeaveViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +30,7 @@ import butterknife.ButterKnife;
 public class CareTakerLeaveFragment extends Fragment {
 
     @BindView(R.id.datePickerLeave)
-    DatePicker datePicker;
+    Button datePicker;
 
     @BindView(R.id.date_selected)
     TextView dateSelected;
@@ -37,13 +41,24 @@ public class CareTakerLeaveFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loading;
 
-    private CareTakerLeaveViewModel careTakerLeaveViewModel;
+    private static CareTakerLeaveViewModel careTakerLeaveViewModel;
 
     private static String currentCareTakerUsername;
 
-    public static CareTakerLeaveFragment newInstance(String username) {
+    public static CareTakerLeaveFragment newInstance(String username, CareTakerLeaveViewModel vm) {
         currentCareTakerUsername = username;
+        careTakerLeaveViewModel = vm;
         return new CareTakerLeaveFragment();
+    }
+
+    public interface LeaveDatePickerCallback {
+        void showDatePicker(Calendar[] days);
+    }
+
+    private LeaveDatePickerCallback datePickerCallback;
+
+    public void setLeaveDatePicker(LeaveDatePickerCallback impl) {
+        this.datePickerCallback = impl;
     }
 
     @Override
@@ -53,28 +68,24 @@ public class CareTakerLeaveFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        careTakerLeaveViewModel = ViewModelProviders.of(this).get(CareTakerLeaveViewModel.class);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
-        datePicker.setMinDate(Calendar.DATE);
-
-        datePicker.setOnDateChangedListener((view1, year, monthOfYear, dayOfMonth) -> {
-
-            @SuppressLint("DefaultLocale")
-            String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
-            dateSelected.setText(date);
+        datePicker.setOnClickListener(v -> {
+            Calendar[] days = new Calendar[0];
+            try {
+                days = convertStringToDates(Objects.requireNonNull(careTakerLeaveViewModel.availableDates.getValue()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            datePickerCallback.showDatePicker(days);
         });
 
         applyLeave.setOnClickListener(v -> {
             String date = dateSelected.getText().toString();
             careTakerLeaveViewModel.requestToApplyLeave(currentCareTakerUsername, date);
+            careTakerLeaveViewModel.refresh(currentCareTakerUsername);
         });
 
         careTakerLeaveViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
@@ -84,6 +95,8 @@ public class CareTakerLeaveFragment extends Fragment {
                 loading.setVisibility(View.GONE);
             }
         });
+
+        careTakerLeaveViewModel.selectedDate.observe(getViewLifecycleOwner(), date -> dateSelected.setText(date));
     }
 
     @Override
@@ -93,7 +106,31 @@ public class CareTakerLeaveFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof LeaveDatePickerCallback) {
+            datePickerCallback = (LeaveDatePickerCallback) context;
+        } else {
+            throw new ClassCastException("RegisterPOListener not implemented");
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
+    }
+
+    private Calendar[] convertStringToDates(List<String> dates) throws ParseException {
+        List<Calendar> calendarList = new ArrayList<>();
+        for (String date : dates) {
+            //YYYY-MM-DD
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(Objects.requireNonNull(format.parse(date)));
+            calendarList.add(cal);
+        }
+        return calendarList.toArray(new Calendar[0]);
     }
 }

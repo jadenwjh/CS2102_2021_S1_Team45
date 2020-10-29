@@ -13,34 +13,29 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class CareTakerBidsViewModel extends ViewModel {
+public class CareTakerHomepageViewModel extends ViewModel {
 
-    public MutableLiveData<List<PetOwner>> petOwners = new MutableLiveData<>();
-    public MutableLiveData<Boolean> loadError = new MutableLiveData<>();
-    public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    public MutableLiveData<String> contract = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void refreshBids(String careTakerName) {fetchPetOwnerBids(careTakerName);}
-
-    public void fetchPetOwnerBids(String careTakerName) {
-        loading.setValue(true);
-        disposable.add(dataApiService.getBids(careTakerName)
+    public void fetchContract(String careTakerName) {
+        isLoading.setValue(true);
+        disposable.add(dataApiService.getCTContract(careTakerName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<PetOwner>>() {
+                .subscribeWith(new DisposableSingleObserver<String>() {
                     @Override
-                    public void onSuccess(List<PetOwner> _petOwners) {
-                        petOwners.setValue(_petOwners);
-                        loadError.setValue(false);
-                        loading.setValue(false);
+                    public void onSuccess(String ct) {
+                        contract.setValue(ct);
+                        isLoading.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        loadError.setValue(true);
-                        loading.setValue(false);
+                        isLoading.setValue(false);
                         e.printStackTrace();
                     }
                 })
@@ -52,4 +47,5 @@ public class CareTakerBidsViewModel extends ViewModel {
         super.onCleared();
         disposable.clear();
     }
+
 }

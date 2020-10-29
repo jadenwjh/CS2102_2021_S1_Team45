@@ -1,6 +1,6 @@
 package com.example.cs2102.model.retrofitApi;
 
-import com.example.cs2102.constants.Strings;
+import com.example.cs2102.widgets.Strings;
 import com.example.cs2102.model.CareTaker;
 import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.PetTypeCost;
@@ -65,7 +65,16 @@ public interface DataApi {
     Single<String> acceptBid(@Field("username") String username,
                              @Field("petName") String petName);
 
+    @GET(Strings.CT_FULL_TIME_FREE)
+    Single<List<String>> careTakerFullTimeFree(@Query("username") String username);
 
     @GET(Strings.PET_OWNERS_REQUESTS)
     Single<List<PetOwner>> getPetOwners();
+
+    @POST(Strings.CT_PART_TIME_FREE)
+    Single<String> setPartTimeFree(@Field("username") String username,
+                                   @Field("date") String leaveDate);
+
+    @GET(Strings.CARE_TAKERS)
+    Single<String> getCareTakerContract(@Query("username") String username);
 }
