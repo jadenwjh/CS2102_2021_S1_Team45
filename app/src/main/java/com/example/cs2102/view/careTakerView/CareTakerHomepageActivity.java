@@ -19,7 +19,7 @@ import com.example.cs2102.model.PetOwner;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CareTakerHomepageActivity extends AppCompatActivity implements CareTakerBidsAdapter.BidsListener, CareTakerLeaveFragment.ApplyLeaveListener, CareTakerSetPriceFragment.SetPetPriceListener {
+public class CareTakerHomepageActivity extends AppCompatActivity implements CareTakerBidsAdapter.BidsListener, CareTakerLeaveFragment.ApplyLeaveListener, CareTakerSetPriceFragment.SetPetPriceListener, BidSelectedFragment.BidSelectedFragmentListener {
 
     @BindView(R.id.loading)
     ProgressBar loading;
@@ -87,6 +87,18 @@ public class CareTakerHomepageActivity extends AppCompatActivity implements Care
         });
     }
 
+    private void toggleHideNavigator(boolean hide) {
+        if (hide) {
+            viewBids.setVisibility(View.INVISIBLE);
+            viewLeaves.setVisibility(View.INVISIBLE);
+            viewPrices.setVisibility(View.INVISIBLE);
+        } else {
+            viewBids.setVisibility(View.VISIBLE);
+            viewLeaves.setVisibility(View.VISIBLE);
+            viewPrices.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void switchFragment(String key) {
         isLoading.setValue(true);
         switch (key) {
@@ -107,8 +119,11 @@ public class CareTakerHomepageActivity extends AppCompatActivity implements Care
 
     @Override
     public void onBidSelected(PetOwner petOwner) {
-        //load new fragment
-        //TODO: using petOwner, generate fragment with his profile and a button to accept bid
+        isLoading.setValue(true);
+        toggleHideNavigator(true);
+        BidSelectedFragment currentBid = BidSelectedFragment.newInstance(username, petOwner);
+        ft.replace(R.id.careTaker_fragment, currentBid, CURRENT_FRAGMENT).commit();
+        isLoading.setValue(false);
     }
 
     @Override
@@ -119,5 +134,11 @@ public class CareTakerHomepageActivity extends AppCompatActivity implements Care
     @Override
     public void onExitSetPetPrice() {
         switchFragment(Strings.BIDS);
+    }
+
+    @Override
+    public void onBidAcceptedExitFragment() {
+        switchFragment(Strings.BIDS);
+        toggleHideNavigator(false);
     }
 }

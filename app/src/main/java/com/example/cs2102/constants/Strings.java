@@ -27,4 +27,5 @@ public class Strings {
     public static final String PETS_THE_CARE_TAKER_CAN_TAKE_CARE = "";
 
     public static final String CT_FULL_TIME_LEAVE = "";
+    public static final String CT_BIDS = "";
 }

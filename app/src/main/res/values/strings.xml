@@ -25,5 +25,6 @@
     <string name="leaves">Leaves</string>
     <string name="bids">Bids</string>
     <string name="prices">Prices</string>
+    <string name="accept_bid">Accept Bid</string>
 
 </resources>

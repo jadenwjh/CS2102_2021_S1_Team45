@@ -6,7 +6,6 @@ import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.model.User;
 
-import java.sql.Date;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -72,6 +71,10 @@ public class DataApiService {
 
     public Single<String> applyLeave(String username, String date) {
         return dataApi.applyLeave(username, date);
+    }
+
+    public Single<String> acceptBid(String username, String petName) {
+        return  dataApi.acceptBid(username, petName);
     }
 
     public Single<List<PetOwner>> getPetOwners() {

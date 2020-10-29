@@ -2,12 +2,10 @@ package com.example.cs2102.model.retrofitApi;
 
 import com.example.cs2102.constants.Strings;
 import com.example.cs2102.model.CareTaker;
-import com.example.cs2102.model.Pet;
 import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.model.User;
 
-import java.sql.Date;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -45,7 +43,7 @@ public interface DataApi {
                                    @Field("address") String address,
                                    @Field("contract") String contract);
 
-    @GET(Strings.PET_OWNERS_REQUESTS)
+    @GET(Strings.CT_BIDS)
     Single<List<PetOwner>> getBidsReceived(@Query("username") String username);
 
     @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE)
@@ -62,6 +60,11 @@ public interface DataApi {
     @POST(Strings.CT_FULL_TIME_LEAVE)
     Single<String> applyLeave(@Field("username") String username,
                             @Field("date") String leaveDate);
+
+    @POST(Strings.CT_BIDS)
+    Single<String> acceptBid(@Field("username") String username,
+                             @Field("petName") String petName);
+
 
     @GET(Strings.PET_OWNERS_REQUESTS)
     Single<List<PetOwner>> getPetOwners();
