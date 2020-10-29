@@ -380,7 +380,7 @@ app.get("/CareTaker/AbleToCare/:caretaker", async (req, res) => {
   try {
     const abletocare = await pool.query(
       `SELECT * FROM AbleToCare 
-      WHERE caretaker = '${req.body.caretaker}';`
+      WHERE caretaker = '${req.params.caretaker}';`
     );
     res.json(getCareTakerInfo.rows);
   } catch (err) {

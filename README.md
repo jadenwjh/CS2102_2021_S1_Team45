@@ -11,11 +11,11 @@
 
 # Debug
 
-- ## Show all tables:      `GET /debug`
+- ## Show all tables: <div style="text-align: right"> `GET /debug`</div>
 
 &nbsp;
 
-- ## Show all contents of a table:      `GET /debug/:table`
+- ## Show all contents of a table:<div style="text-align: right"> `GET /debug/:table`</div>
 
     ### Params:
     - `table` : name of the table to show
@@ -29,7 +29,7 @@
 
 &nbsp;
 
-- ## Insert into a table:      `POST /debug/:table`
+- ## Insert into a table:<div style="text-align: right">`POST /debug/:table`</div>
     
     ### Params:
     - `table` : name of the table to show
@@ -56,7 +56,7 @@
 
 &nbsp;
 
-- ## Delete from a table:       `DELETE /debug/:table`
+- ## Delete from a table:<div style="text-align: right">`DELETE /debug/:table`</div>
     
     ### Params:
 
@@ -97,7 +97,7 @@
 ## Login/Register
 --------------------
 
-- ## login:              `POST /Users/login`
+- ## login:<div style="text-align: right">`POST /Users/login`</div>
 
     ### Body:
 
@@ -127,7 +127,7 @@
 
 &nbsp;
 
-- ## Register:              `POST /Users/register`
+- ## Register:<div style="text-align: right">`POST /Users/register`</div>
     ### Body
 
     - `username` : string
@@ -196,7 +196,7 @@
 ## Pet Owner Operations
 --------------------
 
-- ## Get user information:              `GET /PetOwner/:petowner`
+- ## Get user information:<div style="text-align: right">`GET /PetOwner/:petowner`</div>
 
     ### Params:
 
@@ -212,7 +212,7 @@
         > Null values are due to the petowner not having any pets.
 
 &nbsp;
-- ## Get information about current bids:         `GET /PetOwner/Bids/:petowner`
+- ## Get information about current bids:<div style="text-align: right">`GET /PetOwner/Bids/:petowner`</div>
 
     ### Params:
 
@@ -226,7 +226,7 @@
         # TODO 
 
 &nbsp;
-- ## Leave rating and reviews for caretaker   `POST /PetOwner/RatingsReviews`  
+- ## Leave rating and reviews for caretaker <div style="text-align: right">`POST /PetOwner/RatingsReviews`  </div>
 
     ### Body:
 
@@ -254,7 +254,7 @@
 
 
 &nbsp;
-- ## Get past bid records               `GET /PetOwner/Bids/:petowner/history`
+- ## Get past bid records <div style="text-align: right">`GET /PetOwner/Bids/:petowner/history`</div>
 
     ### Params:
     - `petowner`: string
@@ -265,7 +265,7 @@
     # TODO 
 
 &nbsp;
-- ## Get available caretakers           `POST /PetOwner/findCareTaker`
+- ## Get available caretakers <div style="text-align: right">`POST /PetOwner/findCareTaker`</div>
 
     ### Body: 
     - `petowner` : string
@@ -275,7 +275,7 @@
 
 
 &nbsp;
-- ## Get caretaker rating and reviews `GET /PetOwner/RatingsReviews/:caretaker`
+- ## Get caretaker rating and reviews <div style="text-align: right">`GET /PetOwner/RatingsReviews/:caretaker`</div>
 
     ### Params:
     - `caretaker` : string
@@ -287,7 +287,7 @@
 
 
 &nbsp;
-- ## Insert bid for a caretaker `POST /PetOwner/Bids`
+- ## Insert bid for a caretaker <div style="text-align: right">`POST /PetOwner/Bids`</div>
 
     ### Body: 
     - `petowner` : string
@@ -310,7 +310,7 @@
 
 
 &nbsp;
-- ## get all Pets owned by a petowner `GET /PetOwner/Pets/:petowner`
+- ## get all Pets owned by a petowner <div style="text-align: right">`GET /PetOwner/Pets/:petowner`
 
     ### Params:
     - `petowner` : string
@@ -319,14 +319,14 @@
 
 
 &nbsp;
-- ## get a Pet by petname and petowner `GET /PetOwner/Pets/:petowner/:petname`
+- ## get a Pet by petname and petowner <div style="text-align: right">`GET /PetOwner/Pets/:petowner/:petname`
 
     ### Params:
     - `petowner` : string
 
 
 &nbsp;
-- ## Create a pet `POST /PetOwner/Pets`
+- ## Create a pet <div style="text-align: right">`POST /PetOwner/Pets`
 
     ### Body:
     - `petowner` : string
@@ -356,7 +356,7 @@
 
 
 &nbsp;
-- ## Update a pet's info   `PUT /PetOwner/Pets/:petowner/:petname`
+- ## Update a pet's info <div style="text-align: right"> `PUT /PetOwner/Pets/:petowner/:petname`</div>
 
     ### Params:
     - `petowner` : string
@@ -390,7 +390,7 @@
 
 
 &nbsp;
-- ## Delete a pet `DELETE /PetOwner/Pets/:petowner/:petname`
+- ## Delete a pet <div style="text-align: right">`DELETE /PetOwner/Pets/:petowner/:petname`
 
     ### Params:
     - `petowner` : string
@@ -411,19 +411,19 @@
 
 
 &nbsp;
-- ## Get all of the caretaker's own information `GET /CareTaker/:caretaker`
+- ## Get all of the caretaker's own information <div style="text-align: right">`GET /CareTaker/:caretaker`
 
     ### Params:
     - `caretaker` : string
 
 &nbsp;
-- ## Get own AbleToCare info `GET /CareTaker/AbleToCare/:caretaker`
+- ## Get own AbleToCare info <div style="text-align: right">`GET /CareTaker/AbleToCare/:caretaker`
 
     ### Params:
     - `caretaker` : string
 
 &nbsp;
-- ## Add AbleToCare info `POST /CareTaker/AbleToCare`
+- ## Add AbleToCare info <div style="text-align: right">`POST /CareTaker/AbleToCare`
 
     ### Body:
     - `caretaker` : string
@@ -431,26 +431,26 @@
     - `feeperday` : float, fee that the caretaker wanna charge
 
 &nbsp;
-- ## Get all available days `GET /CareTaker/available/:caretaker`
+- ## Get all available days <div style="text-align: right">`GET /CareTaker/available/:caretaker`
 
     ### Params:
     - `caretaker` : string
 
 
 &nbsp;
-- ## Get own ratings and reviews `GET /CareTaker/RatingsReviews/:caretaker`
+- ## Get own ratings and reviews <div style="text-align: right">`GET /CareTaker/RatingsReviews/:caretaker`
 
     ### Params:
     - `caretaker` : string
 
 &nbsp;
-- ## Get all bids for self `GET /CareTaker/Bids/:caretaker`
+- ## Get all bids for self <div style="text-align: right">`GET /CareTaker/Bids/:caretaker`
 
     ### Params:
     - `caretaker` : string
 
 &nbsp;
-- ## Respond to a bid `PUT /CareTaker/Bids`
+- ## Respond to a bid <div style="text-align: right">`PUT /CareTaker/Bids`
 
     ### Body:
     - `petowner` : string
@@ -464,13 +464,13 @@
 
 
 &nbsp;
-- ## Get range of prices that can be set `GET /CareTaker/pricing/:caretaker`
+- ## Get range of prices that can be set <div style="text-align: right">`GET /CareTaker/pricing/:caretaker`
 
     ### Params:
     - `caretaker` : string
 
 &nbsp;
-- ## Set price for a pettype `PUT /CareTaker/pricing`
+- ## Set price for a pettype <div style="text-align: right">`PUT /CareTaker/pricing`
 
     ### Body:
     - `caretaker` : string
@@ -478,7 +478,7 @@
     - `price` : integer
 
 &nbsp;
-- ## For fulltimers: apply for leave  `POST /CareTaker/leaves`
+- ## For fulltimers: apply for leave  <div style="text-align: right">`POST /CareTaker/leaves`
 
     ### Body:
     - `username` : string
@@ -486,7 +486,7 @@
     - `edate` : string, end date in the format 'yyyy-mm-dd'
 
 &nbsp;
-- ## For parttimers: Schedule available days `POST /CareTaker/available`
+- ## For parttimers: Schedule available days <div style="text-align: right">`POST /CareTaker/available`
 
     ### Body:
     - `username` : string
@@ -501,7 +501,7 @@
 
 
 &nbsp;
-- ## Add an admin `POST /Admin`
+- ## Add an admin <div style="text-align: right">`POST /Admin`
 
     ### Body:
     - `username` : string
@@ -513,7 +513,7 @@
 
 
 &nbsp;
-- ## Get pet type base prices `GET /Admin/PetTypes`
+- ## Get pet type base prices <div style="text-align: right">`GET /Admin/PetTypes`
 
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/PetTypes
@@ -524,7 +524,7 @@
 
 
 &nbsp;
-- ## Set base price for a pet type `PUT /Admin/PetTypes`
+- ## Set base price for a pet type <div style="text-align: right">`PUT /Admin/PetTypes`
 
     ### Body:
     - `basePrice` : float
@@ -545,7 +545,7 @@
     `PetType meowth was updated`
 
 &nbsp;
-- ## Get all caretakers and their ratings `GET /Admin/summary`
+- ## Get all caretakers and their ratings <div style="text-align: right">`GET /Admin/summary`
 
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/summary
