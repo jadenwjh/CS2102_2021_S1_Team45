@@ -38,11 +38,11 @@ app.get("/", async (req, res) => {
 app.post("/Users/login", async (req, res) => {
   try {
     var accountType;
-    if (req.body.acctype.toLowerCase()==="petowner") {
+    if (req.body.acctype==="petowner") {
       accountType = ["PetOwners", "PetOwners"];
-    } else if (req.body.acctype.toLowerCase()==="caretaker") {
+    } else if (req.body.acctype==="caretaker") {
       accountType = ["CareTakers", "CareTakers"];
-    } else if (req.body.acctype.toLowerCase()==="both") {
+    } else if (req.body.acctype==="both") {
       accountType = ["PetOwners", "CareTakers"];
     } else {
       throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker', 'both'], case insensitive.");
@@ -67,7 +67,7 @@ app.post("/Users/login", async (req, res) => {
 app.post("/Users/register", async (req, res) => {
   try {
     var queryStr = "";
-    if (req.body.acctype.toLowerCase()==="petowner" || req.body.acctype.toLowerCase()==="both") {
+    if (req.body.acctype==="petowner" || req.body.acctype==="both") {
       queryStr = queryStr.concat(
         `
         CALL addPetOwner('${req.body.username}',
@@ -81,7 +81,7 @@ app.post("/Users/register", async (req, res) => {
         `
       );
     } 
-    if (req.body.acctype.toLowerCase()==="caretaker" || req.body.acctype.toLowerCase()==="both") {
+    if (req.body.acctype==="caretaker" || req.body.acctype==="both") {
       queryStr = queryStr.concat(
         `
         CALL addCareTaker('${req.body.username}',
@@ -108,7 +108,7 @@ app.post("/Users/register", async (req, res) => {
         )
       }
     } 
-    if (!["petowner", "caretaker", "both"].includes(req.body.acctype.toLowerCase())) {
+    if (!["petowner", "caretaker", "both"].includes(req.body.acctype)) {
       throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker', 'both'], case insensitive.")
     }
     const register = await pool.query(queryStr);
