@@ -441,7 +441,7 @@ app.get("/CareTaker/Bids/:caretaker", async (req, res) => {
       `SELECT * FROM Bids 
       WHERE caretaker = '${req.params.caretaker}';`
     );
-    res.json(getBid.rows[0]);
+    res.json(getBid.rows);
   } catch (err) {
     console.error(err.message);
   }
