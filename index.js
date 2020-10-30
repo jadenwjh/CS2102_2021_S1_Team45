@@ -116,8 +116,8 @@ app.post("/Users/register", async (req, res) => {
 
   } catch (err) {
     console.log(queryStr);
-    console.log(String(req.body.acctype));
-    console.log()
+    console.log(req.body.acctype);
+    console.log(req.body)
     console.error(err.message);
   }
 });
