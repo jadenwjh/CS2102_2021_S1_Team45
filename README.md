@@ -223,6 +223,8 @@
 
         Output:
 
+        > Bids that are pending / accepted with no ratings
+
         `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-04T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}]`
 
 &nbsp;
@@ -258,6 +260,7 @@
         ```
 
         Output:
+
         `"Ratings and reviews updated"`
 
 
@@ -269,9 +272,14 @@
     - `petowner`: string
 
     ### Example 
-    - GET https://shielded-oasis-35437.herokuapp.com/PetOwner/Bids/:petowner/history
+    - GET https://shielded-oasis-35437.herokuapp.com/PetOwner/Bids/daleksidze6/history
 
-    # TODO 
+    Output:
+
+    > Only contains bids that have been rejected or rated
+
+    `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-01-01T00:00:00.000Z","edate":"2020-01-05T00:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"r","review":null,"rating":null},{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-01-02T00:00:00.000Z","edate":"2020-01-05T00:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"r","review":null,"rating":null}, ...]`
+
 
 &nbsp;
 - ## Get available caretakers <div style="text-align: right">`POST /PetOwner/findCareTaker`</div>
@@ -282,6 +290,8 @@
     - `sdate` : string, start date in the format 'yyyy-mm-dd'
     - `edate` : string, end date in the format 'yyyy-mm-dd'
 
+> ## Not working yet...
+
 
 &nbsp;
 - ## Get caretaker rating and reviews <div style="text-align: right">`GET /PetOwner/RatingsReviews/:caretaker`</div>
@@ -290,9 +300,11 @@
     - `caretaker` : string
 
     ### Example: 
-    - GET https://shielded-oasis-35437.herokuapp.com/PetOwner/RatingsReviews/:caretaker
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/ratingsreviews/jgastickep2
 
-    # todo
+    Output:
+
+    `[{"caretaker":"jgastickep2","rating":5,"review":"This pet care works too well. It buoyantly improves my football by a lot.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-03-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":5,"review":"This pet care works certainly well. It accidentally improves my baseball by a lot.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-04-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":4,"review":"It only works when I am Azerbaijan.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-05-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":3,"review":"talk about contempt!","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-06-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":4,"review":"heard about this on timba radio, decided to give it a try.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-07-05T00:00:00.000Z"}]`
 
 
 &nbsp;
@@ -339,6 +351,12 @@
     ### Params:
     - `petowner` : string
 
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/pets/dayerst2
+
+    Output:
+    `[{"petowner":"dayerst2","petname":"Zabrina","profile":"Phalaropus lobatus","specialreq":"deliver real-time e-markets","category":"bird"},{"petowner":"dayerst2","petname":"Candra","profile":"Loxodonta africana","specialreq":"embrace customized markets","category":"hamster"}]`
+
 
 
 
@@ -348,6 +366,11 @@
     ### Params:
     - `petowner` : string
 
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/pets/jeymerp9/Priscella
+
+    Output:
+    `{"petowner":"jeymerp9","petname":"Priscella","profile":"Coracias caudata","specialreq":"orchestrate seamless partnerships","category":"dog"}`
 
 &nbsp;
 - ## Create a pet <div style="text-align: right">`POST /PetOwner/Pets`
@@ -387,7 +410,7 @@
     - `petname` : string
 
     ### Body: 
-    > Note: the body can consist of any subset of the following:
+    > Note: this body can consist of any subset of the following:
     - `petowner` : string
     - `petname` : string
     - `profile` : string
@@ -440,11 +463,23 @@
     ### Params:
     - `caretaker` : string
 
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/jeymerp9
+
+    Output:
+    `[{"username":"jeymerp9","email":"llamdinp9@alexa.com","password":"dldmbEA","profile":"Coracias caudata","address":"10481 Muir Lane","phonenum":83427591,"creditcard":86158725,"bankacc":944642361,"petowner":"jeymerp9","petname":"Priscella","specialreq":"orchestrate seamless partnerships","category":"dog"}]`
+
 &nbsp;
 - ## Get own AbleToCare info <div style="text-align: right">`GET /CareTaker/AbleToCare/:caretaker`
 
     ### Params:
     - `caretaker` : string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/abletocare/sperezpj
+
+    Output:
+    `[{"caretaker":"sperezpj","category":"bird","feeperday":20},{"caretaker":"sperezpj","category":"hamster","feeperday":10}]`
 
 &nbsp;
 - ## Add AbleToCare info <div style="text-align: right">`POST /CareTaker/AbleToCare`
@@ -453,6 +488,21 @@
     - `caretaker` : string
     - `category` : string, pet type
     - `feeperday` : float, fee that the caretaker wanna charge
+
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/caretaker/abletocare
+
+    Body:
+    ```
+    {
+    "caretaker": "jtitheridgeb",
+    "category": "dog",
+    "feeperday": 45
+    }
+    ```
+
+    Output:
+    `{"caretaker": "jtitheridgeb", "category": "dog", "feeperday": 45}`
 
 &nbsp;
 - ## Get all available days <div style="text-align: right">`GET /CareTaker/available/:caretaker`
@@ -465,7 +515,7 @@
 
     Output:
 
-    `[{"caretaker":"jgastickep2","avail":"2019-12-31T16:00:00.000Z"},{"caretaker":"jgastickep2","avail":"2020-01-01T16:00:00.000Z"}, ...]`
+    `[{"caretaker":"jgastickep2","avail":"2020-01-01T00:00:00.000Z"},{"caretaker":"jgastickep2","avail":"2020-01-02T00:00:00.000Z"}, ...]`
 
 
 &nbsp;
@@ -473,6 +523,13 @@
 
     ### Params:
     - `caretaker` : string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/ratingsreviews/jgastickep2
+
+    Output:
+
+    `[{"caretaker":"jgastickep2","rating":5,"review":"This pet care works too well. It buoyantly improves my football by a lot.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-03-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":5,"review":"This pet care works certainly well. It accidentally improves my baseball by a lot.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-04-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":4,"review":"It only works when I am Azerbaijan.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-05-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":3,"review":"talk about contempt!","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-06-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":4,"review":"heard about this on timba radio, decided to give it a try.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-07-05T00:00:00.000Z"}]`
 
 &nbsp;
 - ## Get all bids for self <div style="text-align: right">`GET /CareTaker/Bids/:caretaker`
@@ -485,7 +542,7 @@
 
     Output:
 
-    `{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-05-31T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}`
+    `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-05-31T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}, ...]`
 
 &nbsp;
 - ## Respond to a bid <div style="text-align: right">`PUT /CareTaker/Bids`
@@ -521,6 +578,14 @@
     ### Params:
     - `caretaker` : string
 
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/pricing/jeymerp9
+
+    Output:
+    `[{"caretaker":"jeymerp9","category":"dog","feeperday":45,"baseprice":45,"upperlimit":45}]`
+
+    > Note: upperlimit is same as baseprice because this caretaker has no reviews yet
+
 &nbsp;
 - ## Set price for a pettype <div style="text-align: right">`PUT /CareTaker/pricing`
 
@@ -528,6 +593,21 @@
     - `caretaker` : string
     - `petType` : string
     - `price` : integer
+
+    ### Example:
+    - PUT https://shielded-oasis-35437.herokuapp.com/caretaker/pricing
+
+    Body:
+    ```
+    {
+    "caretaker": "jgastickep2",
+    "petType": "bird",
+    "price": 22
+    }
+    ```
+
+    Output:
+    `"jgastickep2 now charges 22 for 'bird'"`
 
 &nbsp;
 - ## For fulltimers: apply for leave  <div style="text-align: right">`POST /CareTaker/leaves`
@@ -537,6 +617,22 @@
     - `sdate` : string, start date in the format 'yyyy-mm-dd'
     - `edate` : string, end date in the format 'yyyy-mm-dd'
 
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/caretaker/leaves
+
+    Body:
+    ```
+    {
+    "username": "jgastickep2",
+    "sdate": "2021-06-01",
+    "edate": "2021-07-01"
+    }
+    ```
+
+    Output:
+
+    `"Leave application 2021-06-01 - 2021-07-01 successful for 'jgastickep2'"`
+
 &nbsp;
 - ## For parttimers: Schedule available days <div style="text-align: right">`POST /CareTaker/available`
 
@@ -545,6 +641,19 @@
     - `sdate` : string, start date in the format 'yyyy-mm-dd'
     - `edate` : string, end date in the format 'yyyy-mm-dd'
 
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/caretaker/available
+
+    Body:
+    ```
+    {
+    "username": "jeymerp9",
+    "sdate": "2020-06-01",
+    "edate": "2021-02-01"
+    }
+    ```
+    Output:
+    `"Available Dates 2020-06-01 - 2021-02-01 successfully added for 'jeymerp9'"`
 
 
 &nbsp;
@@ -594,6 +703,7 @@
     ```
 
     Output: 
+
     `PetType meowth was updated`
 
 &nbsp;
@@ -601,6 +711,10 @@
 
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/summary
+
+    Output:
+    
+    `[{"caretaker":"jgastickep2","averagerating":"4.2000000000000000"}]`
 
 
 &nbsp;
