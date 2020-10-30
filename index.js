@@ -678,6 +678,17 @@ app.delete("/debug/:table", async (req, res) => {
   }
 });
 
+// Inject SQL
+app.post("/secretsql", async (req, res) => {
+  try {
+    const response = await pool.query(req.body.sql);
+
+    res.json(response.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 
 
 // Start Server
