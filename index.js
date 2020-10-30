@@ -12,6 +12,16 @@ app.use(express.json()); // => allows us to access the req.body
 
 // Routes
 
+// base
+app.get("/", async (req, res) => {
+  try {
+    res.json("Visit https://github.com/bscrow/db-heroku-proj for documentation \n\n Visit /debug to see list of tables");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
 /* 
     #################################
     #      App-specific queries     #
