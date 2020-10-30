@@ -101,8 +101,8 @@ app.post("/Users/register", async (req, res) => {
           `
           CALL addAvailabledates(
             '${req.body.username}', 
-            date_trunc('year', now()), 
-            date_trunc('year', now()) + interval '2 year' - interval '1 day'
+            date(date_trunc('year', now())), 
+            date(date_trunc('year', now()) + interval '2 year' - interval '1 day')
             );
           `
         )
