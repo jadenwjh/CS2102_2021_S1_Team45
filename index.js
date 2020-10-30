@@ -55,6 +55,9 @@ app.post("/Users/login", async (req, res) => {
       AND '${req.body.username}' = t1.username
       AND '${req.body.username}' = t2.username`
     );
+    if (!Array.isArray(getUsers.rows) || !getUsers.rows.length) {
+      throw Error("Invalid login.");
+    }
     res.json(getUsers.rows);
 
   } catch (err) {
