@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -55,10 +56,10 @@ public class CareTakerSetPriceViewModel extends ViewModel {
         disposable.add(dataApiService.updateCostOfPetType(careTakerUsername, petType, price)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<PetTypeCost>() {
+                .subscribeWith(new DisposableCompletableObserver() {
 
                     @Override
-                    public void onSuccess(PetTypeCost petTypeCosts) {
+                    public void onComplete() {
                         refreshPrices(careTakerUsername);
                         loadError.setValue(false);
                         loading.setValue(false);

@@ -8,6 +8,7 @@ import com.example.cs2102.model.User;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -45,7 +46,7 @@ public class DataApiService {
         return dataApi.getBidsReceived(careTakerName);
     }
 
-    public Single<User> verifyLogin(String uName, String pw, String type) {
+    public Completable verifyLogin(String uName, String pw, String type) {
         return dataApi.verifyUser(uName, pw, type);
     }
 
@@ -53,27 +54,27 @@ public class DataApiService {
         return dataApi.getUsername(uName);
     }
 
-    public Single<PetOwner> addPetOwner(String username, String password, String email, String number, String address, String petName, String petType) {
-        return dataApi.addPetOwner(username, password, Strings.PET_OWNER, email, number, address, petName, petType);
+    public Completable addPetOwner(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype) {
+        return dataApi.addPetOwner(username, email, password, profile, address, phoneNum, creditCard, bankAcc, acctype);
     }
 
-    public Single<CareTaker> addCareTaker(String username, String password, String email, String number, String address, String contract) {
-        return dataApi.addCareTaker(username, password, Strings.CARE_TAKER, email, number, address, contract);
+    public Completable addCareTaker(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype, boolean isPT, String admin) {
+        return dataApi.addCareTaker(username, email, password, profile, address, phoneNum, creditCard, bankAcc, acctype, isPT, admin);
     }
 
     public Single<List<PetTypeCost>> getPetsForCare(String careTakerUsername) {
         return dataApi.getPetsForCare(careTakerUsername);
     }
 
-    public Single<PetTypeCost> updateCostOfPetType(String careTakerUsername, String type, double price) {
+    public Completable updateCostOfPetType(String careTakerUsername, String type, double price) {
         return dataApi.updateCost(careTakerUsername, type, price);
     }
 
-    public Single<String> applyLeave(String username, String date) {
+    public Completable applyLeave(String username, String date) {
         return dataApi.applyLeave(username, date);
     }
 
-    public Single<String> acceptBid(String username, String petName) {
+    public Completable acceptBid(String username, String petName) {
         return dataApi.acceptBid(username, petName);
     }
 
@@ -81,7 +82,7 @@ public class DataApiService {
         return dataApi.careTakerFullTimeFree(username);
     }
 
-    public Single<String> setPartTimerFree(String username, String date) {
+    public Completable setPartTimerFree(String username, String date) {
         return dataApi.setPartTimeFree(username, date);
     }
 

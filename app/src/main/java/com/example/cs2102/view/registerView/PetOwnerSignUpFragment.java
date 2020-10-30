@@ -2,6 +2,7 @@ package com.example.cs2102.view.registerView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cs2102.R;
+import com.example.cs2102.widgets.Strings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,24 +36,31 @@ public class PetOwnerSignUpFragment extends Fragment {
     @BindView(R.id.address)
     EditText address;
 
-    @BindView(R.id.pet_name)
-    EditText petName;
+    @BindView(R.id.creditCard)
+    EditText creditCard;
 
-    @BindView(R.id.pet_type)
-    EditText petType;
+    @BindView(R.id.bankAcc)
+    EditText bankAcc;
 
-    @BindView(R.id.register)
+    @BindView(R.id.profile)
+    EditText profile;
+
+    @BindView(R.id.register_PO)
     Button register;
-
-    private RegisterPOListener registerListener;
 
     public static PetOwnerSignUpFragment newInstance() {
         return new PetOwnerSignUpFragment();
     }
 
+    private RegisterPOListener registerListener;
+
     public interface RegisterPOListener {
         void onExitPetOwnerRegister();
-        void onRegisterPetOwner(String username, String password, String email, String number, String address, String petName, String petType);
+        void onRegisterPetOwner(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype);
+    }
+
+    public void setRegisterListener(RegisterPOListener listener) {
+        this.registerListener = listener;
     }
 
     @Nullable
@@ -71,28 +80,24 @@ public class PetOwnerSignUpFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
+        if (registerListener != null) {
+            Log.e("POSignUp", "registerListener is impl");
+        }
+
         register.setOnClickListener(currView -> {
+            Log.e("POSignUp", "Register clicked");
             String uname = username.getText().toString();
             String pw = password.getText().toString();
             String mail = email.getText().toString();
-            String num = number.getText().toString();
+            int num = Integer.parseInt(number.getText().toString());
             String add = address.getText().toString();
-            String pn = petName.getText().toString();
-            String pt = petType.getText().toString();
+            int cc = Integer.parseInt(creditCard.getText().toString());
+            int bank = Integer.parseInt(bankAcc.getText().toString());
+            String acc = Strings.PET_OWNER;
+            String pro = profile.getText().toString();
 
-            registerListener.onRegisterPetOwner(uname, pw, mail, num, add, pn, pt);
+            registerListener.onRegisterPetOwner(uname,mail,pw,pro,add,num,cc,bank,acc);
         });
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof RegisterPOListener) {
-            registerListener = (RegisterPOListener) context;
-        } else {
-            throw new ClassCastException("RegisterPOListener not implemented");
-        }
     }
 
     @Override

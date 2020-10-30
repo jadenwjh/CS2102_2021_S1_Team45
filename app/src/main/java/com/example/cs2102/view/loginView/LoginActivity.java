@@ -24,6 +24,7 @@ import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepage;
 import com.example.cs2102.view.registerView.RegisterActivity;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
@@ -70,10 +71,13 @@ public class LoginActivity extends AppCompatActivity {
             checkValidity(uName);
             checkValidity(pw);
             loginViewModel.loginAttempt(uName, pw, t);
-            if (loginViewModel.userProfile.getValue() != null) {
-                User currentUser = loginViewModel.userProfile.getValue();
-                userProfileSharedPref.edit().putString(Strings.PROFILE, currentUser.getUserID()).apply();
-                startUserPage(loginViewModel.userProfile.getValue());
+        });
+
+        loginViewModel.loginSuccess.observe(this, success -> {
+            if (success) {
+                String currentUsername = loginViewModel.userName.getValue();
+                userProfileSharedPref.edit().putString(Strings.PROFILE, currentUsername).apply();
+                startUserPage(Objects.requireNonNull(loginViewModel.userType.getValue()));
             }
         });
 
@@ -105,8 +109,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void startUserPage(User user) {
-        String type = user.getType();
+    private void startUserPage(String type) {
         switch (type) {
             case Strings.ADMIN:
                 startActivity(new Intent(this, AdminActivity.class));

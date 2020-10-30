@@ -8,9 +8,9 @@ public class Strings {
     public static final String BIDS = "Bids";
     public static final String PRICES = "Prices";
 
-    public static final String ADMIN = "Admin";
-    public static final String PET_OWNER = "PetOwner";
-    public static final String CARE_TAKER = "CareTaker";
+    public static final String ADMIN = "admin";
+    public static final String PET_OWNER = "petowner";
+    public static final String CARE_TAKER = "caretaker";
     public static final String FULL_TIME = "FT";
     public static final String PART_TIME = "PT";
 
@@ -19,7 +19,9 @@ public class Strings {
 
     public static final String BASE_URL = "https://shielded-oasis-35437.herokuapp.com/";
 
-    public static final String LOGIN = "/Users/login";
+    public static final String LOGIN = "Users/login";
+    public static final String REGISTER = "Users/register";
+
     public static final String ADMINS = "zzz";
     public static final String PET_OWNERS = "zzz";
     public static final String CARE_TAKERS = "zzz";

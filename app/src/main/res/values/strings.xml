@@ -28,5 +28,10 @@
     <string name="accept_bid">Accept Bid</string>
     <string name="select_date">Select Date</string>
     <string name="availability">Availability</string>
+    <string name="tell_us_about_you">Tell us about you</string>
+    <string name="enter_your_bank_account_number">Enter your bank account number</string>
+    <string name="enter_your_credit_card_number">Enter your credit card number</string>
+    <string name="enter_referral">Enter referral</string>
+    <string name="full_time">Full-Time</string>
 
 </resources>

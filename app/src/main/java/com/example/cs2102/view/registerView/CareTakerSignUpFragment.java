@@ -1,18 +1,25 @@
 package com.example.cs2102.view.registerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cs2102.R;
+import com.example.cs2102.widgets.Strings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,17 +41,34 @@ public class CareTakerSignUpFragment extends Fragment {
     @BindView(R.id.address)
     EditText address;
 
-    @BindView(R.id.contract)
-    EditText contract;
+    @BindView(R.id.creditCard)
+    EditText creditCard;
 
-    @BindView(R.id.register)
+    @BindView(R.id.bankAcc)
+    EditText bankAcc;
+
+    @BindView(R.id.profile)
+    EditText profile;
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    @BindView(R.id.isFT)
+    Switch isFT;
+
+    @BindView(R.id.referral)
+    EditText admin;
+
+    @BindView(R.id.register_CT)
     Button register;
 
     private RegisterCTListener registerListener;
 
     public interface RegisterCTListener {
         void onExitCareTakerRegister();
-        void onRegisterCareTaker(String username, String password, String email, String number, String address, String contract);
+        void onRegisterCareTaker(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype, boolean isPT, String admin);
+    }
+
+    public void setRegisterListener(RegisterCTListener listener) {
+        this.registerListener = listener;
     }
 
     public static CareTakerSignUpFragment newInstance() {
@@ -62,27 +86,26 @@ public class CareTakerSignUpFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
+        if (registerListener != null) {
+            Log.e("POSignUp", "registerListener is impl");
+        }
+
         register.setOnClickListener(currView -> {
+            Log.e("CTSignUp", "Register clicked");
             String uname = username.getText().toString();
             String pw = password.getText().toString();
             String mail = email.getText().toString();
-            String num = number.getText().toString();
+            int num = Integer.parseInt(number.getText().toString());
             String add = address.getText().toString();
-            String con = contract.getText().toString();
+            int cc = Integer.parseInt(creditCard.getText().toString());
+            int bank = Integer.parseInt(bankAcc.getText().toString());
+            String acc = Strings.CARE_TAKER;
+            String pro = profile.getText().toString();
+            boolean isFullTime = isFT.isChecked();
+            String adminUsername = admin.getText().toString();
 
-            registerListener.onRegisterCareTaker(uname, pw, mail, num, add, con);
+            registerListener.onRegisterCareTaker(uname,mail,pw,pro,add,num,cc,bank,acc,isFullTime,adminUsername);
         });
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof RegisterCTListener) {
-            registerListener = (RegisterCTListener) context;
-        } else {
-            throw new ClassCastException("RegisterCTListener not implemented");
-        }
     }
 
     @Override

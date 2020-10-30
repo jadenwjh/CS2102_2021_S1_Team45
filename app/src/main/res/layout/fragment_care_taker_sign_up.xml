@@ -1,88 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".view.registerView.CareTakerSignUpFragment">
+    android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/username"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="96dp"
-        android:layout_marginEnd="24dp"
-        android:autofillHints="@string/prompt_username"
-        android:hint="@string/prompt_username"
-        android:inputType="textPersonName"
-        android:selectAllOnFocus="true" />
+        android:orientation="vertical"
+        tools:context=".view.registerView.CareTakerSignUpFragment">
 
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:autofillHints="@string/prompt_password"
-        android:hint="@string/prompt_password"
-        android:inputType="textPassword"
-        android:selectAllOnFocus="true" />
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="96dp"
+            android:layout_marginEnd="24dp"
+            android:autofillHints="@string/prompt_username"
+            android:hint="@string/prompt_username"
+            android:inputType="textPersonName"
+            android:selectAllOnFocus="true" />
 
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="textEmailAddress"
-        android:hint="@string/enter_your_email"
-        android:autofillHints="@string/enter_your_email"
-        android:selectAllOnFocus="true" />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:autofillHints="@string/prompt_password"
+            android:hint="@string/prompt_password"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="true" />
 
-    <EditText
-        android:id="@+id/number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="number"
-        android:hint="@string/enter_your_number"
-        android:autofillHints="@string/enter_your_number"
-        android:selectAllOnFocus="true" />
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="textEmailAddress"
+            android:hint="@string/enter_your_email"
+            android:autofillHints="@string/enter_your_email"
+            android:selectAllOnFocus="true" />
 
-    <EditText
-        android:id="@+id/address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="text"
-        android:hint="@string/enter_your_address"
-        android:autofillHints="@string/enter_your_address"
-        android:selectAllOnFocus="true" />
+        <EditText
+            android:id="@+id/number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="number"
+            android:hint="@string/enter_your_number"
+            android:autofillHints="@string/enter_your_number"
+            android:selectAllOnFocus="true" />
 
-    <EditText
-        android:id="@+id/contract"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:inputType="text"
-        android:hint="@string/contract"
-        android:autofillHints="@string/contract"
-        android:selectAllOnFocus="true" />
+        <EditText
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="text"
+            android:hint="@string/enter_your_address"
+            android:autofillHints="@string/enter_your_address"
+            android:selectAllOnFocus="true" />
 
-    <Button
-        android:id="@+id/register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/register" />
+        <EditText
+            android:id="@+id/creditCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="number"
+            android:hint="@string/enter_your_credit_card_number"
+            android:autofillHints="@string/enter_your_credit_card_number"
+            android:selectAllOnFocus="true" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/bankAcc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="number"
+            android:hint="@string/enter_your_bank_account_number"
+            android:autofillHints="@string/enter_your_bank_account_number"
+            android:selectAllOnFocus="true" />
+
+        <EditText
+            android:id="@+id/profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="text"
+            android:hint="@string/tell_us_about_you"
+            android:autofillHints="@string/tell_us_about_you"
+            android:selectAllOnFocus="true" />
+
+        <EditText
+            android:id="@+id/referral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:inputType="text"
+            android:hint="@string/enter_referral"
+            android:autofillHints="@string/enter_referral"
+            android:selectAllOnFocus="true" />
+
+        <Switch
+            android:id="@+id/isFT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/full_time"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Button
+            android:id="@+id/register_CT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/register" />
+
+    </LinearLayout>
+</ScrollView>

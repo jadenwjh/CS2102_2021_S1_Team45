@@ -1,5 +1,7 @@
 package com.example.cs2102.view.registerView;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -9,6 +11,7 @@ import com.example.cs2102.model.retrofitApi.DataApiService;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -21,15 +24,18 @@ public class RegisterViewModel extends ViewModel {
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void registerPetOwner (String username, String password, String email, String number, String address, String petName, String petType) {
+    public void registerPetOwner(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype) {
+        Log.e(this.toString(), String.format("Username:%s, Email:%s, Password:%s, Profile:%s, Address:%s, phoneNum:%s, credit:%d, bank:%d, acctype:%s", username,email,password,profile,address,phoneNum,creditCard,bankAcc,acctype));
         loading.setValue(true);
         registered.setValue(false);
-        disposable.add(dataApiService.addPetOwner(username, password, email, number, address, petName, petType)
+        Log.e(this.toString(), "attempting to register PO");
+        disposable.add(dataApiService.addPetOwner(username, email, password, profile, address, phoneNum, creditCard, bankAcc, acctype)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<PetOwner>() {
+                .subscribeWith(new DisposableCompletableObserver() {
                     @Override
-                    public void onSuccess(PetOwner petOwner) {
+                    public void onComplete() {
+                        Log.e(this.toString(), "success");
                         registered.setValue(true);
                         loadError.setValue(false);
                         loading.setValue(false);
@@ -37,6 +43,7 @@ public class RegisterViewModel extends ViewModel {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e(this.toString(), "failed");
                         registered.setValue(false);
                         loadError.setValue(true);
                         loading.setValue(false);
@@ -45,15 +52,18 @@ public class RegisterViewModel extends ViewModel {
         );
     }
 
-    public void registerCareTaker (String username, String password, String email, String number, String address, String contract) {
+    public void registerCareTaker(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype, boolean isPT, String admin) {
+        Log.e(this.toString(), String.format("Username:%s, Email:%s, Password:%s, Profile:%s, Address:%s, phoneNum:%s, credit:%d, bank:%d, acctype:%s, FullTime:true, Admin:%s", username,email,password,profile,address,phoneNum,creditCard,bankAcc,acctype,admin));
         loading.setValue(true);
         registered.setValue(false);
-        disposable.add(dataApiService.addCareTaker(username, password, email, number, address, contract)
+        Log.e(this.toString(), "attempting to register CT");
+        disposable.add(dataApiService.addCareTaker(username, email, password, profile, address, phoneNum, creditCard, bankAcc, acctype, isPT, admin)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<CareTaker>() {
+                .subscribeWith(new DisposableCompletableObserver() {
                     @Override
-                    public void onSuccess(CareTaker careTaker) {
+                    public void onComplete() {
+                        Log.e(this.toString(), "success");
                         registered.setValue(true);
                         loadError.setValue(false);
                         loading.setValue(false);
@@ -61,6 +71,7 @@ public class RegisterViewModel extends ViewModel {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e(this.toString(), "failed");
                         registered.setValue(false);
                         loadError.setValue(true);
                         loading.setValue(false);
