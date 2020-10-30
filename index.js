@@ -99,7 +99,11 @@ app.post("/Users/register", async (req, res) => {
       if (req.body.isPartTime === false) {
         queryStr = queryStr.concat(
           `
-          CALL addAvailabledates('${req.body.username}', '${req.body.sdate}', '${req.body.edate}');
+          CALL addAvailabledates(
+            '${req.body.username}', 
+            date_trunc('year', now()), 
+            date_trunc('year', now()) + interval '2 year' - interval '1 day'
+            );
           `
         )
       }
@@ -204,17 +208,17 @@ app.post("/PetOwner/findCareTaker", async (req, res) => {
     const availCareTakers = await pool.query(
       `SELECT b.caretaker, u.profile, b.rating, '${req.body.sdate}', '${req.body.edate}', atc.feeperday
       FROM Bids b 
-      INNER JOIN User u ON b.caretaker = u.username
+      INNER JOIN Users u ON b.caretaker = u.username
       INNER JOIN AbleToCare atc ON b.caretaker = atc.caretaker 
       WHERE b.caretaker IN (
         SELECT caretaker
         FROM (SELECT b.caretaker, COUNT(*)
           FROM Bids b
           WHERE status = 'a'
-          AND avail BETWEEN '${req.body.sdate}'  AND '${req.body.edate}' 
+          AND avail BETWEEN date '${req.body.sdate}'  AND date '${req.body.edate}' 
           AND b.caretaker IN (	SELECT DISTINCT caretaker 
             FROM  Availability a
-            WHERE avail BETWEEN '${req.body.sdate}'  AND '${req.body.edate}' ) 
+            WHERE avail BETWEEN date '${req.body.sdate}'  AND date '${req.body.edate}' ) 
           GROUP BY b.caretaker 
 
         INTERSECT 
@@ -256,6 +260,7 @@ app.post("/PetOwner/findCareTaker", async (req, res) => {
 
     res.json(availCareTakers.rows);
   } catch (err) {
+    console.log(req.body);
     console.error(err.message);
   }
 });
