@@ -43,6 +43,7 @@ public class RegisterViewModel extends ViewModel {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e("RequestError", String.valueOf(e));
                         Log.e(this.toString(), "failed");
                         registered.setValue(false);
                         loadError.setValue(true);
@@ -53,7 +54,7 @@ public class RegisterViewModel extends ViewModel {
     }
 
     public void registerCareTaker(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype, boolean isPT, String admin) {
-        Log.e(this.toString(), String.format("Username:%s, Email:%s, Password:%s, Profile:%s, Address:%s, phoneNum:%s, credit:%d, bank:%d, acctype:%s, FullTime:true, Admin:%s", username,email,password,profile,address,phoneNum,creditCard,bankAcc,acctype,admin));
+        Log.e(this.toString(), String.format("Username:%s, Email:%s, Password:%s, Profile:%s, Address:%s, phoneNum:%s, credit:%d, bank:%d, acctype:%s, FullTime:%s, Admin:%s", username,email,password,profile,address,phoneNum,creditCard,bankAcc,acctype,isPT,admin));
         loading.setValue(true);
         registered.setValue(false);
         Log.e(this.toString(), "attempting to register CT");
@@ -71,6 +72,7 @@ public class RegisterViewModel extends ViewModel {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e("RequestError", String.valueOf(e));
                         Log.e(this.toString(), "failed");
                         registered.setValue(false);
                         loadError.setValue(true);

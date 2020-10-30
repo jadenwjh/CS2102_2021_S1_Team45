@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.retrofitApi.DataApiService;
+import com.google.gson.internal.LinkedTreeMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -16,7 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 public class CareTakerHomepageViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    public MutableLiveData<String> contract = new MutableLiveData<>();
+    public MutableLiveData<LinkedTreeMap<String,String>> contract = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -26,10 +28,10 @@ public class CareTakerHomepageViewModel extends ViewModel {
         disposable.add(dataApiService.getCTContract(careTakerName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<String>() {
+                .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,String>>>() {
                     @Override
-                    public void onSuccess(String ct) {
-                        contract.setValue(ct);
+                    public void onSuccess(ArrayList<LinkedTreeMap<String,String>> ct) {
+                        contract.setValue(ct.get(0));
                         isLoading.setValue(false);
                     }
 

@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
+import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerAvailabilityViewModel;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerLeaveViewModel;
@@ -41,6 +42,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     private CareTakerLeaveFragment leaveFragment;
     private CareTakerSetPriceFragment priceFragment;
     private CareTakerAvailabilityFragment availabilityFragment;
+    private UserProfile userProfile;
 
     private CareTakerHomepageViewModel careTakerHomepageViewModel;
 
@@ -49,20 +51,24 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String username = getSharedPreferences(Strings.PROFILE, Context.MODE_PRIVATE).getString(Strings.PROFILE, Strings.PROFILE);
-        String contract = careTakerHomepageViewModel.contract.getValue();
-        assert contract != null;
+        careTakerHomepageViewModel  = ViewModelProviders.of(this).get(CareTakerHomepageViewModel.class);
+        userProfile = UserProfile.getInstance();
+        String username = userProfile.username;
+        careTakerHomepageViewModel.fetchContract(username);
+
+        careTakerHomepageViewModel.contract.observe(this, type -> {
+            userProfile.setUserContract(type.get("isPartTime"));
+        });
+
         setContentView(R.layout.activity_care_taker_homepage);
         FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            careTakerHomepageViewModel  = ViewModelProviders.of(this).get(CareTakerHomepageViewModel.class);
-            careTakerHomepageViewModel.isLoading.setValue(true);
             ft = fm.beginTransaction();
             bidsFragment = CareTakerBidsFragment.newInstance(username);
             priceFragment = CareTakerSetPriceFragment.newInstance(username);
 
-            if (contract.equals(Strings.FULL_TIME)) {
+            if (userProfile.contract.equals(Strings.FULL_TIME)) {
                 CareTakerLeaveViewModel careTakerLeaveViewModel = ViewModelProviders.of(this).get(CareTakerLeaveViewModel.class);
                 leaveFragment = CareTakerLeaveFragment.newInstance(username, careTakerLeaveViewModel);
                 leaveFragment.setLeaveDatePicker(days -> {
@@ -72,7 +78,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 });
             }
 
-            if (contract.equals(Strings.PART_TIME)) {
+            if (userProfile.contract.equals(Strings.PART_TIME)) {
                 CareTakerAvailabilityViewModel careTakerAvailabilityViewModel = ViewModelProviders.of(this).get(CareTakerAvailabilityViewModel.class);
                 availabilityFragment = CareTakerAvailabilityFragment.newInstance(username);
                 availabilityFragment.setAvailabilityDatePicker(days -> {
@@ -90,22 +96,20 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                     toggleHideNavigator(false);
                 });
                 ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
-                careTakerHomepageViewModel.isLoading.setValue(false);
             });
 
             //default bid page
             ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
-            careTakerHomepageViewModel.isLoading.setValue(false);
         }
 
         ButterKnife.bind(this);
 
-        if (contract.equals(Strings.FULL_TIME)) {
+        if (userProfile.contract.equals(Strings.FULL_TIME)) {
             viewLeavesOrFree.setText(R.string.leaves);
             viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.LEAVES));
         }
 
-        if (contract.equals(Strings.PART_TIME)) {
+        if (userProfile.contract.equals(Strings.PART_TIME)) {
             viewLeavesOrFree.setText(R.string.availability);
             viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.PT_FREE));
         }

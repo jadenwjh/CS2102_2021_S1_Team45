@@ -7,9 +7,9 @@
     <string name="errorText">An error has occurred while loading the data.</string>
 
     <string-array name="user_selection">
-        <item>Pet Owner</item>
-        <item>Care Taker</item>
-        <item>Admin</item>
+        <item>petowner</item>
+        <item>caretaker</item>
+        <item>admin</item>
     </string-array>
     <string name="pet_owner">Pet Owner</string>
     <string name="care_taker">Care Taker</string>

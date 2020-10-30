@@ -5,11 +5,22 @@ import com.example.cs2102.model.CareTaker;
 import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.model.User;
+import com.google.gson.JsonElement;
+import com.google.gson.internal.LinkedTreeMap;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,8 +33,13 @@ public class DataApiService {
 
     private DataApiService() {}
 
+    OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5,TimeUnit.SECONDS).build();
+
     public DataApi dataApi =  new Retrofit.Builder()
             .baseUrl(Strings.BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
@@ -46,20 +62,42 @@ public class DataApiService {
         return dataApi.getBidsReceived(careTakerName);
     }
 
-    public Completable verifyLogin(String uName, String pw, String type) {
-        return dataApi.verifyUser(uName, pw, type);
-    }
-
-    public Single<User> getUsername(String uName) {
-        return dataApi.getUsername(uName);
+    public Single<ArrayList<LinkedTreeMap<String,String>>> verifyLogin(String uName, String pw, String type) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("username", uName);
+        params.put("password", pw);
+        params.put("acctype",type);
+        return dataApi.verifyUser(params);
     }
 
     public Completable addPetOwner(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype) {
-        return dataApi.addPetOwner(username, email, password, profile, address, phoneNum, creditCard, bankAcc, acctype);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("email",email);
+        params.put("password", password);
+        params.put("profile", profile);
+        params.put("address", address);
+        params.put("phoneNum", String.valueOf(phoneNum));
+        params.put("creditCard", String.valueOf(creditCard));
+        params.put("bankAcc", String.valueOf(bankAcc));
+        params.put("acctype", acctype);
+        return dataApi.addPetOwner(params);
     }
 
     public Completable addCareTaker(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype, boolean isPT, String admin) {
-        return dataApi.addCareTaker(username, email, password, profile, address, phoneNum, creditCard, bankAcc, acctype, isPT, admin);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("username", username);
+        params.put("email",email);
+        params.put("password", password);
+        params.put("profile", profile);
+        params.put("address", address);
+        params.put("phoneNum", String.valueOf(phoneNum));
+        params.put("creditCard", String.valueOf(creditCard));
+        params.put("bankAcc", String.valueOf(bankAcc));
+        params.put("acctype", acctype);
+        params.put("isPartTime", isPT);
+        params.put("admin", admin);
+        return dataApi.addCareTaker(params);
     }
 
     public Single<List<PetTypeCost>> getPetsForCare(String careTakerUsername) {
@@ -86,7 +124,7 @@ public class DataApiService {
         return dataApi.setPartTimeFree(username, date);
     }
 
-    public Single<String> getCTContract(String username) {
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getCTContract(String username) {
         return dataApi.getCareTakerContract(username);
     }
 

@@ -11,8 +11,8 @@ public class Strings {
     public static final String ADMIN = "admin";
     public static final String PET_OWNER = "petowner";
     public static final String CARE_TAKER = "caretaker";
-    public static final String FULL_TIME = "FT";
-    public static final String PART_TIME = "PT";
+    public static final String FULL_TIME = "false";
+    public static final String PART_TIME = "true";
 
     public static final String PET_OWNER_SIGN_UP = "PetOwnerSignUp";
     public static final String CARE_TAKER_SIGN_UP = "CareTakerSignUp";
@@ -24,7 +24,7 @@ public class Strings {
 
     public static final String ADMINS = "zzz";
     public static final String PET_OWNERS = "zzz";
-    public static final String CARE_TAKERS = "zzz";
+    public static final String CARE_TAKERS = "/CareTaker/:caretaker";
     public static final String PET_OWNERS_REQUESTS = "zzz";
     public static final String CARE_TAKERS_AVAILABLE = "zzz";
     public static final String PETS_THE_CARE_TAKER_CAN_TAKE_CARE = "zzz";

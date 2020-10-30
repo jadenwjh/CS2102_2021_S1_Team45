@@ -1,8 +1,6 @@
 package com.example.cs2102.view.loginView;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,18 +11,16 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
-import com.example.cs2102.widgets.Strings;
-import com.example.cs2102.model.User;
+import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepage;
 import com.example.cs2102.view.registerView.RegisterActivity;
+import com.example.cs2102.widgets.Strings;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
@@ -51,14 +47,14 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar loadingBar;
 
     private LoginViewModel loginViewModel;
-    private SharedPreferences userProfileSharedPref;
+    private UserProfile userProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userProfileSharedPref = getSharedPreferences(Strings.PROFILE, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        userProfile = UserProfile.getInstance();
 
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         loginViewModel.loading.setValue(false);
@@ -74,10 +70,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginViewModel.loginSuccess.observe(this, success -> {
-            if (success) {
-                String currentUsername = loginViewModel.userName.getValue();
-                userProfileSharedPref.edit().putString(Strings.PROFILE, currentUsername).apply();
-                startUserPage(Objects.requireNonNull(loginViewModel.userType.getValue()));
+            if (success && userProfile.accType != null) {
+                startUserPage(userProfile.accType);
             }
         });
 
@@ -90,6 +84,8 @@ public class LoginActivity extends AppCompatActivity {
                 loadingBar.setVisibility(View.INVISIBLE);
             }
         });
+
+        loginViewModel.userProfile.observe(this, profile -> userProfile.setUserProfile(profile.get("username"), profile.get("password"), profile.get("email"), profile.get("profile"), profile.get("address"), profile.get("phoneNum"), profile.get("acctype")));
     }
 
     public void generateMenu() {
