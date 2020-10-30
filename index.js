@@ -137,11 +137,15 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
   try {
     const getRating = await pool.query(
       `SELECT * 
-      FROM Bids 
+      FROM Bids as B1
       WHERE petowner = '${req.params.petowner}'
-      AND avail = edate
-      AND status != 'r'
-      AND rating IS NULL;`
+      AND (SELECT rating FROM Bids AS B2 
+        WHERE B1.edate = B2.avail
+        AND B1.petowner = B2.petowner
+        AND B1.petname = B2.petname
+        AND B1.caretaker = B2.caretaker
+        AND B1.edate = B2.edate) IS NULL
+      AND status != 'r';`
     );
     res.json(getRating.rows);
   } catch (err) {
@@ -261,7 +265,7 @@ app.post("/PetOwner/Bids", async (req, res) => {
   try {
     const _ = await pool.query(
       `CALL enterBid('${req.body.petowner}', '${req.body.petname}', 
-      '${req.body.caretaker}', '${req.body.sdate}', '${req.body.edate}', '${req.body.transferType}', 
+      '${req.body.caretaker}', DATE ('${req.body.sdate}'), DATE ('${req.body.edate}'), '${req.body.transferType}', 
       '${req.body.paymentType}', ${req.body.price});`
     );
     res.json(req.body);
@@ -650,7 +654,7 @@ app.delete("/debug/:table", async (req, res) => {
     }
 
     const delFrom = await pool.query(
-      `DELETE ${req.params.table} WHERE ${delArray.join(" AND ")} RETURNING *;`
+      `DELETE FROM ${req.params.table} WHERE ${delArray.join(" AND ")} RETURNING *;`
     );
 
     res.json(delFrom);
