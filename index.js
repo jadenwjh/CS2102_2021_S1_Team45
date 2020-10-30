@@ -48,7 +48,7 @@ app.post("/Users/login", async (req, res) => {
       throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker', 'both'], case insensitive.");
     }
     const getUsers = await pool.query(
-      `SELECT Users.username, password 
+      `SELECT Users.*, '${req.body.acctype}'
       FROM Users, ${accountType[0]} as t1, ${accountType[1]} as t2
       WHERE '${req.body.username}' = Users.username
       AND '${req.body.password}' = password
