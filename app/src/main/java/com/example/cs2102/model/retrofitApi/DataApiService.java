@@ -132,6 +132,14 @@ public class DataApiService {
         return dataApi.getCareTakerContract(username);
     }
 
+    public Completable updatePricePetType(String username, String petType, int price) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("caretaker", username);
+        params.put("petType", petType);
+        params.put("price", price);
+        return dataApi.updateCost(username, params);
+    }
+
     public Single<List<PetOwner>> getPetOwners() {
         return dataApi.getPetOwners();
     }

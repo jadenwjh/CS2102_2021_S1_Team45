@@ -41,10 +41,8 @@ public interface DataApi {
     @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetsForCare(@Path("username") String username);
 
-    @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{username}")
-    Single<ArrayList<LinkedTreeMap<String,String>>> updateCost(@Path("username") String username,
-                                   @Field("petType")String type,
-                                   @Field("price") double price);
+    @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{caretaker}")
+    Completable updateCost(@Path("caretaker") String caretaker, @Body HashMap<String,Object> params);
 
     @GET(Strings.CARE_TAKERS_AVAILABLE)
     Single<List<CareTaker>> getCareTakers();
