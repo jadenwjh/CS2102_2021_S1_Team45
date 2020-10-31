@@ -1,4 +1,4 @@
-package com.example.cs2102.widgets;
+package com.example.cs2102.model.retrofitApi;
 
 public class Strings {
 

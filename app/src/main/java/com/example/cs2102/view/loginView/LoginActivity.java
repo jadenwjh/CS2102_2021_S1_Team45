@@ -19,7 +19,7 @@ import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepage;
 import com.example.cs2102.view.registerView.RegisterActivity;
-import com.example.cs2102.widgets.Strings;
+import com.example.cs2102.model.retrofitApi.Strings;
 
 import java.util.regex.Pattern;
 

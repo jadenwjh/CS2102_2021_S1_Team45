@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
-import com.example.cs2102.widgets.Strings;
+import com.example.cs2102.model.retrofitApi.Strings;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;

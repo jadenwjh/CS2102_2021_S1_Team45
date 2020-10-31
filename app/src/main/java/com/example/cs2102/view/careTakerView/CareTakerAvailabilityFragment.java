@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cs2102.R;
-import com.example.cs2102.widgets.Strings;
+import com.example.cs2102.model.retrofitApi.Strings;
 
 import java.util.Calendar;
 

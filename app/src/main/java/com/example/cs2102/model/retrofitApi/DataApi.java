@@ -2,8 +2,6 @@ package com.example.cs2102.model.retrofitApi;
 
 import com.example.cs2102.model.CareTaker;
 import com.example.cs2102.model.PetOwner;
-import com.example.cs2102.model.PetTypeCost;
-import com.example.cs2102.widgets.Strings;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
@@ -13,8 +11,6 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;

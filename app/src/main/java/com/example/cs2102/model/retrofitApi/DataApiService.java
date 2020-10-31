@@ -1,26 +1,17 @@
 package com.example.cs2102.model.retrofitApi;
 
-import com.example.cs2102.widgets.Strings;
 import com.example.cs2102.model.CareTaker;
 import com.example.cs2102.model.PetOwner;
-import com.example.cs2102.model.PetTypeCost;
-import com.example.cs2102.model.User;
-import com.google.gson.JsonElement;
 import com.google.gson.internal.LinkedTreeMap;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;

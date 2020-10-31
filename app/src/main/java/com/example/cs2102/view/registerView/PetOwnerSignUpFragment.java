@@ -1,6 +1,5 @@
 package com.example.cs2102.view.registerView;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cs2102.R;
-import com.example.cs2102.widgets.Strings;
+import com.example.cs2102.model.retrofitApi.Strings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
