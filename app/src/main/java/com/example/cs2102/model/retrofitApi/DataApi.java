@@ -14,14 +14,17 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface DataApi {
 
-    @GET(Strings.CARE_TAKERS)
-    Single<ArrayList<LinkedTreeMap<String,String>>> getCareTakerContract(@Query("careTaker") String username);
+    @GET(Strings.CARE_TAKERS_CONTRACT + "/{username}")
+    Single<LinkedTreeMap<String,String>> getCareTakerContract(@Path("username") String username);
 
     @POST(Strings.LOGIN)
     Single<ArrayList<LinkedTreeMap<String,String>>> verifyUser(@Body HashMap<String, String> params);
@@ -32,8 +35,8 @@ public interface DataApi {
     @POST(Strings.REGISTER)
     Completable addCareTaker(@Body HashMap<String, Object> params);
 
-    @GET(Strings.CT_BIDS)
-    Single<List<PetOwner>> getBidsReceived(@Query("username") String username);
+    @GET(Strings.CT_BIDS + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getBidsReceived(@Path("username") String username);
 
     @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE)
     Single<List<PetTypeCost>> getPetsForCare(@Query("username") String username);
@@ -50,9 +53,8 @@ public interface DataApi {
     Completable applyLeave(@Field("username") String username,
                             @Field("date") String leaveDate);
 
-    @POST(Strings.CT_BIDS)
-    Completable acceptBid(@Field("username") String username,
-                             @Field("petName") String petName);
+    @PUT(Strings.CT_BIDS)
+    Completable acceptBid(@Body HashMap<String, String> params);
 
     @GET(Strings.CT_FULL_TIME_FREE)
     Single<List<String>> careTakerFullTimeFree(@Query("username") String username);

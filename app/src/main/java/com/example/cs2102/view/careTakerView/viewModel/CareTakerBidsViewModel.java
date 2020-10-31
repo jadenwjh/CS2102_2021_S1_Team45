@@ -1,11 +1,15 @@
 package com.example.cs2102.view.careTakerView.viewModel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.retrofitApi.DataApiService;
+import com.google.gson.internal.LinkedTreeMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -15,7 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CareTakerBidsViewModel extends ViewModel {
 
-    public MutableLiveData<List<PetOwner>> petOwners = new MutableLiveData<>();
+    public MutableLiveData<ArrayList<LinkedTreeMap<String,String>>> petOwners = new MutableLiveData<>();
     public MutableLiveData<Boolean> loadError = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
 
@@ -29,16 +33,18 @@ public class CareTakerBidsViewModel extends ViewModel {
         disposable.add(dataApiService.getBids(careTakerName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<PetOwner>>() {
+                .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,String>>>() {
                     @Override
-                    public void onSuccess(List<PetOwner> _petOwners) {
+                    public void onSuccess(ArrayList<LinkedTreeMap<String,String>> _petOwners) {
                         petOwners.setValue(_petOwners);
                         loadError.setValue(false);
                         loading.setValue(false);
+                        Log.e("fetchBids", "Success");
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e("fetchBids", "Failed");
                         loadError.setValue(true);
                         loading.setValue(false);
                         e.printStackTrace();

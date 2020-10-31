@@ -8,38 +8,30 @@
 
     <FrameLayout
         android:id="@+id/careTaker_fragment"
-        android:layout_width="412dp"
-        android:layout_height="682dp"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+
+        android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ProgressBar
-        android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/viewBids"
-        android:text="@string/bids"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/bids"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/viewPrices"
-        android:text="@string/prices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/prices"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/viewBids"
         app:layout_constraintHorizontal_bias="0.364"

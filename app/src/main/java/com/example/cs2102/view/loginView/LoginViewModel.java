@@ -27,6 +27,7 @@ public class LoginViewModel extends ViewModel {
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
     public MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
     public MutableLiveData<LinkedTreeMap<String,String>> userProfile = new MutableLiveData<>();
+    public MutableLiveData<String> contract = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -57,6 +58,33 @@ public class LoginViewModel extends ViewModel {
                         Log.e("Login", "Failed");
                         loadError.setValue(true);
                         loading.setValue(false);
+                        e.printStackTrace();
+                    }
+                })
+        );
+    }
+
+    public void fetchContract(String careTakerName) {
+        Log.e("Login", "Attempting to fetch contract");
+        loading.setValue(true);
+        disposable.add(dataApiService.getCTContract(careTakerName)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LinkedTreeMap<String,String>>() {
+                    @Override
+                    public void onSuccess(LinkedTreeMap<String,String> ct) {
+                        Log.e("Fetch contract", "Success");
+                        String con = ct.get("contract");
+                        contract.setValue(con);
+                        loading.setValue(false);
+                        loadError.setValue(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("Fetch contract", "Failed");
+                        loading.setValue(false);
+                        loadError.setValue(true);
                         e.printStackTrace();
                     }
                 })

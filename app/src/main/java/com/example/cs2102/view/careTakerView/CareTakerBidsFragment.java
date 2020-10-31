@@ -1,7 +1,7 @@
 package com.example.cs2102.view.careTakerView;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
+import com.example.cs2102.model.PetOwnerBid;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerBidsViewModel;
+import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +34,9 @@ public class CareTakerBidsFragment extends Fragment {
 
     @BindView(R.id.careTakerBidsError)
     TextView listError;
+
+    @BindView(R.id.careTakerNoBids)
+    TextView noBidsMsg;
 
     @BindView(R.id.careTakerBidsLoading)
     ProgressBar loadingView;
@@ -44,6 +50,7 @@ public class CareTakerBidsFragment extends Fragment {
     private CareTakerBidsAdapter careTakerBidsAdapter = new CareTakerBidsAdapter(new ArrayList<>());
 
     public static CareTakerBidsFragment newInstance(String username) {
+        Log.e("BidsFragment", "new instance");
         currentCareTakerUsername = username;
         return new CareTakerBidsFragment();
     }
@@ -68,6 +75,8 @@ public class CareTakerBidsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        bidsVM = ViewModelProviders.of(this).get(CareTakerBidsViewModel.class);
+        bidsVM.loading.setValue(false);
 
         bidsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         bidsRecyclerView.setAdapter(careTakerBidsAdapter);
@@ -81,20 +90,11 @@ public class CareTakerBidsFragment extends Fragment {
             bidsVM.refreshBids(currentCareTakerUsername);
             refreshLayout.setRefreshing(false);
         });
-
-        bidsVM.loading.observe(getViewLifecycleOwner(), aBoolean -> {
-            if (aBoolean) {
-                loadingView.setVisibility(View.VISIBLE);
-            } else {
-                loadingView.setVisibility(View.GONE);
-            }
-        });
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        bidsVM = ViewModelProviders.of(this).get(CareTakerBidsViewModel.class);
         bidsVMObserver();
         bidsVM.refreshBids(currentCareTakerUsername);
     }
@@ -110,22 +110,25 @@ public class CareTakerBidsFragment extends Fragment {
         super.onStop();
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof CareTakerBidsFragmentListener) {
-            careTakerBidsFragmentListener = (CareTakerBidsFragmentListener) context;
-        } else {
-            throw new ClassCastException("RegisterPOListener not implemented");
-        }
-    }
-
     private void bidsVMObserver() {
         bidsVM.petOwners.observe(getViewLifecycleOwner(), petOwners -> {
+            noBidsMsg.setVisibility(View.GONE);
             if (petOwners != null) {
+                List<PetOwnerBid> bids = new ArrayList<>();
+                for (LinkedTreeMap<String,String> petOwner : petOwners) {
+                    String petOwnerName = petOwner.get("petowner");
+                    String petName = petOwner.get("petname");
+//                    String petType = petOwner.get("pettype");
+                    String avail = petOwner.get("avail").substring(0,10);
+                    PetOwnerBid petOwnerBid = new PetOwnerBid(petOwnerName, petName, "petType", avail);
+                    bids.add(petOwnerBid);
+                    Log.e("bidsVMObserver", "Added petOwner" + petOwnerName);
+                }
+                careTakerBidsAdapter.updatePetOwners(bids);
                 bidsRecyclerView.setVisibility(View.VISIBLE);
-                careTakerBidsAdapter.updatePetOwners(petOwners);
+            } else {
+                Log.e("bidsVMObserver", "You have no bids");
+                noBidsMsg.setVisibility(View.VISIBLE);
             }
         });
         bidsVM.loadError.observe(getViewLifecycleOwner(), isError -> {
@@ -136,7 +139,7 @@ public class CareTakerBidsFragment extends Fragment {
         bidsVM.loading.observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading != null) {
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                if(isLoading) {
+                if (isLoading) {
                     listError.setVisibility(View.GONE);
                     bidsRecyclerView.setVisibility(View.GONE);
                 }

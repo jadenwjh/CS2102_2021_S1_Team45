@@ -1,7 +1,6 @@
 package com.example.cs2102.view.careTakerView;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +14,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerAvailabilityViewModel;
-import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerLeaveViewModel;
 import com.example.cs2102.widgets.Strings;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -24,9 +22,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class CareTakerHomepageActivity extends AppCompatActivity {
-
-    @BindView(R.id.loading)
-    ProgressBar loading;
 
     @BindView(R.id.viewBids)
     Button viewBids;
@@ -42,37 +37,41 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     private CareTakerLeaveFragment leaveFragment;
     private CareTakerSetPriceFragment priceFragment;
     private CareTakerAvailabilityFragment availabilityFragment;
-    private UserProfile userProfile;
 
-    private CareTakerHomepageViewModel careTakerHomepageViewModel;
+    private FragmentManager fm;
 
     private static final String CURRENT_FRAGMENT = "CareTakerFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        careTakerHomepageViewModel  = ViewModelProviders.of(this).get(CareTakerHomepageViewModel.class);
-        userProfile = UserProfile.getInstance();
+        UserProfile userProfile = UserProfile.getInstance();
         String username = userProfile.username;
-        careTakerHomepageViewModel.fetchContract(username);
-
-        careTakerHomepageViewModel.contract.observe(this, type -> {
-            userProfile.setUserContract(type.get("isPartTime"));
-        });
 
         setContentView(R.layout.activity_care_taker_homepage);
-        FragmentManager fm = getSupportFragmentManager();
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
 
         if (savedInstanceState == null) {
-            ft = fm.beginTransaction();
             bidsFragment = CareTakerBidsFragment.newInstance(username);
             priceFragment = CareTakerSetPriceFragment.newInstance(username);
+
+            bidsFragment.setCareTakerBidsFragmentListener(selectedBid -> {
+                toggleHideNavigator(true);
+                selectedBid.setBidSelectedFragmentListener(() -> {
+                    switchFragment(Strings.BIDS);
+                    toggleHideNavigator(false);
+                });
+                ft = fm.beginTransaction();
+                ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
+            });
 
             if (userProfile.contract.equals(Strings.FULL_TIME)) {
                 CareTakerLeaveViewModel careTakerLeaveViewModel = ViewModelProviders.of(this).get(CareTakerLeaveViewModel.class);
                 leaveFragment = CareTakerLeaveFragment.newInstance(username, careTakerLeaveViewModel);
                 leaveFragment.setLeaveDatePicker(days -> {
-                    @SuppressLint("DefaultLocale") DatePickerDialog datePicker = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> careTakerLeaveViewModel.selectedDate.setValue((String.format("%d-%d-%d", year, monthOfYear, dayOfMonth))));
+                    @SuppressLint("DefaultLocale")
+                    DatePickerDialog datePicker = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> careTakerLeaveViewModel.selectedDate.setValue((String.format("%d-%d-%d", year, monthOfYear, dayOfMonth))));
                     datePicker.setSelectableDays(days);
                     datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
                 });
@@ -82,21 +81,12 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 CareTakerAvailabilityViewModel careTakerAvailabilityViewModel = ViewModelProviders.of(this).get(CareTakerAvailabilityViewModel.class);
                 availabilityFragment = CareTakerAvailabilityFragment.newInstance(username);
                 availabilityFragment.setAvailabilityDatePicker(days -> {
-                    @SuppressLint("DefaultLocale") DatePickerDialog datePicker = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> careTakerAvailabilityViewModel.selectedDate.setValue((String.format("%d-%d-%d", year, monthOfYear, dayOfMonth))));
+                    @SuppressLint("DefaultLocale")
+                    DatePickerDialog datePicker = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> careTakerAvailabilityViewModel.selectedDate.setValue((String.format("%d-%d-%d", year, monthOfYear, dayOfMonth))));
                     datePicker.setSelectableDays(days);
                     datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
                 });
             }
-
-            bidsFragment.setCareTakerBidsFragmentListener(selectedBid -> {
-                careTakerHomepageViewModel.isLoading.setValue(true);
-                toggleHideNavigator(true);
-                selectedBid.setBidSelectedFragmentListener(() -> {
-                    switchFragment(Strings.BIDS);
-                    toggleHideNavigator(false);
-                });
-                ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
-            });
 
             //default bid page
             ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
@@ -118,13 +108,6 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
 
         viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
 
-        careTakerHomepageViewModel.isLoading.observe(this, aBoolean -> {
-            if (aBoolean) {
-                loading.setVisibility(View.VISIBLE);
-            } else {
-                loading.setVisibility(View.GONE);
-            }
-        });
     }
 
     private void toggleHideNavigator(boolean hide) {
@@ -140,23 +123,25 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     }
 
     private void switchFragment(String key) {
-        careTakerHomepageViewModel.isLoading.setValue(true);
         switch (key) {
             case Strings.BIDS:
+                ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.PRICES:
+                ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, priceFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.LEAVES:
+                ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, leaveFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.PT_FREE:
+                ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, availabilityFragment, CURRENT_FRAGMENT).commit();
                 break;
             default:
                 throw new RuntimeException(String.format("Unable to load %s fragment", key));
         }
-        careTakerHomepageViewModel.isLoading.setValue(false);
     }
 }

@@ -10,7 +10,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
-import com.example.cs2102.model.PetOwner;
+import com.example.cs2102.model.PetOwnerBid;
 
 import java.util.List;
 
@@ -19,13 +19,13 @@ import butterknife.ButterKnife;
 
 public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdapter.BidsReceivedViewHolder> {
 
-    private List<PetOwner> petOwners;
+    private List<PetOwnerBid> petOwners;
 
-    public CareTakerBidsAdapter(List<PetOwner> petOwners) {
+    public CareTakerBidsAdapter(List<PetOwnerBid> petOwners) {
         this.petOwners = petOwners;
     }
 
-    public void updatePetOwners(List<PetOwner> newPetOwners) {
+    public void updatePetOwners(List<PetOwnerBid> newPetOwners) {
         petOwners.clear();
         petOwners.addAll(newPetOwners);
         notifyDataSetChanged();
@@ -34,7 +34,7 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
     private CareTakerBidsAdapter.BidsListener bidsListener;
 
     public interface BidsListener {
-        void onBidSelected(PetOwner petOwner); //can be sent to fragment or the activity or show another fragment
+        void onBidSelected(PetOwnerBid petOwner); //can be sent to fragment or the activity or show another fragment
     }
 
     public void setBidsListener(BidsListener listenerImpl) {
@@ -76,14 +76,14 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
             petOwnerBid.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    PetOwner petOwner = petOwners.get(position);
-                    bidsListener.onBidSelected(petOwner);
+                    PetOwnerBid bid = petOwners.get(position);
+                    bidsListener.onBidSelected(bid);
                 }
             });
         }
 
-        void bind(PetOwner petOwner) {
-            petOwnerName.setText(petOwner.getUserID());
+        void bind(PetOwnerBid petOwner) {
+            petOwnerName.setText(petOwner.getPetOwner());
             petOwnerPet.setText(petOwner.getPetName());
         }
     }

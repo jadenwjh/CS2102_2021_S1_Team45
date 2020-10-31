@@ -1,6 +1,5 @@
 package com.example.cs2102.view.careTakerView;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
-import com.example.cs2102.model.PetOwner;
+import com.example.cs2102.model.PetOwnerBid;
 import com.example.cs2102.view.careTakerView.viewModel.BidSelectedViewModel;
 
 import butterknife.BindView;
@@ -36,12 +35,12 @@ public class BidSelectedFragment extends Fragment {
     Button acceptBid;
 
     @BindView(R.id.loading)
-    ProgressBar loading;
+    ProgressBar loadingBar;
 
     private BidSelectedViewModel bidSelectedViewModel;
     private BidSelectedFragmentListener bidSelectedFragmentListener;
 
-    private static PetOwner petOwner;
+    private static PetOwnerBid petOwner;
     private static String username;
 
     public interface BidSelectedFragmentListener {
@@ -52,7 +51,7 @@ public class BidSelectedFragment extends Fragment {
         this.bidSelectedFragmentListener = listenerImpl;
     }
 
-    public static BidSelectedFragment newInstance(String uName, PetOwner current) {
+    public static BidSelectedFragment newInstance(String uName, PetOwnerBid current) {
         petOwner = current;
         username = uName;
         return new BidSelectedFragment();
@@ -68,29 +67,23 @@ public class BidSelectedFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-
-        petOwnerName.setText(petOwner.getUserID());
+        bidSelectedViewModel = ViewModelProviders.of(this).get(BidSelectedViewModel.class);
+        petOwnerName.setText(petOwner.getPetOwner());
         petName.setText(petOwner.getPetName());
-        petType.setText(petOwner.getPetType());
+        petType.setText("petOwner.getPetType()");
 
         acceptBid.setOnClickListener(v -> {
-            bidSelectedViewModel.acceptBid(username, petOwner.getPetName());
-            bidSelectedFragmentListener.onBidAcceptedExitFragment();
+            bidSelectedViewModel.acceptBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "a");
         });
 
-        bidSelectedViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
-            if (aBoolean) {
-                loading.setVisibility(View.VISIBLE);
-            } else {
-                loading.setVisibility(View.GONE);
-            }
-        });
+        bidSelectedViewModel.loading.setValue(false);
+        bidSelectedViewModel.acceptedBid.setValue(false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        bidSelectedViewModel = ViewModelProviders.of(this).get(BidSelectedViewModel.class);
+        bidsSelectedVMObserver();
     }
 
     @Override
@@ -100,18 +93,22 @@ public class BidSelectedFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof BidSelectedFragmentListener) {
-            bidSelectedFragmentListener = (BidSelectedFragmentListener) context;
-        } else {
-            throw new ClassCastException("RegisterPOListener not implemented");
-        }
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
+    }
+
+    private void bidsSelectedVMObserver() {
+        bidSelectedViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                loadingBar.setVisibility(View.VISIBLE);
+            } else {
+                loadingBar.setVisibility(View.GONE);
+            }
+        });
+        bidSelectedViewModel.acceptedBid.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                bidSelectedFragmentListener.onBidAcceptedExitFragment();
+            }
+        });
     }
 }

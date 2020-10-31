@@ -33,5 +33,6 @@
     <string name="enter_your_credit_card_number">Enter your credit card number</string>
     <string name="enter_referral">Enter referral</string>
     <string name="full_time">Full-Time</string>
+    <string name="you_currently_have_no_bids">You currently have no bids</string>
 
 </resources>

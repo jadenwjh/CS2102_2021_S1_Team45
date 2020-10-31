@@ -58,7 +58,7 @@ public class DataApiService {
         return dataApi.getCareTakers();
     }
 
-    public Single<List<PetOwner>> getBids(String careTakerName) {
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getBids(String careTakerName) {
         return dataApi.getBidsReceived(careTakerName);
     }
 
@@ -112,8 +112,14 @@ public class DataApiService {
         return dataApi.applyLeave(username, date);
     }
 
-    public Completable acceptBid(String username, String petName) {
-        return dataApi.acceptBid(username, petName);
+    public Completable acceptBid(String petOwner, String petName, String careTaker, String avail, String approveReject) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("petowner", petOwner);
+        params.put("petname", petName);
+        params.put("caretaker", careTaker);
+        params.put("avail", avail);
+        params.put("approveReject", approveReject);
+        return dataApi.acceptBid(params);
     }
 
     public Single<List<String>> careTakerFullTimeFree(String username) {
@@ -124,7 +130,7 @@ public class DataApiService {
         return dataApi.setPartTimeFree(username, date);
     }
 
-    public Single<ArrayList<LinkedTreeMap<String,String>>> getCTContract(String username) {
+    public Single<LinkedTreeMap<String,String>> getCTContract(String username) {
         return dataApi.getCareTakerContract(username);
     }
 
