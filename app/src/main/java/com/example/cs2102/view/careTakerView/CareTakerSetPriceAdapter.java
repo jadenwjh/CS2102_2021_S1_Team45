@@ -1,5 +1,9 @@
 package com.example.cs2102.view.careTakerView;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +25,7 @@ import butterknife.ButterKnife;
 public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetPriceAdapter.PricesViewHolder> {
 
     private List<PetTypeCost> petPrices;
+    private int selectedPos = RecyclerView.NO_POSITION;
 
     public CareTakerSetPriceAdapter(List<PetTypeCost> petPrices) {
         this.petPrices = petPrices;
@@ -51,6 +56,7 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
 
     @Override
     public void onBindViewHolder(@NonNull CareTakerSetPriceAdapter.PricesViewHolder holder, int position) {
+        holder.priceCard.setCardBackgroundColor(selectedPos == position ? Color.CYAN : Color.WHITE);
         holder.bind(petPrices.get(position));
     }
 
@@ -59,7 +65,7 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
         return petPrices.size();
     }
 
-    class PricesViewHolder extends RecyclerView.ViewHolder{
+    class PricesViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.price_card)
         CardView priceCard;
@@ -76,6 +82,9 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
             ButterKnife.bind(this, itemView);
 
             priceCard.setOnClickListener(v -> {
+                notifyItemChanged(selectedPos);
+                selectedPos = getLayoutPosition();
+                notifyItemChanged(selectedPos);
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     PetTypeCost currentPrice = petPrices.get(position);
@@ -86,7 +95,7 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
 
         void bind(PetTypeCost petTypeCost) {
             petType.setText(petTypeCost.getType());
-            price.setText(String.valueOf(petTypeCost.getCurrentCost()));
+            price.setText(String.format("$%s per day", petTypeCost.getFee()));
         }
     }
 }

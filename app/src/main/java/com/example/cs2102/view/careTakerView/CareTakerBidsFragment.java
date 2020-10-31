@@ -50,7 +50,6 @@ public class CareTakerBidsFragment extends Fragment {
     private CareTakerBidsAdapter careTakerBidsAdapter = new CareTakerBidsAdapter(new ArrayList<>());
 
     public static CareTakerBidsFragment newInstance(String username) {
-        Log.e("BidsFragment", "new instance");
         currentCareTakerUsername = username;
         return new CareTakerBidsFragment();
     }

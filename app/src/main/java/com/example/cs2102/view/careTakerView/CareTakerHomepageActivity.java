@@ -57,12 +57,11 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
             priceFragment = CareTakerSetPriceFragment.newInstance(username);
 
             bidsFragment.setCareTakerBidsFragmentListener(selectedBid -> {
-                toggleHideNavigator(true);
                 selectedBid.setBidSelectedFragmentListener(() -> {
                     switchFragment(Strings.BIDS);
-                    toggleHideNavigator(false);
                 });
                 ft = fm.beginTransaction();
+                toggleHideNavigator(true);
                 ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
             });
 
@@ -123,6 +122,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     }
 
     private void switchFragment(String key) {
+        toggleHideNavigator(false);
         switch (key) {
             case Strings.BIDS:
                 ft = fm.beginTransaction();
@@ -143,5 +143,10 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
             default:
                 throw new RuntimeException(String.format("Unable to load %s fragment", key));
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        switchFragment(Strings.BIDS);
     }
 }

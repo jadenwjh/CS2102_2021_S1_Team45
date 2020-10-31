@@ -2,6 +2,7 @@ package com.example.cs2102.view.careTakerView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
+import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerSetPriceViewModel;
 
 import java.util.ArrayList;
@@ -34,26 +36,20 @@ public class CareTakerSetPriceFragment extends Fragment {
     @BindView(R.id.careTakerPricesError)
     TextView listError;
 
+    @BindView(R.id.careTakerNoTypes)
+    TextView noTypesMsg;
+
     @BindView(R.id.careTakerPricesLoading)
     ProgressBar loadingView;
 
     @BindView(R.id.all_pets)
     RecyclerView pricesRecyclerView;
 
-    @BindView(R.id.set_price)
+    @BindView(R.id.editPrice)
     EditText setPrice;
 
-    @BindView(R.id.selected_pet_type)
-    TextView petType;
-
-    @BindView(R.id.lower_bound)
-    TextView lowerBound;
-
-    @BindView(R.id.upper_bound)
-    TextView upperBound;
-
-    @BindView(R.id.confirm_price)
-    Button confirmPrice;
+    @BindView(R.id.setPrice)
+    Button confirmSet;
 
     private static String currentCareTakerUsername;
 
@@ -72,26 +68,22 @@ public class CareTakerSetPriceFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        pricesVM = ViewModelProviders.of(this).get(CareTakerSetPriceViewModel.class);
-        petPricesVMObserver();
-        pricesVM.refreshPrices(currentCareTakerUsername);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
+        pricesVM = ViewModelProviders.of(this).get(CareTakerSetPriceViewModel.class);
+        pricesVM.loading.setValue(false);
+
         pricesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
 
-        careTakerSetPriceAdapter.setPricesListener(petTypeCost -> {
-            petType.setText(petTypeCost.getType());
-            lowerBound.setText(String.valueOf(petTypeCost.getLowerBound()));
-            upperBound.setText(String.valueOf(petTypeCost.getUpperBound()));
-            setPrice.setText(String.valueOf(petTypeCost.getCurrentCost()));
+        careTakerSetPriceAdapter.setPricesListener(new CareTakerSetPriceAdapter.PricesListener() {
+            @Override
+            public void onPriceCardSelected(PetTypeCost petTypeCost) {
+                // set prices for edit text (Upper and base price)
+                setPrice.setText(petTypeCost.getFee());
+            }
         });
 
         refreshLayout.setOnRefreshListener(() -> {
@@ -99,12 +91,20 @@ public class CareTakerSetPriceFragment extends Fragment {
             refreshLayout.setRefreshing(false);
         });
 
-        confirmPrice.setOnClickListener(v -> {
-            double price = Double.parseDouble(String.valueOf(setPrice.getText()));
-            String currentPetType = petType.getTag().toString();
-            pricesVM.updatePetTypeCost(currentCareTakerUsername, currentPetType, price);
-            pricesVM.refreshPrices(currentCareTakerUsername);
+        confirmSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //set price
+                //refresh layout
+            }
         });
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        petPricesVMObserver();
+        pricesVM.refreshPrices(currentCareTakerUsername);
     }
 
     @Override
@@ -120,9 +120,14 @@ public class CareTakerSetPriceFragment extends Fragment {
 
     private void petPricesVMObserver() {
         pricesVM.petTypeCosts.observe(getViewLifecycleOwner(), petPrices -> {
+            noTypesMsg.setVisibility(View.GONE);
             if (petPrices != null) {
                 pricesRecyclerView.setVisibility(View.VISIBLE);
                 careTakerSetPriceAdapter.updatePetPrices(petPrices);
+                pricesRecyclerView.setVisibility(View.VISIBLE);
+            } else {
+                Log.e("petPricesVMObserver", "You have no prices");
+                noTypesMsg.setVisibility(View.VISIBLE);
             }
         });
         pricesVM.loadError.observe(getViewLifecycleOwner(), isError -> {

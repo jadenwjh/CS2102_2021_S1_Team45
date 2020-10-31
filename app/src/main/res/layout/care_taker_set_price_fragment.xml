@@ -17,14 +17,22 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/all_pets"
-                android:layout_width="412dp"
-                android:layout_height="534dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/careTakerNoTypes"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="@string/you_currently_have_no_categories_set"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.085" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/careTakerPricesError"
@@ -46,63 +54,25 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/set_price"
-                android:layout_width="104dp"
-                android:layout_height="39dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets"
-                app:layout_constraintVertical_bias="0.354"
-                android:autofillHints="Price"
-                android:inputType="number"
-                tools:ignore="LabelFor" />
-
-            <TextView
-                android:id="@+id/selected_pet_type"
+            <Button
+                android:id="@+id/setPrice"
+                android:text="@string/set"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toTopOf="@+id/set_price"
+                android:layout_marginEnd="40dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/all_pets"
                 app:layout_constraintTop_toBottomOf="@+id/all_pets" />
 
-            <TextView
-                android:id="@+id/lower_bound"
+            <EditText
+                android:id="@+id/editPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/set_price"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets"
-                app:layout_constraintVertical_bias="0.405" />
+                android:layout_marginEnd="68dp"
+                android:inputType="number"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@+id/setPrice"
+                app:layout_constraintTop_toBottomOf="@+id/all_pets" />
 
-            <TextView
-                android:id="@+id/upper_bound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/set_price"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets"
-                app:layout_constraintVertical_bias="0.405" />
-
-            <Button
-                android:id="@+id/confirm_price"
-                android:layout_width="93dp"
-                android:layout_height="38dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/set_price"
-                android:text="@string/confirm"
-                app:layout_constraintVertical_bias="0.534" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -34,6 +34,9 @@ public class BidSelectedFragment extends Fragment {
     @BindView(R.id.acceptBid)
     Button acceptBid;
 
+    @BindView(R.id.rejectBid)
+    Button rejectBid;
+
     @BindView(R.id.loading)
     ProgressBar loadingBar;
 
@@ -73,7 +76,11 @@ public class BidSelectedFragment extends Fragment {
         petType.setText("petOwner.getPetType()");
 
         acceptBid.setOnClickListener(v -> {
-            bidSelectedViewModel.acceptBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "a");
+            bidSelectedViewModel.acceptRejectBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "a");
+        });
+
+        rejectBid.setOnClickListener(v -> {
+            bidSelectedViewModel.acceptRejectBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "r");
         });
 
         bidSelectedViewModel.loading.setValue(false);

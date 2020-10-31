@@ -14,20 +14,29 @@
             android:id="@+id/acceptBid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="68dp"
+            android:layout_marginTop="80dp"
             android:text="@string/accept_bid"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet_type" />
+
+        <Button
+            android:id="@+id/rejectBid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="84dp"
+            android:layout_marginTop="80dp"
+            android:text="@string/reject_bid"
+            app:layout_constraintStart_toEndOf="@+id/acceptBid"
+            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet_type" />
 
         <TextView
             android:id="@+id/pet_owner_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="168dp"
+            android:layout_marginTop="172dp"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,24 +44,21 @@
             android:id="@+id/pet_owner_pet_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/pet_owner_pet_type"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_owner_name"
-            app:layout_constraintVertical_bias="0.458" />
+            app:layout_constraintTop_toBottomOf="@+id/pet_owner_name" />
 
         <TextView
             android:id="@+id/pet_owner_pet_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="56dp"
+            android:layout_marginTop="48dp"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/acceptBid"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet_name" />
 
         <ProgressBar
             android:id="@+id/loading"

@@ -28,7 +28,7 @@ public class Strings {
     public static final String CARE_TAKERS = "CareTaker/:caretaker";
     public static final String PET_OWNERS_REQUESTS = "zzz";
     public static final String CARE_TAKERS_AVAILABLE = "zzz";
-    public static final String PETS_THE_CARE_TAKER_CAN_TAKE_CARE = "zzz";
+    public static final String PETS_THE_CARE_TAKER_CAN_TAKE_CARE = "caretaker/abletocare";
 
     public static final String CT_FULL_TIME_LEAVE = "zzz";
     public static final String CT_BIDS = "caretaker/bids";

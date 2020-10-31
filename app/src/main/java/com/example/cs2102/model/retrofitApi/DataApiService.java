@@ -100,13 +100,11 @@ public class DataApiService {
         return dataApi.addCareTaker(params);
     }
 
-    public Single<List<PetTypeCost>> getPetsForCare(String careTakerUsername) {
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getPetsForCare(String careTakerUsername) {
         return dataApi.getPetsForCare(careTakerUsername);
     }
 
-    public Completable updateCostOfPetType(String careTakerUsername, String type, double price) {
-        return dataApi.updateCost(careTakerUsername, type, price);
-    }
+
 
     public Completable applyLeave(String username, String date) {
         return dataApi.applyLeave(username, date);

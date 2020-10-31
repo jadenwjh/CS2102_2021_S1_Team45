@@ -34,5 +34,8 @@
     <string name="enter_referral">Enter referral</string>
     <string name="full_time">Full-Time</string>
     <string name="you_currently_have_no_bids">You currently have no bids</string>
+    <string name="reject_bid">Reject Bid</string>
+    <string name="you_currently_have_no_categories_set">You currently have no categories set</string>
+    <string name="set">Set</string>
 
 </resources>

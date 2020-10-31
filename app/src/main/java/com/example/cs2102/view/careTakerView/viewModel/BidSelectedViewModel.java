@@ -22,7 +22,7 @@ public class BidSelectedViewModel extends ViewModel {
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void acceptBid(String petOwner, String petName, String careTaker, String avail, String approveReject) {
+    public void acceptRejectBid(String petOwner, String petName, String careTaker, String avail, String approveReject) {
         Log.e("Accept Bids", "Trying to accept bid");
         acceptedBid.setValue(false);
         loading.setValue(true);
@@ -32,7 +32,7 @@ public class BidSelectedViewModel extends ViewModel {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        Log.e("Accept Bids", "Success");
+                        Log.e("acceptRejectBid", "Success");
                         Log.e("Accept bid", String.format("petowner:%s, petname:%s, caretaker:%s, avail:%s, approveReject:%s", petOwner, petName, careTaker, avail, approveReject));
                         loadError.setValue(false);
                         loading.setValue(false);
@@ -41,7 +41,7 @@ public class BidSelectedViewModel extends ViewModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("Accept Bids", "Failed");
+                        Log.e("acceptRejectBid", "Failed");
                         loadError.setValue(true);
                         loading.setValue(false);
                         e.printStackTrace();

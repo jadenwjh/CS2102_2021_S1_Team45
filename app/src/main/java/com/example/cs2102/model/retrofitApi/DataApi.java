@@ -38,11 +38,11 @@ public interface DataApi {
     @GET(Strings.CT_BIDS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getBidsReceived(@Path("username") String username);
 
-    @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE)
-    Single<List<PetTypeCost>> getPetsForCare(@Query("username") String username);
+    @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getPetsForCare(@Path("username") String username);
 
-    @POST(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE)
-    Completable updateCost(@Field("username") String username,
+    @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> updateCost(@Path("username") String username,
                                    @Field("petType")String type,
                                    @Field("price") double price);
 
