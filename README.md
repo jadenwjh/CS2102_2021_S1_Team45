@@ -488,6 +488,18 @@
     `[{"caretaker":"sperezpj","category":"bird","feeperday":20},{"caretaker":"sperezpj","category":"hamster","feeperday":10}]`
 
 &nbsp;
+- ## Get contract type (fulltimer, parttimer, not caretaker)
+
+    ### Params:
+    - `caretaker` : string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/contract/jgastickep2
+
+    Output:
+    `{"contract":"fulltimer"}`
+
+&nbsp;
 - ## Add AbleToCare info <div style="text-align: right">`POST /CareTaker/AbleToCare`
 
     ### Body:

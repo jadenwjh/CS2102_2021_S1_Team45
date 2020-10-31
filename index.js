@@ -402,6 +402,23 @@ app.get("/CareTaker/:caretaker", async (req, res) => {
   }
 });
 
+// Check if fulltimer
+app.get("/CareTaker/contract/:caretaker", async (req, res) => {
+  try {
+    const contract = await pool.query(
+      `SELECT 
+      CASE 
+        WHEN EXISTS (SELECT * FROM parttimers WHERE username = '${req.params.caretaker}') THEN 'parttimer'
+        WHEN EXISTS (SELECT * FROM CareTakers WHERE username = '${req.params.caretaker}') THEN 'fulltimer'
+        ELSE 'not caretaker'
+      END AS contract;`
+    );
+    res.json(contract.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Get AbleToCare info
 app.get("/CareTaker/AbleToCare/:caretaker", async (req, res) => {
   try {
