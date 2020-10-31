@@ -426,8 +426,8 @@ app.get("/CareTaker/contract/:caretaker", async (req, res) => {
 app.get("/CareTaker/AbleToCare/:caretaker", async (req, res) => {
   try {
     const abletocare = await pool.query(
-      `SELECT * FROM AbleToCare 
-      WHERE caretaker = '${req.params.caretaker}';`
+      `SELECT * FROM petTypes
+      WHERE category NOT IN (SELECT category FROM AbleToCare WHERE caretaker = '${req.params.caretaker}');`
     );
     res.json(abletocare.rows);
   } catch (err) {
@@ -627,7 +627,7 @@ app.get("/Admin/summary", async (req, res) => {
 
     res.json(caretakerSummary.rows);
   } catch (err) {
-    console.error(err.message);+
+    console.error(err.message);
   }
 });
 // TODO update
