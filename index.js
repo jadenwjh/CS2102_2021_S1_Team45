@@ -478,13 +478,14 @@ app.get("/CareTaker/RatingsReviews/:caretaker", async (req, res) => {
   }
 });
 
-// Get all bids for self
+// Get all pending bids for self
 app.get("/CareTaker/Bids/:caretaker", async (req, res) => {
   try {
     const getBid = await pool.query(
       `SELECT * 
       FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
       WHERE caretaker = '${req.params.caretaker}'
+      AND status = 'p'
       ORDER BY edate;`
     );
     res.json(getBid.rows);
@@ -626,9 +627,10 @@ app.get("/Admin/summary", async (req, res) => {
 
     res.json(caretakerSummary.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.message);+
   }
 });
+// TODO update
 
 // Get all salaries
 // TODO 
