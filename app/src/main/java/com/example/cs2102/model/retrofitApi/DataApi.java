@@ -38,18 +38,23 @@ public interface DataApi {
     @GET(Strings.CT_BIDS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getBidsReceived(@Path("username") String username);
 
-    @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{username}")
+    @GET(Strings.UPDATE_PRICE_CT + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetsForCare(@Path("username") String username);
 
     @GET(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE + "/{caretaker}")
-    Completable updateCost(@Path("caretaker") String caretaker, @Body HashMap<String,Object> params);
+    Single<ArrayList<LinkedTreeMap<String,String>>> getPetTypesForCT(@Path("caretaker") String username);
+
+    @POST(Strings.PETS_THE_CARE_TAKER_CAN_TAKE_CARE)
+    Completable addPetTypeToCare(@Body HashMap<String, Object> params);
+
+    @PUT(Strings.UPDATE_PRICE_CT)
+    Completable updateCost(@Body HashMap<String,Object> params);
 
     @GET(Strings.CARE_TAKERS_AVAILABLE)
     Single<List<CareTaker>> getCareTakers();
 
     @POST(Strings.CT_FULL_TIME_LEAVE)
-    Completable applyLeave(@Field("username") String username,
-                            @Field("date") String leaveDate);
+    Completable applyLeave(@Body HashMap<String, String> params);
 
     @PUT(Strings.CT_BIDS)
     Completable acceptBid(@Body HashMap<String, String> params);
@@ -61,7 +66,6 @@ public interface DataApi {
     Single<List<PetOwner>> getPetOwners();
 
     @POST(Strings.CT_PART_TIME_FREE)
-    Completable setPartTimeFree(@Field("username") String username,
-                                   @Field("date") String leaveDate);
+    Completable setPartTimeFree(@Body HashMap<String, String> params);
 
 }

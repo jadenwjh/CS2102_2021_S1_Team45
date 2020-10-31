@@ -4,7 +4,7 @@ public class Strings {
 
     public static final String PROFILE = "UserProfile";
     public static final String LEAVES = "Leaves";
-    public static final String PT_FREE = "PTAvailability";
+    public static final String LEAVES_AVAILABILITY = "CT Dates";
     public static final String BIDS = "Bids";
     public static final String PRICES = "Prices";
 
@@ -28,11 +28,12 @@ public class Strings {
     public static final String CARE_TAKERS = "CareTaker/:caretaker";
     public static final String PET_OWNERS_REQUESTS = "zzz";
     public static final String CARE_TAKERS_AVAILABLE = "zzz";
+    public static final String UPDATE_PRICE_CT = "caretaker/pricing";
     public static final String PETS_THE_CARE_TAKER_CAN_TAKE_CARE = "caretaker/abletocare";
 
-    public static final String CT_FULL_TIME_LEAVE = "zzz";
+    public static final String CT_FULL_TIME_LEAVE = "caretaker/leaves";
     public static final String CT_BIDS = "caretaker/bids";
     public static final String CT_FULL_TIME_FREE = "zzz";
 
-    public static final String CT_PART_TIME_FREE = "zzz";
+    public static final String CT_PART_TIME_FREE = "caretaker/available";
 }

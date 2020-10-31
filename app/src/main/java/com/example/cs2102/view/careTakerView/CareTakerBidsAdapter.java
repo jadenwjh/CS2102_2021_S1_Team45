@@ -86,7 +86,7 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
 
         void bind(PetOwnerBid petOwner) {
             petOwnerName.setText(petOwner.getPetOwner());
-            petOwnerPet.setText(petOwner.getPetName());
+            petOwnerPet.setText(String.format("%s - %s", petOwner.getPetName(), petOwner.getPetType()));
         }
     }
 }

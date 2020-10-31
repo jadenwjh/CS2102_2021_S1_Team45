@@ -20,7 +20,6 @@ import io.reactivex.schedulers.Schedulers;
 public class CareTakerBidsViewModel extends ViewModel {
 
     public MutableLiveData<ArrayList<LinkedTreeMap<String,String>>> petOwners = new MutableLiveData<>();
-    public MutableLiveData<Boolean> loadError = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
@@ -37,7 +36,6 @@ public class CareTakerBidsViewModel extends ViewModel {
                     @Override
                     public void onSuccess(ArrayList<LinkedTreeMap<String,String>> _petOwners) {
                         petOwners.setValue(_petOwners);
-                        loadError.setValue(false);
                         loading.setValue(false);
                         Log.e("fetchBids", "Success");
                     }
@@ -45,7 +43,6 @@ public class CareTakerBidsViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("fetchBids", "Failed");
-                        loadError.setValue(true);
                         loading.setValue(false);
                         e.printStackTrace();
                     }

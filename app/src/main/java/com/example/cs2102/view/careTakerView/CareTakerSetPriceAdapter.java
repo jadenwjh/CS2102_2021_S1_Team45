@@ -25,22 +25,24 @@ import butterknife.ButterKnife;
 public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetPriceAdapter.PricesViewHolder> {
 
     private List<PetTypeCost> petPrices;
-    private int selectedPos = RecyclerView.NO_POSITION;
+    private static int selectedPos = RecyclerView.NO_POSITION;
 
     public CareTakerSetPriceAdapter(List<PetTypeCost> petPrices) {
         this.petPrices = petPrices;
     }
 
     public void updatePetPrices(List<PetTypeCost> priceList) {
+        Log.e("New price list", priceList.toArray().toString());
         petPrices.clear();
         petPrices.addAll(priceList);
+        selectedPos = RecyclerView.NO_POSITION;
         notifyDataSetChanged();
     }
 
     private CareTakerSetPriceAdapter.PricesListener pricesListener;
 
     public interface PricesListener {
-        void onPriceCardSelected(PetTypeCost petTypeCost); //set textViews upper and lower bound of fragment
+        void onPriceCardSelected(PetTypeCost petTypeCost);
     }
 
     public void setPricesListener(PricesListener listenerImpl) {
@@ -98,4 +100,5 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
             price.setText(String.format("$%s per day", petTypeCost.getFee()));
         }
     }
+
 }

@@ -1,10 +1,10 @@
 package com.example.cs2102.view.careTakerView;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -13,10 +13,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
-import com.example.cs2102.view.careTakerView.viewModel.CareTakerAvailabilityViewModel;
-import com.example.cs2102.view.careTakerView.viewModel.CareTakerLeaveViewModel;
+import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
 import com.example.cs2102.widgets.Strings;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,14 +30,23 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     @BindView(R.id.viewLeaves)
     Button viewLeavesOrFree;
 
+    @BindView(R.id.homepageLoading)
+    ProgressBar loadingBar;
+
     @BindView(R.id.viewPrices)
     Button viewPrices;
 
     private FragmentTransaction ft;
     private CareTakerBidsFragment bidsFragment;
-    private CareTakerLeaveFragment leaveFragment;
     private CareTakerSetPriceFragment priceFragment;
     private CareTakerAvailabilityFragment availabilityFragment;
+    private CareTakerHomepageViewModel homepageViewModel;
+
+    private DatePickerDialog.OnDateSetListener dateSetListener;
+
+    public void setDateSetListener(DatePickerDialog.OnDateSetListener listener) {
+        this.dateSetListener = listener;
+    }
 
     private FragmentManager fm;
 
@@ -47,6 +57,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         UserProfile userProfile = UserProfile.getInstance();
         String username = userProfile.username;
+        homepageViewModel = ViewModelProviders.of(this).get(CareTakerHomepageViewModel.class);
 
         setContentView(R.layout.activity_care_taker_homepage);
         fm = getSupportFragmentManager();
@@ -65,48 +76,68 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
             });
 
-            if (userProfile.contract.equals(Strings.FULL_TIME)) {
-                CareTakerLeaveViewModel careTakerLeaveViewModel = ViewModelProviders.of(this).get(CareTakerLeaveViewModel.class);
-                leaveFragment = CareTakerLeaveFragment.newInstance(username, careTakerLeaveViewModel);
-                leaveFragment.setLeaveDatePicker(days -> {
-                    @SuppressLint("DefaultLocale")
-                    DatePickerDialog datePicker = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> careTakerLeaveViewModel.selectedDate.setValue((String.format("%d-%d-%d", year, monthOfYear, dayOfMonth))));
-                    datePicker.setSelectableDays(days);
-                    datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
-                });
-            }
+            setDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+                    String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
+                    if (userProfile.contract.equals(Strings.PART_TIME)) {
+                        homepageViewModel.requestToSendAvailability(username, date);
+                    }
+                    if (userProfile.contract.equals(Strings.FULL_TIME)) {
+                        homepageViewModel.requestToApplyLeave(username, date);
+                    }
+                }
+            });
 
-            if (userProfile.contract.equals(Strings.PART_TIME)) {
-                CareTakerAvailabilityViewModel careTakerAvailabilityViewModel = ViewModelProviders.of(this).get(CareTakerAvailabilityViewModel.class);
-                availabilityFragment = CareTakerAvailabilityFragment.newInstance(username);
-                availabilityFragment.setAvailabilityDatePicker(days -> {
-                    @SuppressLint("DefaultLocale")
-                    DatePickerDialog datePicker = DatePickerDialog.newInstance((view, year, monthOfYear, dayOfMonth) -> careTakerAvailabilityViewModel.selectedDate.setValue((String.format("%d-%d-%d", year, monthOfYear, dayOfMonth))));
-                    datePicker.setSelectableDays(days);
-                    datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
-                });
-            }
+            availabilityFragment = CareTakerAvailabilityFragment.newInstance(userProfile.contract);
+            Calendar now = Calendar.getInstance();
+            availabilityFragment.setAvailabilityDatePicker(days -> {
+                String date = "";
+                DatePickerDialog datePicker = DatePickerDialog.newInstance(dateSetListener, now);
+                datePicker.setSelectableDays(days);
+                datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
+            });
 
             //default bid page
             ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
         }
 
         ButterKnife.bind(this);
+        loadingBar.setVisibility(View.GONE);
 
         if (userProfile.contract.equals(Strings.FULL_TIME)) {
             viewLeavesOrFree.setText(R.string.leaves);
-            viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.LEAVES));
         }
 
         if (userProfile.contract.equals(Strings.PART_TIME)) {
             viewLeavesOrFree.setText(R.string.availability);
-            viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.PT_FREE));
         }
+
+        viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.LEAVES_AVAILABILITY));
 
         viewBids.setOnClickListener(view -> switchFragment(Strings.BIDS));
 
         viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
 
+        homepageViewModel.loading.observe(this, isLoading -> {
+            if (isLoading) {
+                loadingBar.setVisibility(View.VISIBLE);
+            } else {
+                loadingBar.setVisibility(View.GONE);
+            }
+        });
+
+        homepageViewModel.loadErrorPT.observe(this, isLoading -> {
+            if (isLoading) {
+                Toast.makeText(this, "This date has already been chosen", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        homepageViewModel.loadErrorFT.observe(this, isLoading -> {
+            if (isLoading) {
+                Toast.makeText(this, "Violates 150 days constraint", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void toggleHideNavigator(boolean hide) {
@@ -132,11 +163,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, priceFragment, CURRENT_FRAGMENT).commit();
                 break;
-            case Strings.LEAVES:
-                ft = fm.beginTransaction();
-                ft.replace(R.id.careTaker_fragment, leaveFragment, CURRENT_FRAGMENT).commit();
-                break;
-            case Strings.PT_FREE:
+            case Strings.LEAVES_AVAILABILITY:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, availabilityFragment, CURRENT_FRAGMENT).commit();
                 break;

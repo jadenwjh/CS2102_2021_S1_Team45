@@ -104,10 +104,12 @@ public class DataApiService {
         return dataApi.getPetsForCare(careTakerUsername);
     }
 
-
-
     public Completable applyLeave(String username, String date) {
-        return dataApi.applyLeave(username, date);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("sdate", date);
+        params.put("edate", date);
+        return dataApi.applyLeave(params);
     }
 
     public Completable acceptBid(String petOwner, String petName, String careTaker, String avail, String approveReject) {
@@ -125,7 +127,11 @@ public class DataApiService {
     }
 
     public Completable setPartTimerFree(String username, String date) {
-        return dataApi.setPartTimeFree(username, date);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("sdate", date);
+        params.put("edate", date);
+        return dataApi.setPartTimeFree(params);
     }
 
     public Single<LinkedTreeMap<String,String>> getCTContract(String username) {
@@ -137,7 +143,19 @@ public class DataApiService {
         params.put("caretaker", username);
         params.put("petType", petType);
         params.put("price", price);
-        return dataApi.updateCost(username, params);
+        return dataApi.updateCost(params);
+    }
+
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getCTPetTypes(String username) {
+        return dataApi.getPetTypesForCT(username);
+    }
+
+    public Completable addPetTypeForCT(String username, String petType, int price) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("caretaker", username);
+        params.put("category", petType);
+        params.put("feeperday", price);
+        return dataApi.addPetTypeToCare(params);
     }
 
     public Single<List<PetOwner>> getPetOwners() {

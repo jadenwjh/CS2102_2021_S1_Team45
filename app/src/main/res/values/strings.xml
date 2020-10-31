@@ -37,5 +37,8 @@
     <string name="reject_bid">Reject Bid</string>
     <string name="you_currently_have_no_categories_set">You currently have no categories set</string>
     <string name="set">Set</string>
+    <string name="add">Add</string>
+    <string name="add_category">Add category</string>
+    <string name="this_date_has_already_been_chosen">This date has already been chosen</string>
 
 </resources>

@@ -1,52 +1,46 @@
 package com.example.cs2102.view.careTakerView.viewModel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.model.retrofitApi.DataApiService;
-
-import java.sql.Date;
-import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class CareTakerLeaveViewModel extends ViewModel {
+public class CareTakerHomepageViewModel extends ViewModel {
 
-    public MutableLiveData<Boolean> loadError = new MutableLiveData<>();
+    public MutableLiveData<Boolean> loadErrorPT = new MutableLiveData<>();
+    public MutableLiveData<Boolean> loadErrorFT = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
-    public MutableLiveData<List<String>> availableDates = new MutableLiveData<>();
-
-    public MutableLiveData<String> selectedDate = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void refresh(String uName) {getWorkingDays(uName);}
-
-    public void getWorkingDays(String username) {
+    public void requestToSendAvailability(String careTakerUsername, String date) {
         loading.setValue(true);
-        disposable.add(dataApiService.careTakerFullTimeFree(username)
+        disposable.add(dataApiService.setPartTimerFree(careTakerUsername, date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<String>>() {
+                .subscribeWith(new DisposableCompletableObserver() {
 
                     @Override
-                    public void onSuccess(List<String> dates) {
-                        availableDates.setValue(dates);
-                        loadError.setValue(false);
+                    public void onComplete() {
+                        Log.e("Set availability", "Success");
+                        Log.e("sent avail for PT", date);
+                        loadErrorPT.setValue(false);
                         loading.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        loadError.setValue(true);
+                        Log.e("sent avail for PT", "Failed");
+                        loadErrorPT.setValue(true);
                         loading.setValue(false);
-                        e.printStackTrace();
                     }
                 })
         );
@@ -61,15 +55,17 @@ public class CareTakerLeaveViewModel extends ViewModel {
 
                     @Override
                     public void onComplete() {
-                        loadError.setValue(false);
+                        Log.e("Apply leave", "Success");
+                        Log.e("sent leave for FT", date);
+                        loadErrorFT.setValue(false);
                         loading.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        loadError.setValue(true);
+                        Log.e("sent avail for FT", "Failed");
+                        loadErrorFT.setValue(true);
                         loading.setValue(false);
-                        e.printStackTrace();
                     }
                 })
         );

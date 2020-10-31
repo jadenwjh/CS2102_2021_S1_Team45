@@ -1,14 +1,19 @@
 package com.example.cs2102.view.careTakerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,6 +29,7 @@ import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerSetPriceViewModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,13 +54,27 @@ public class CareTakerSetPriceFragment extends Fragment {
     @BindView(R.id.editPrice)
     EditText setPrice;
 
+    @BindView(R.id.priceRange)
+    TextView range;
+
+    @BindView(R.id.addNewPrice)
+    Button addPrice;
+
     @BindView(R.id.setPrice)
     Button confirmSet;
+
+    @BindView(R.id.petTypesList)
+    Spinner petTypesList;
 
     private static String currentCareTakerUsername;
 
     private CareTakerSetPriceViewModel pricesVM;
     private CareTakerSetPriceAdapter careTakerSetPriceAdapter = new CareTakerSetPriceAdapter(new ArrayList<>());
+    private static PetTypeCost typeCost = null;
+    private static String selectedPetType = "";
+    private static String selectedPetTypePrice = "";
+
+    private ArrayAdapter<String> petTypeAdapterList;
 
     public static CareTakerSetPriceFragment newInstance(String username) {
         currentCareTakerUsername = username;
@@ -71,31 +91,51 @@ public class CareTakerSetPriceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        range.setVisibility(View.GONE);
+        setPrice.setVisibility(View.GONE);
 
         pricesVM = ViewModelProviders.of(this).get(CareTakerSetPriceViewModel.class);
         pricesVM.loading.setValue(false);
+        pricesVM.fetchPetTypes(currentCareTakerUsername);
 
         pricesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
 
         careTakerSetPriceAdapter.setPricesListener(new CareTakerSetPriceAdapter.PricesListener() {
+
             @Override
             public void onPriceCardSelected(PetTypeCost petTypeCost) {
-                // set prices for edit text (Upper and base price)
+                range.setVisibility(View.VISIBLE);
+                setPrice.setVisibility(View.VISIBLE);
+                range.setText(String.format("Valid Range: %s - %s", petTypeCost.getMin().substring(0,2), petTypeCost.getMax().substring(0,2)));
                 setPrice.setText(petTypeCost.getFee());
+                typeCost = petTypeCost;
             }
         });
 
         refreshLayout.setOnRefreshListener(() -> {
-            pricesVM.refreshPrices(currentCareTakerUsername);
+            pricesVM.refreshPage(currentCareTakerUsername);
             refreshLayout.setRefreshing(false);
         });
 
         confirmSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //set price
-                //refresh layout
+                hideKeyboard(getActivity());
+                if (typeCost != null) {
+                    pricesVM.updatePetTypeCost(currentCareTakerUsername, typeCost.getType(), Integer.parseInt(setPrice.getText().toString()));
+                    pricesVM.refreshPage(currentCareTakerUsername);
+                    range.setVisibility(View.GONE);
+                    setPrice.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        addPrice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pricesVM.addPetType(currentCareTakerUsername, selectedPetType, Integer.parseInt(selectedPetTypePrice));
+                pricesVM.refreshPage(currentCareTakerUsername);
             }
         });
     }
@@ -104,7 +144,7 @@ public class CareTakerSetPriceFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         petPricesVMObserver();
-        pricesVM.refreshPrices(currentCareTakerUsername);
+        pricesVM.refreshPage(currentCareTakerUsername);
     }
 
     @Override
@@ -122,9 +162,10 @@ public class CareTakerSetPriceFragment extends Fragment {
         pricesVM.petTypeCosts.observe(getViewLifecycleOwner(), petPrices -> {
             noTypesMsg.setVisibility(View.GONE);
             if (petPrices != null) {
-                pricesRecyclerView.setVisibility(View.VISIBLE);
+                Log.e("petPricesVMObserver", "Updating prices");
                 careTakerSetPriceAdapter.updatePetPrices(petPrices);
                 pricesRecyclerView.setVisibility(View.VISIBLE);
+                pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
             } else {
                 Log.e("petPricesVMObserver", "You have no prices");
                 noTypesMsg.setVisibility(View.VISIBLE);
@@ -144,5 +185,38 @@ public class CareTakerSetPriceFragment extends Fragment {
                 }
             }
         });
+        pricesVM.petTypeAdapter.observe(getViewLifecycleOwner(), typeArr -> {
+            if (typeArr != null) {
+                petTypesList.setVisibility(View.GONE);
+                Log.e("petTypeAdapter", Integer.toString(typeArr.length));
+                if (typeArr.length == 0) {
+                    addPrice.setEnabled(false);
+                } else {
+                    addPrice.setEnabled(true);
+                }
+                petTypeAdapterList = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, typeArr);
+                petTypeAdapterList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                petTypesList.setAdapter(petTypeAdapterList);
+                petTypesList.setVisibility(View.VISIBLE);
+                petTypesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        selectedPetType = typeArr[position];
+                        selectedPetTypePrice = Objects.requireNonNull(pricesVM.petTypeBasePrices.getValue())[position];
+                        Log.e("Selected Pet type", selectedPetType);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+            }
+        });
+    }
+
+    private void hideKeyboard(Activity activity) {
+        if (activity.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }

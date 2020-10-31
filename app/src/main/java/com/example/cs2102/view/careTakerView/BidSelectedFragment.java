@@ -73,7 +73,7 @@ public class BidSelectedFragment extends Fragment {
         bidSelectedViewModel = ViewModelProviders.of(this).get(BidSelectedViewModel.class);
         petOwnerName.setText(petOwner.getPetOwner());
         petName.setText(petOwner.getPetName());
-        petType.setText("petOwner.getPetType()");
+        petType.setText(petOwner.getPetType());
 
         acceptBid.setOnClickListener(v -> {
             bidSelectedViewModel.acceptRejectBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "a");

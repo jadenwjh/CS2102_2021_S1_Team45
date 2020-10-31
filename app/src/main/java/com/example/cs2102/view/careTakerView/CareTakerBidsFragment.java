@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,12 +32,6 @@ public class CareTakerBidsFragment extends Fragment {
 
     @BindView(R.id.careTakerBidsReceived)
     RecyclerView bidsRecyclerView;
-
-    @BindView(R.id.careTakerBidsError)
-    TextView listError;
-
-    @BindView(R.id.careTakerNoBids)
-    TextView noBidsMsg;
 
     @BindView(R.id.careTakerBidsLoading)
     ProgressBar loadingView;
@@ -111,35 +106,32 @@ public class CareTakerBidsFragment extends Fragment {
 
     private void bidsVMObserver() {
         bidsVM.petOwners.observe(getViewLifecycleOwner(), petOwners -> {
-            noBidsMsg.setVisibility(View.GONE);
-            if (petOwners != null) {
+            if (petOwners != null && petOwners.size() != 0) {
                 List<PetOwnerBid> bids = new ArrayList<>();
                 for (LinkedTreeMap<String,String> petOwner : petOwners) {
                     String petOwnerName = petOwner.get("petowner");
                     String petName = petOwner.get("petname");
+                    //TODO: caretaker/bids/username elements does not have pettype
 //                    String petType = petOwner.get("pettype");
+//                    Log.e(petOwnerName+"-"+petName + " - ", petType);
                     String avail = petOwner.get("avail").substring(0,10);
                     PetOwnerBid petOwnerBid = new PetOwnerBid(petOwnerName, petName, "petType", avail);
                     bids.add(petOwnerBid);
                     Log.e("bidsVMObserver", "Added petOwner" + petOwnerName);
                 }
+                Log.e("bidsLength", Integer.toString(petOwners.size()));
                 careTakerBidsAdapter.updatePetOwners(bids);
                 bidsRecyclerView.setVisibility(View.VISIBLE);
+                bidsRecyclerView.setAdapter(careTakerBidsAdapter);
             } else {
+                Toast.makeText(getContext(), "You have no bids", Toast.LENGTH_SHORT).show();
                 Log.e("bidsVMObserver", "You have no bids");
-                noBidsMsg.setVisibility(View.VISIBLE);
-            }
-        });
-        bidsVM.loadError.observe(getViewLifecycleOwner(), isError -> {
-            if (isError != null) {
-                listError.setVisibility(isError ? View.VISIBLE : View.GONE);
             }
         });
         bidsVM.loading.observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading != null) {
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
                 if (isLoading) {
-                    listError.setVisibility(View.GONE);
                     bidsRecyclerView.setVisibility(View.GONE);
                 }
             }
