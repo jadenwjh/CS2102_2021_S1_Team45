@@ -1,6 +1,7 @@
 package com.example.cs2102.view.careTakerView.viewModel;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -26,11 +27,13 @@ public class CareTakerSetPriceViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> loadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
+    public MutableLiveData<Boolean> setPriceError = new MutableLiveData<Boolean>();
     public MutableLiveData<List<PetTypeCost>> petTypeCosts = new MutableLiveData<>();
     public MutableLiveData<PetTypeCost> selectedPetTypeCost = new MutableLiveData<>();
     public MutableLiveData<String[]> petTypeBasePrices = new MutableLiveData<>();
     public MutableLiveData<String[]> petTypeAdapter = new MutableLiveData<>();
     public MutableLiveData<String[]> removePetTypeAdapter = new MutableLiveData<>();
+
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -103,19 +106,18 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                     public void onComplete() {
                         Log.e("updatePetTypeCost", "Success");
                         loading.setValue(false);
+                        setPriceError.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e("updatePetTypeCost", "Fail");
-                        Log.e("updatePetTypeCost", "Price does not fall within base or upper limit");
                         loading.setValue(false);
+                        setPriceError.setValue(true);
                     }
                 })
         );
     }
-
-    public void refreshPetTypes(String username) {fetchPetTypes(username);}
 
     public void fetchPetTypes(String username) {
         loading.setValue(true);
@@ -174,7 +176,27 @@ public class CareTakerSetPriceViewModel extends ViewModel {
     }
 
     public void deletePetType(String careTakerUsername, String petType) {
-        // insert method
+        Log.e("deletePetType", String.format("username: %s, pettype: %s", careTakerUsername, petType));
+        loading.setValue(true);
+        disposable.add(dataApiService.deletePetTypeForCT(careTakerUsername, petType)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+
+                    @Override
+                    public void onComplete() {
+                        Log.e("deletePetType", "Success");
+                        loading.setValue(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("deletePetType", "Fail");
+                        Log.e("deletePetType", e.getMessage());
+                        loading.setValue(false);
+                    }
+                })
+        );
     }
 
     @Override

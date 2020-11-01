@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,9 +78,19 @@ public class CareTakerSetPriceFragment extends Fragment {
     private CareTakerSetPriceViewModel pricesVM;
     private CareTakerSetPriceAdapter careTakerSetPriceAdapter = new CareTakerSetPriceAdapter(new ArrayList<>());
     private static PetTypeCost typeCost = null;
-    private static String selectedPetType = "";
-    private static String deletePetType = "";
-    private static String selectedPetTypePrice = "";
+    private static String selectedPetType = null;
+    private static String deletePetType = null;
+    private static String selectedPetTypePrice = null;
+
+    private CareTakerSetPriceRefresh careTakerSetPriceRefresh;
+
+    public interface CareTakerSetPriceRefresh {
+        void refreshFragment();
+    }
+
+    public void setCareTakerSetPriceRefresh(CareTakerSetPriceRefresh impl) {
+        this.careTakerSetPriceRefresh = impl;
+    }
 
     public static CareTakerSetPriceFragment newInstance(String username) {
         currentCareTakerUsername = username;
@@ -104,13 +115,10 @@ public class CareTakerSetPriceFragment extends Fragment {
         pricesVM = ViewModelProviders.of(this).get(CareTakerSetPriceViewModel.class);
         pricesVM.loading.setValue(false);
 
-        pricesVM.refreshPage(currentCareTakerUsername);
-
         pricesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
 
         careTakerSetPriceAdapter.setPricesListener(new CareTakerSetPriceAdapter.PricesListener() {
-
             @Override
             public void onPriceCardSelected(PetTypeCost petTypeCost) {
                 range.setVisibility(View.VISIBLE);
@@ -135,6 +143,7 @@ public class CareTakerSetPriceFragment extends Fragment {
                     pricesVM.refreshPage(currentCareTakerUsername);
                     range.setVisibility(View.GONE);
                     setPrice.setVisibility(View.GONE);
+                    careTakerSetPriceRefresh.refreshFragment();
                 }
             }
         });
@@ -145,6 +154,7 @@ public class CareTakerSetPriceFragment extends Fragment {
                 pricesVM.addPetType(currentCareTakerUsername, selectedPetType, Integer.parseInt(selectedPetTypePrice));
                 pricesVM.refreshPage(currentCareTakerUsername);
                 refreshAddSpinner(pricesVM.getPetTypesToShow());
+                careTakerSetPriceRefresh.refreshFragment();
             }
         });
 
@@ -154,6 +164,7 @@ public class CareTakerSetPriceFragment extends Fragment {
                 pricesVM.deletePetType(currentCareTakerUsername, deletePetType);
                 pricesVM.refreshPage(currentCareTakerUsername);
                 refreshDeleteSpinner(pricesVM.getDeletePetTypesToShow());
+                careTakerSetPriceRefresh.refreshFragment();
             }
         });
     }
@@ -185,13 +196,18 @@ public class CareTakerSetPriceFragment extends Fragment {
                 pricesRecyclerView.setVisibility(View.VISIBLE);
                 pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
             } else {
-                Log.e("petPricesVMObserver", "You have no prices");
+                Toast.makeText(getActivity(), "You have no categories set", Toast.LENGTH_SHORT).show();
                 noTypesMsg.setVisibility(View.VISIBLE);
             }
         });
         pricesVM.loadError.observe(getViewLifecycleOwner(), isError -> {
             if (isError != null) {
                 listError.setVisibility(isError ? View.VISIBLE : View.GONE);
+            }
+        });
+        pricesVM.setPriceError.observe(getViewLifecycleOwner(), isError -> {
+            if (isError != null && isError) {
+                Toast.makeText(getActivity(), "Price does not fall within base or upper limit", Toast.LENGTH_SHORT).show();
             }
         });
         pricesVM.loading.observe(getViewLifecycleOwner(), isLoading -> {
@@ -234,6 +250,7 @@ public class CareTakerSetPriceFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedPetType = arr[position];
                 selectedPetTypePrice = Objects.requireNonNull(pricesVM.petTypeBasePrices.getValue())[position];
+                Log.e("refreshAddSpinner at", selectedPetType);
             }
 
             @Override
@@ -249,6 +266,7 @@ public class CareTakerSetPriceFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 deletePetType = arr[position];
+                Log.e("refreshDeleteSpinner at", deletePetType);
             }
 
             @Override

@@ -32,7 +32,6 @@ public class CareTakerSetPriceAdapter extends RecyclerView.Adapter<CareTakerSetP
     }
 
     public void updatePetPrices(List<PetTypeCost> priceList) {
-        Log.e("New price list", priceList.toArray().toString());
         petPrices.clear();
         petPrices.addAll(priceList);
         selectedPos = RecyclerView.NO_POSITION;

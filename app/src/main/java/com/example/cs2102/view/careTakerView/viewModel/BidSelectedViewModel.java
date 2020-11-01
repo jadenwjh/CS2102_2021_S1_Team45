@@ -10,7 +10,6 @@ import com.example.cs2102.model.retrofitApi.DataApiService;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class BidSelectedViewModel extends ViewModel {
@@ -26,7 +25,7 @@ public class BidSelectedViewModel extends ViewModel {
         Log.e("Accept Bids", "Trying to accept bid");
         acceptedBid.setValue(false);
         loading.setValue(true);
-        disposable.add(dataApiService.acceptBid(petOwner, petName, careTaker, avail, approveReject)
+        disposable.add(dataApiService.acceptRejectBid(petOwner, petName, careTaker, avail, approveReject)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {

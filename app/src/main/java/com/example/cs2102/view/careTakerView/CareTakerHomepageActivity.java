@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
@@ -64,9 +65,18 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         ft = fm.beginTransaction();
 
         if (savedInstanceState == null) {
-            bidsFragment = CareTakerBidsFragment.newInstance(username);
             priceFragment = CareTakerSetPriceFragment.newInstance(username);
+            priceFragment.setCareTakerSetPriceRefresh(new CareTakerSetPriceFragment.CareTakerSetPriceRefresh() {
+                @Override
+                public void refreshFragment() {
+                    ft = fm.beginTransaction();
+                    ft.detach(priceFragment);
+                    ft.attach(priceFragment);
+                    ft.commit();
+                }
+            });
 
+            bidsFragment = CareTakerBidsFragment.newInstance(username);
             bidsFragment.setCareTakerBidsFragmentListener(selectedBid -> {
                 selectedBid.setBidSelectedFragmentListener(() -> {
                     switchFragment(Strings.BIDS);
@@ -103,7 +113,6 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         }
 
         ButterKnife.bind(this);
-        loadingBar.setVisibility(View.GONE);
 
         if (userProfile.contract.equals(Strings.FULL_TIME)) {
             viewLeavesOrFree.setText(R.string.leaves);
@@ -138,6 +147,8 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 Toast.makeText(this, "Violates 150 days constraint", Toast.LENGTH_SHORT).show();
             }
         });
+
+        loadingBar.setVisibility(View.GONE);
     }
 
     private void toggleHideNavigator(boolean hide) {

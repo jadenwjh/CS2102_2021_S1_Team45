@@ -41,5 +41,9 @@
     <string name="add_category">Add category</string>
     <string name="this_date_has_already_been_chosen">This date has already been chosen</string>
     <string name="del">del</string>
+    <string name="listings">Listings</string>
+    <string name="pets">Pets</string>
+    <string name="ongoing">Ongoing</string>
+    <string name="review">review</string>
 
 </resources>

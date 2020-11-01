@@ -2,14 +2,12 @@ package com.example.cs2102.view.petOwnerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
 
@@ -20,62 +18,31 @@ import butterknife.ButterKnife;
 
 public class PetOwnerHomepageActivity extends AppCompatActivity {
 
-    @BindView(R.id.careTakerList)
-    RecyclerView careTakerRecyclerView;
+    @BindView(R.id.homepageLoading)
+    ProgressBar loadingBar;
 
-    @BindView(R.id.careTakerError)
-    TextView listError;
+    @BindView(R.id.viewListings)
+    Button viewListings;
 
-    @BindView(R.id.careTakerLoading)
-    ProgressBar loadingView;
+    @BindView(R.id.viewPets)
+    Button viewPets;
 
-    @BindView(R.id.careTakerRefresh)
-    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.viewOngoing)
+    Button viewOngoing;
 
-    private PetOwnerHomepageViewModel careTakerViewModel;
-    private CareTakerAdapter careTakerAdapter = new CareTakerAdapter(new ArrayList<>());
+    @BindView(R.id.viewReview)
+    Button viewReview;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_care_taker);
+        setContentView(R.layout.activity_pet_owner_homepage);
 
         ButterKnife.bind(this);
 
-        careTakerViewModel = ViewModelProviders.of(this).get(PetOwnerHomepageViewModel.class);
-        careTakerViewModel.refreshPage();
 
-        careTakerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        careTakerRecyclerView.setAdapter(careTakerAdapter);
-
-        refreshLayout.setOnRefreshListener(() -> {
-            careTakerViewModel.refreshPage();
-            refreshLayout.setRefreshing(false);
-        });
-
-        observerViewModel();
+        loadingBar.setVisibility(View.GONE);
     }
 
-    private void observerViewModel() {
-        careTakerViewModel.careTakers.observe(this, careTakers -> {
-            if (careTakers != null) {
-                careTakerRecyclerView.setVisibility(View.VISIBLE);
-                careTakerAdapter.updateCareTakers(careTakers);
-            }
-        });
-        careTakerViewModel.loadError.observe(this, isError -> {
-            if (isError != null) {
-                listError.setVisibility(isError ? View.VISIBLE : View.GONE);
-            }
-        });
-        careTakerViewModel.loading.observe(this, isLoading -> {
-            if (isLoading != null) {
-                loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                if(isLoading) {
-                    listError.setVisibility(View.GONE);
-                    careTakerRecyclerView.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
 }
