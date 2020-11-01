@@ -163,6 +163,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL
       AND status != 'r'
+      AND (SELECT currentDate()) <= Bids.edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY edate;`
@@ -191,15 +192,19 @@ app.post("/PetOwner/RatingsReviews", async (req, res) => {
 app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
   try {
     const getRating = await pool.query(
-      `SELECT * 
+      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
       FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
       WHERE Bids.petowner = '${req.params.petowner}'
-      AND ((SELECT rating FROM Bids AS B2 
+      AND (SELECT rating FROM Bids AS B2 
         WHERE Bids.edate = B2.avail
         AND Bids.petowner = B2.petowner
         AND Bids.petname = B2.petname
         AND Bids.caretaker = B2.caretaker
-        AND Bids.edate = B2.edate) IS NOT NULL OR status='r')
+        AND Bids.edate = B2.edate) IS NULL 
+      AND status='a'
+      AND (SELECT currentDate()) >= edate
+      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY Bids.edate;`
     );
     res.json(getRating.rows);
@@ -212,56 +217,38 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
 app.post("/PetOwner/findCareTaker", async (req, res) => {
   try {
     const availCareTakers = await pool.query(
-      `SELECT b.caretaker, u.profile, b.rating, '${req.body.sdate}', '${req.body.edate}', atc.feeperday
-      FROM Bids b 
-      INNER JOIN Users u ON b.caretaker = u.username
-      INNER JOIN AbleToCare atc ON b.caretaker = atc.caretaker 
-      WHERE b.caretaker IN (
-        SELECT caretaker
-        FROM (SELECT b.caretaker, COUNT(*)
-          FROM Bids b
-          WHERE status = 'a'
-          AND avail BETWEEN date '${req.body.sdate}'  AND date '${req.body.edate}' 
-          AND b.caretaker IN (	SELECT DISTINCT caretaker 
-            FROM  Availability a
-            WHERE avail BETWEEN date '${req.body.sdate}'  AND date '${req.body.edate}' ) 
-          GROUP BY b.caretaker 
+      `SELECT atc.caretaker, atc.category, atc.feeperday, '${req.body.sdate}' AS startdate, '${req.body.edate}' AS enddate
+      FROM AbleToCare atc
+      WHERE EXISTS (
+        SELECT 1 FROM (
+          SELECT availCT.caretaker, COUNT(*) AS days
+          FROM (
 
-        INTERSECT 
+            SELECT AV.caretaker, AV.avail 
+            FROM (
 
-        SELECT DISTINCT caretaker, 1
-        FROM AbleToCare 
-        WHERE category IN (
-          SELECT category
-          FROM Pets
-          WHERE petname = '${req.body.petname}'  
-          AND  petowner = '${req.body.petowner}' ) ) AS join1
+              SELECT B.caretaker, B.avail, COUNT(*) AS cnt
+              FROM Bids B
+              WHERE B.status ='a'
+              GROUP BY B.caretaker, B.avail
 
-      NATURAL JOIN
+              UNION 
 
-      (SELECT caretaker, lm 
-        FROM (SELECT DISTINCT caretaker, AVG(rating), 
-          CASE  
-              WHEN AVG(rating) > 4.7 THEN 5
-              WHEN AVG(rating) <= 4.7 AND AVG(rating) > 4 THEN 4
-              WHEN AVG(rating) <= 4 THEN 3
-          END AS lm 
-        FROM Bids 
-        WHERE status = 'a'
-        GROUP BY caretaker ) AS t1 
+              SELECT A.caretaker, A.avail, 0 AS cnt 
+              FROM Availability A
+              WHERE NOT EXISTS (SELECT * FROM Bids B WHERE B.caretaker=A.caretaker AND B.avail=A.avail AND B.status='a')
 
-      INNER JOIN 
+            ) AS AV
+            WHERE AV.cnt<(SELECT computeMaxPet(AV.caretaker)) AND (AV.avail BETWEEN '${req.body.sdate}' AND '${req.body.edate}')
+            ORDER BY avail ASC
 
-      (SELECT username FROM PartTimers ) AS t2
-      ON t1.caretaker = t2.username 
-
-      UNION 
-
-      SELECT username, '5' as lm 
-      FROM FullTimers ) AS join2 
-      WHERE join1.caretaker = join2.caretaker 
-      AND join1.count < join2.lm
-      ); `
+          ) AS availCT
+          GROUP BY availCT.caretaker
+          HAVING COUNT(*) = (CAST(MAX('${req.body.edate}') AS date) - CAST(MIN('${req.body.sdate}') AS date)) +1
+        ) AS t
+      )
+      AND atc.category = '${req.body.category}'; 
+      `
     );
 
     res.json(availCareTakers.rows);
