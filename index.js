@@ -153,7 +153,7 @@ app.get("/PetOwner/:petowner", async (req, res) => {
 app.get("/PetOwner/Bids/:petowner", async (req, res) => {
   try {
     const getRating = await pool.query(
-      `SELECT * 
+      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
       FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
       WHERE Bids.petowner = '${req.params.petowner}'
       AND (SELECT rating FROM Bids AS B2 
@@ -163,14 +163,15 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL
       AND status != 'r'
-      ORDER BY Bids.edate;`
+      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
+      ORDER BY edate;`
     );
     res.json(getRating.rows);
   } catch (err) {
     console.error(err.message);
   }
 });
-
 
 // Leave rating and reviews for caretaker
 app.post("/PetOwner/RatingsReviews", async (req, res) => {
@@ -482,10 +483,12 @@ app.get("/CareTaker/RatingsReviews/:caretaker", async (req, res) => {
 app.get("/CareTaker/Bids/:caretaker", async (req, res) => {
   try {
     const getBid = await pool.query(
-      `SELECT * 
+      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.*
       FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
       WHERE caretaker = '${req.params.caretaker}'
       AND status = 'p'
+      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY edate;`
     );
     res.json(getBid.rows);
