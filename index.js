@@ -233,12 +233,19 @@ app.post("/PetOwner/findCareTaker", async (req, res) => {
               GROUP BY B.caretaker, B.avail
 
               UNION 
+              
+              SELECT Bw.caretaker, Bw.avail, COUNT(*) AS cnt
+              FROM BidsWithoutPetOwner bw
+              WHERE Bw.status ='a'
+              GROUP BY Bw.caretaker, Bw.avail
+
+              UNION 
 
               SELECT A.caretaker, A.avail, 0 AS cnt 
               FROM Availability A
               WHERE NOT EXISTS (SELECT * FROM Bids B WHERE B.caretaker=A.caretaker AND B.avail=A.avail AND B.status='a')
 
-            ) AS AV
+            ) AV
             WHERE AV.cnt<(SELECT computeMaxPet(AV.caretaker)) AND (AV.avail BETWEEN '${req.body.sdate}' AND '${req.body.edate}')
             ORDER BY avail ASC
 
@@ -429,6 +436,18 @@ app.post("/CareTaker/AbleToCare", async (req, res) => {
     const abletocare = await pool.query(
       `INSERT INTO AbleToCare (caretaker, category, feeperday)
       VALUES ('${req.body.caretaker}', '${req.body.category}', ${req.body.feeperday}) RETURNING *;`
+    );
+    res.json(abletocare.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Delete AbleToCare
+app.delete("/CareTaker/AbleToCare", async (req, res) => {
+  try {
+    const abletocare = await pool.query(
+      `DELETE FROM AbleToCare WHERE caretaker='${req.body.caretaker}' AND  category='${req.body.category}' RETURNING *;`
     );
     res.json(abletocare.rows[0]);
   } catch (err) {

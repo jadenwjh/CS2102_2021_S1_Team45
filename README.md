@@ -272,7 +272,7 @@
 
 
 &nbsp;
-- ## Get past bid records <div style="text-align: right">`GET /PetOwner/Bids/:petowner/history`</div>
+- ## Get completed bid records that are ready to give rating<div style="text-align: right">`GET /PetOwner/Bids/:petowner/history`</div>
 
     ### Params:
     - `petowner`: string
@@ -291,12 +291,25 @@
 - ## Get available caretakers <div style="text-align: right">`POST /PetOwner/findCareTaker`</div>
 
     ### Body: 
-    - `petowner` : string
-    - `petname` : string
+    - `category` : string
     - `sdate` : string, start date in the format 'yyyy-mm-dd'
     - `edate` : string, end date in the format 'yyyy-mm-dd'
 
-> ## Not working yet...
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com/petowner/findCareTaker
+
+    Body:
+    ```
+    {
+    "category": "bird",
+    "sdate": "2021-01-11",
+    "edate": "2021-01-15"
+    }
+    ```
+
+    Output:
+    
+    `[{"caretaker":"mmoralp3","category":"bird","feeperday":20,"startdate":"2021-01-11","enddate":"2021-01-15"},{"caretaker":"hcolthardp4","category":"bird","feeperday":20,"startdate":"2021-01-11","enddate":"2021-01-15"},{"caretaker":"ajustunp5","category":"bird","feeperday":20,"startdate":"2021-01-11","enddate":"2021-01-15"},{"caretaker":"ccarnewp8","category":"bird","feeperday":20,"startdate":"2021-01-11","enddate":"2021-01-15"}, ...]`
 
 
 &nbsp;
@@ -476,7 +489,7 @@
     `[{"username":"jeymerp9","email":"llamdinp9@alexa.com","password":"dldmbEA","profile":"Coracias caudata","address":"10481 Muir Lane","phonenum":83427591,"creditcard":86158725,"bankacc":944642361,"petowner":"jeymerp9","petname":"Priscella","specialreq":"orchestrate seamless partnerships","category":"dog"}]`
 
 &nbsp;
-- ## Get own AbleToCare info <div style="text-align: right">`GET /CareTaker/AbleToCare/:caretaker`
+- ## Get pettypes that the caretaker is not able to care <div style="text-align: right">`GET /CareTaker/AbleToCare/:caretaker`
 
     ### Params:
     - `caretaker` : string
@@ -521,6 +534,27 @@
 
     Output:
     `{"caretaker": "jtitheridgeb", "category": "dog", "feeperday": 45}`
+
+&nbsp;
+- ## Delete AbleToCare info <div style="text-align: right">`DELETE /CareTaker/AbleToCare`
+
+    ### Body:
+    - `caretaker` : string
+    - `category` : string, pet type
+
+    ### Example:
+    - DELETE https://shielded-oasis-35437.herokuapp.com/caretaker/abletocare
+
+    Body:
+    ```
+    {
+    "caretaker": "jtitheridgeb",
+    "category": "dog"
+    }
+    ```
+
+    Output:
+    `{"caretaker": "jtitheridgeb", "category": "dog", "feeperday": 50}`
 
 &nbsp;
 - ## Get all available days <div style="text-align: right">`GET /CareTaker/available/:caretaker`
