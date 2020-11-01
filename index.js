@@ -295,6 +295,19 @@ app.post("/PetOwner/Bids", async (req, res) => {
   }
 });
 
+// Get all pettypes owned by a petowner
+app.get("/PetOwner/Pettypes/:petowner", async (req, res) => {
+  try {
+    const getPettypes = await pool.query(
+      `SELECT DISTINCT category FROM Pets 
+      WHERE petowner = '${req.params.petowner}';`
+    );
+    res.json(getPettypes.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 /* 
 =======================
 |     Manage Pets     |

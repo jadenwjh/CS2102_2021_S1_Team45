@@ -364,6 +364,21 @@
 ----------------
 
 
+
+&nbsp;
+- ## get all Pettypes owned by a petowner <div style="text-align: right">`GET /PetOwner/Pettypes/:petowner`
+
+    ### Params:
+    - `petowner` : string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/pettypes/daleksidze6
+
+    Output:
+    `[{"category":"bird"}, {"category":"cat"}]`
+
+
+
 &nbsp;
 - ## get all Pets owned by a petowner <div style="text-align: right">`GET /PetOwner/Pets/:petowner`
 
