@@ -81,7 +81,6 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
             ButterKnife.bind(this, itemView);
 
             petOwnerBid.setOnClickListener(v -> {
-                Log.e("Bid", "Clicked");
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     PetOwnerBid bid = petOwners.get(position);

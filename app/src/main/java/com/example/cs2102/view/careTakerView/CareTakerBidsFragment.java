@@ -110,7 +110,6 @@ public class CareTakerBidsFragment extends Fragment {
                             petOwner.get("avail").substring(0,10),
                             petOwner.get("edate").substring(0,10),
                             petOwner.get("price"),
-                            petOwner.get("transfertype"),
                             petOwner.get("paymenttype"));
                     bids.add(petOwnerBid);
                 }

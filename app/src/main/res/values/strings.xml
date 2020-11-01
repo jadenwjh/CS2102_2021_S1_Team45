@@ -11,6 +11,13 @@
         <item>caretaker</item>
         <item>admin</item>
     </string-array>
+
+    <string-array name="payment_selection">
+        <item>creditcard</item>
+        <item>cash</item>
+    </string-array>
+
+
     <string name="pet_owner">Pet Owner</string>
     <string name="care_taker">Care Taker</string>
     <string name="enter_your_address">Enter your address</string>
@@ -49,5 +56,6 @@
     <string name="search">Search</string>
     <string name="no_listings_available_for_selection">No listings available for selection</string>
     <string name="you_currently_have_no_pets">You currently have no pets</string>
+    <string name="submit_bid">Submit Bid</string>
 
 </resources>

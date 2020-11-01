@@ -18,7 +18,7 @@
             android:layout_marginTop="32dp"
             android:text="@string/accept_bid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/transfer" />
+            app:layout_constraintTop_toBottomOf="@+id/payment" />
 
         <Button
             android:id="@+id/rejectBid"
@@ -28,7 +28,7 @@
             android:layout_marginTop="32dp"
             android:text="@string/reject_bid"
             app:layout_constraintStart_toEndOf="@+id/acceptBid"
-            app:layout_constraintTop_toBottomOf="@+id/transfer" />
+            app:layout_constraintTop_toBottomOf="@+id/payment" />
 
         <TextView
             android:id="@+id/pet_owner_name"
@@ -83,16 +83,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fees" />
-
-        <TextView
-            android:id="@+id/transfer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/payment" />
 
         <ProgressBar
             android:id="@+id/loading"

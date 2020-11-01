@@ -37,9 +37,6 @@ public class BidSelectedFragment extends Fragment {
     @BindView(R.id.payment)
     TextView payment;
 
-    @BindView(R.id.transfer)
-    TextView transfer;
-
     @BindView(R.id.acceptBid)
     Button acceptBid;
 
@@ -85,7 +82,6 @@ public class BidSelectedFragment extends Fragment {
         dates.setText(String.format("Date: %s to %s", petOwner.getAvailability(), petOwner.getEndDate()));
         fees.setText(String.format("Fee per day: $%s", petOwner.getPrice()));
         payment.setText(String.format("Payment by: %s", petOwner.getPayment()));
-        transfer.setText(String.format("Transfer via: %s", petOwner.getTransfer()));
 
         acceptBid.setOnClickListener(v -> {
             bidSelectedViewModel.acceptRejectBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "a");

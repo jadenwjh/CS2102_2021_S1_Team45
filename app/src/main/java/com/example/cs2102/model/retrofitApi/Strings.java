@@ -33,4 +33,5 @@ public class Strings {
 
     public static final String PO_GET_LISTINGS = "petowner/findCareTaker";
     public static final String ALL_PET_TYPES = "petowner/pettypes";
+    public static final String SEND_BID_REQUEST = "PetOwner/Bids";
 }

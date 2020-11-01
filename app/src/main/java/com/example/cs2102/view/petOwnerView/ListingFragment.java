@@ -11,14 +11,44 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.Listing;
 import com.example.cs2102.view.petOwnerView.viewModel.ListingViewModel;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ListingFragment extends Fragment {
+
+    @BindView(R.id.get_own_pets)
+    Spinner allPets;
+
+    @BindView(R.id.date_range_listing)
+    TextView dates;
+
+    @BindView(R.id.price_listing)
+    TextView price;
+
+    @BindView(R.id.listing_care_taker_name)
+    TextView careTaker;
+
+    @BindView(R.id.listing_payment)
+    Spinner paymentType;
+
+    @BindView(R.id.submit_bid)
+    Button submitBid;
+
+    @BindView(R.id.loading)
+    ProgressBar loadingBar;
 
     private ListingViewModel listingViewModel;
     private static Listing listing;
@@ -52,15 +82,34 @@ public class ListingFragment extends Fragment {
         ButterKnife.bind(this, view);
         listingViewModel = ViewModelProviders.of(this).get(ListingViewModel.class);
 
-        //set text
+        careTaker.setText(String.format("Care Taker: %s", listing.getCareTaker()));
+        dates.setText(String.format("Dates: %s - %s", listing.getStartDate(), listing.getEndDate()));
+        price.setText(String.format("Price: $%s", listing.getPrice()));
 
-        //onclicks
+        submitBid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String payment = paymentType.getSelectedItem().toString();
+                String petName = allPets.getSelectedItem().toString();
+                if (!payment.equals("") && !petName.equals("")) {
+                    listingViewModel.submitBid(
+                            username,
+                            petName,
+                            listing.getCareTaker(),
+                            listing.getStartDate(),
+                            listing.getEndDate(),
+                            payment,
+                            Float.parseFloat(listing.getPrice()));
+                }
+            }
+        });
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         listingSelectedObserver();
+        generatePaymentTypes();
     }
 
     @Override
@@ -69,7 +118,38 @@ public class ListingFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    private void listingSelectedObserver() {
+    private void refreshSpinner(String[] arr) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arr);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        allPets.setAdapter(adapter);
+    }
 
+    public void generatePaymentTypes() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.payment_selection, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        paymentType.setAdapter(adapter);
+    }
+
+    private void listingSelectedObserver() {
+        listingViewModel.bidSubmitted.observe(getViewLifecycleOwner(), submitted -> {
+            if (submitted) {
+                listingSelectedListener.onListingSubmittedExitFragment();
+            }
+        });
+        listingViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                loadingBar.setVisibility(View.VISIBLE);
+            } else {
+                loadingBar.setVisibility(View.GONE);
+            }
+        });
+        listingViewModel.ownedPets.observe(getViewLifecycleOwner(), nameArr -> {
+            if (nameArr != null) {
+                allPets.setVisibility(View.GONE);
+                refreshSpinner(nameArr);
+                allPets.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }

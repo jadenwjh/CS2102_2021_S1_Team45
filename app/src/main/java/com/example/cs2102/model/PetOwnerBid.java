@@ -7,16 +7,14 @@ public class PetOwnerBid {
     private final String availability;
     private final String endDate;
     private final String price;
-    private final String transfer;
     private final String payment;
 
-    public PetOwnerBid(String username, String petName, String petType, String availability, String endDate, String price, String transfer, String payment) {
+    public PetOwnerBid(String username, String petName, String petType, String availability, String endDate, String price, String payment) {
         this.username = username;
         this.petName = petName;
         this.petType = petType;
         this.availability = availability;
         this.price = price;
-        this.transfer = transfer;
         this.payment = payment;
         this.endDate = endDate;
     }
@@ -39,10 +37,6 @@ public class PetOwnerBid {
 
     public String getPrice() {
         return price;
-    }
-
-    public String getTransfer() {
-        return transfer;
     }
 
     public String getPayment() {

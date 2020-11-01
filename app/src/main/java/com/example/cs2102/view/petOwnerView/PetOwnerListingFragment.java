@@ -112,6 +112,11 @@ public class PetOwnerListingFragment extends Fragment {
         listingsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         listingsRecyclerView.setAdapter(listingAdapter);
 
+        listingAdapter.setListingListener(listing -> {
+            ListingFragment currentListing = ListingFragment.newInstance(currentPetOwnerUsername, listing);
+            selectedListener.onListingSelected(currentListing);
+        });
+
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

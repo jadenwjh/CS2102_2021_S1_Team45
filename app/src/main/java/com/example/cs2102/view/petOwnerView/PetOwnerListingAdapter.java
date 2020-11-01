@@ -33,7 +33,15 @@ public class PetOwnerListingAdapter extends RecyclerView.Adapter<PetOwnerListing
         notifyDataSetChanged();
     }
 
-    //listner interface for on selecredListing
+    private ListingListener listingListener;
+
+    public interface ListingListener {
+        void onListingSelected(Listing listing);
+    }
+
+    public void setListingListener(ListingListener impl) {
+        this.listingListener = impl;
+    }
 
     @NonNull
     @Override
@@ -73,7 +81,13 @@ public class PetOwnerListingAdapter extends RecyclerView.Adapter<PetOwnerListing
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            //onCLicklistener
+            listing.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Listing currentListing = listings.get(position);
+                    listingListener.onListingSelected(currentListing);
+                }
+            });
         }
 
         void bind(Listing listing) {

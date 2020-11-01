@@ -77,4 +77,11 @@ public interface DataApi {
 
     @GET(Strings.ALL_PET_TYPES + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetTypes(@Path("username") String username);
+
+    @POST(Strings.SEND_BID_REQUEST)
+    Completable sendBidRequest(@Body HashMap<String, Object> params);
+
+    //TODO: Update this function
+    @GET(Strings.ALL_PET_TYPES + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(@Path("username") String username, String petType);
 }
