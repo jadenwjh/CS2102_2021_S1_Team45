@@ -17,7 +17,7 @@ import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
-import com.example.cs2102.view.petOwnerView.PetOwnerHomepage;
+import com.example.cs2102.view.petOwnerView.PetOwnerHomepageActivity;
 import com.example.cs2102.view.registerView.RegisterActivity;
 import com.example.cs2102.model.retrofitApi.Strings;
 
@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
                 break;
             case Strings.PET_OWNER:
-                startActivity(new Intent(this, PetOwnerHomepage.class));
+                startActivity(new Intent(this, PetOwnerHomepageActivity.class));
                 finish();
                 break;
             case Strings.CARE_TAKER:

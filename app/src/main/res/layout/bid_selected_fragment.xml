@@ -15,50 +15,84 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="68dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="32dp"
             android:text="@string/accept_bid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet_type" />
+            app:layout_constraintTop_toBottomOf="@+id/transfer" />
 
         <Button
             android:id="@+id/rejectBid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="84dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="32dp"
             android:text="@string/reject_bid"
             app:layout_constraintStart_toEndOf="@+id/acceptBid"
-            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet_type" />
+            app:layout_constraintTop_toBottomOf="@+id/transfer" />
 
         <TextView
             android:id="@+id/pet_owner_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="172dp"
-            android:textSize="20sp"
+            android:layout_marginTop="16dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/pet_owner_pet_name"
+            android:id="@+id/pet_owner_pet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="52dp"
-            android:textSize="20sp"
+            android:layout_marginTop="25dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/pet_owner_name" />
 
         <TextView
-            android:id="@+id/pet_owner_pet_type"
+            android:id="@+id/date_avail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:textSize="20sp"
+            android:layout_marginTop="25dp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet" />
+
+        <TextView
+            android:id="@+id/fees"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_avail" />
+
+        <TextView
+            android:id="@+id/payment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_owner_pet_name" />
+            app:layout_constraintTop_toBottomOf="@+id/fees" />
+
+        <TextView
+            android:id="@+id/transfer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/payment" />
 
         <ProgressBar
             android:id="@+id/loading"

@@ -25,11 +25,20 @@ public class BidSelectedFragment extends Fragment {
     @BindView(R.id.pet_owner_name)
     TextView petOwnerName;
 
-    @BindView(R.id.pet_owner_pet_name)
-    TextView petName;
+    @BindView(R.id.pet_owner_pet)
+    TextView pet;
 
-    @BindView(R.id.pet_owner_pet_type)
-    TextView petType;
+    @BindView(R.id.date_avail)
+    TextView dates;
+
+    @BindView(R.id.fees)
+    TextView fees;
+
+    @BindView(R.id.payment)
+    TextView payment;
+
+    @BindView(R.id.transfer)
+    TextView transfer;
 
     @BindView(R.id.acceptBid)
     Button acceptBid;
@@ -71,9 +80,12 @@ public class BidSelectedFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         bidSelectedViewModel = ViewModelProviders.of(this).get(BidSelectedViewModel.class);
-        petOwnerName.setText(petOwner.getPetOwner());
-        petName.setText(petOwner.getPetName());
-        petType.setText(petOwner.getPetType());
+        petOwnerName.setText(String.format("Pet Owner: %s", petOwner.getPetOwner()));
+        pet.setText(String.format("Pet: %s, Type: %s", petOwner.getPetName(), petOwner.getPetType()));
+        dates.setText(String.format("Date: %s to %s", petOwner.getAvailability(), petOwner.getEndDate()));
+        fees.setText(String.format("Fee per day: $%s", petOwner.getPrice()));
+        payment.setText(String.format("Payment by: %s", petOwner.getPayment()));
+        transfer.setText(String.format("Transfer via: %s", petOwner.getTransfer()));
 
         acceptBid.setOnClickListener(v -> {
             bidSelectedViewModel.acceptRejectBid(petOwner.getPetOwner(), petOwner.getPetName(), username, petOwner.getAvailability(), "a");

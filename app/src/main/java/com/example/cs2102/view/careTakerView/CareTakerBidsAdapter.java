@@ -70,6 +70,12 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
         @BindView(R.id.pet_owner_pet_name)
         TextView petOwnerPet;
 
+        @BindView(R.id.date_range)
+        TextView avail;
+
+        @BindView(R.id.feeperday)
+        TextView price;
+
         public BidsReceivedViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -85,8 +91,10 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
         }
 
         void bind(PetOwnerBid petOwner) {
-            petOwnerName.setText(petOwner.getPetOwner());
+            petOwnerName.setText(String.format("Pet Owner: %s", petOwner.getPetOwner()));
             petOwnerPet.setText(String.format("%s - %s", petOwner.getPetName(), petOwner.getPetType()));
+            avail.setText(String.format("Date: %s to %s", petOwner.getAvailability(), petOwner.getEndDate()));
+            price.setText(String.format("Fee per day: $%s", petOwner.getPrice()));
         }
     }
 }

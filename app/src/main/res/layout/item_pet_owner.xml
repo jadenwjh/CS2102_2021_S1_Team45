@@ -30,6 +30,20 @@
             android:gravity="center"
             android:padding="3dp" />
 
+        <TextView
+            android:id="@+id/date_range"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="3dp" />
+
+        <TextView
+            android:id="@+id/feeperday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="3dp" />
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

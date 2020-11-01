@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PetOwnerHomepage extends AppCompatActivity {
+public class PetOwnerHomepageActivity extends AppCompatActivity {
 
     @BindView(R.id.careTakerList)
     RecyclerView careTakerRecyclerView;

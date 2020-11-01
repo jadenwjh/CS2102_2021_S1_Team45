@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.registerView.RegisterActivity" />
-        <activity android:name=".view.petOwnerView.PetOwnerHomepage" />
+        <activity android:name=".view.petOwnerView.PetOwnerHomepageActivity" />
         <activity android:name=".view.adminView.AdminActivity" />
         <activity android:name=".view.careTakerView.CareTakerHomepageActivity" />
     </application>

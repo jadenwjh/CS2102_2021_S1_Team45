@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/careTakerRefresh"
-    tools:context=".view.petOwnerView.PetOwnerHomepage">
+    tools:context=".view.petOwnerView.PetOwnerHomepageActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

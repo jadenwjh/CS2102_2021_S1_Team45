@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -109,17 +108,17 @@ public class CareTakerBidsFragment extends Fragment {
             if (petOwners != null && petOwners.size() != 0) {
                 List<PetOwnerBid> bids = new ArrayList<>();
                 for (LinkedTreeMap<String,String> petOwner : petOwners) {
-                    String petOwnerName = petOwner.get("petowner");
-                    String petName = petOwner.get("petname");
-                    //TODO: caretaker/bids/username elements does not have pettype
-//                    String petType = petOwner.get("pettype");
-//                    Log.e(petOwnerName+"-"+petName + " - ", petType);
-                    String avail = petOwner.get("avail").substring(0,10);
-                    PetOwnerBid petOwnerBid = new PetOwnerBid(petOwnerName, petName, "petType", avail);
+                    PetOwnerBid petOwnerBid = new PetOwnerBid(petOwner.get("petowner"),
+                            petOwner.get("petname"),
+                            petOwner.get("category"),
+                            petOwner.get("avail").substring(0,10),
+                            petOwner.get("edate").substring(0,10),
+                            petOwner.get("price"),
+                            petOwner.get("transfertype"),
+                            petOwner.get("paymenttype"));
                     bids.add(petOwnerBid);
-                    Log.e("bidsVMObserver", "Added petOwner" + petOwnerName);
                 }
-                Log.e("bidsLength", Integer.toString(petOwners.size()));
+                Log.e("Number of bids fetched", Integer.toString(petOwners.size()));
                 careTakerBidsAdapter.updatePetOwners(bids);
                 bidsRecyclerView.setVisibility(View.VISIBLE);
                 bidsRecyclerView.setAdapter(careTakerBidsAdapter);
