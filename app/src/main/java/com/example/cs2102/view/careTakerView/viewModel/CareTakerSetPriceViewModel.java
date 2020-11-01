@@ -30,6 +30,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
     public MutableLiveData<PetTypeCost> selectedPetTypeCost = new MutableLiveData<>();
     public MutableLiveData<String[]> petTypeBasePrices = new MutableLiveData<>();
     public MutableLiveData<String[]> petTypeAdapter = new MutableLiveData<>();
+    public MutableLiveData<String[]> removePetTypeAdapter = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -37,6 +38,22 @@ public class CareTakerSetPriceViewModel extends ViewModel {
     public void refreshPage(String careTakerUsername) {
         fetchPetTypeCosts(careTakerUsername);
         fetchPetTypes(careTakerUsername);
+    }
+
+    public String[] getPetTypesToShow() {
+        if (petTypeAdapter.getValue() != null) {
+            return petTypeAdapter.getValue();
+        } else {
+            return new String[0];
+        }
+    }
+
+    public String[] getDeletePetTypesToShow() {
+        if (removePetTypeAdapter.getValue() != null) {
+            return removePetTypeAdapter.getValue();
+        } else {
+            return new String[0];
+        }
     }
 
     public void fetchPetTypeCosts(String careTakerUsername) {
@@ -50,10 +67,15 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                     public void onSuccess(ArrayList<LinkedTreeMap<String,String>> _petTypeCosts) {
                         Log.e("fetchPetTypeCosts", "Success");
                         List<PetTypeCost> list = new ArrayList<>();
+                        String[] types = new String[_petTypeCosts.size()];
+                        int i = 0;
                         for (LinkedTreeMap<String,String> type : _petTypeCosts) {
                             PetTypeCost item = new PetTypeCost(careTakerUsername, type.get("category"), type.get("feeperday"), type.get("baseprice"), type.get("upperlimit"));
                             list.add(item);
+                            types[i] = type.get("category");
+                            i++;
                         }
+                        removePetTypeAdapter.setValue(types);
                         petTypeCosts.setValue(list);
                         loadError.setValue(false);
                         loading.setValue(false);
@@ -149,6 +171,10 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                     }
                 })
         );
+    }
+
+    public void deletePetType(String careTakerUsername, String petType) {
+        // insert method
     }
 
     @Override

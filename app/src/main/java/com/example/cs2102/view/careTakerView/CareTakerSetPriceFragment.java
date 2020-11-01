@@ -66,15 +66,20 @@ public class CareTakerSetPriceFragment extends Fragment {
     @BindView(R.id.petTypesList)
     Spinner petTypesList;
 
+    @BindView(R.id.removePrice)
+    Button removePrice;
+
+    @BindView(R.id.deletePetTypesList)
+    Spinner deletePetTypesList;
+
     private static String currentCareTakerUsername;
 
     private CareTakerSetPriceViewModel pricesVM;
     private CareTakerSetPriceAdapter careTakerSetPriceAdapter = new CareTakerSetPriceAdapter(new ArrayList<>());
     private static PetTypeCost typeCost = null;
     private static String selectedPetType = "";
+    private static String deletePetType = "";
     private static String selectedPetTypePrice = "";
-
-    private ArrayAdapter<String> petTypeAdapterList;
 
     public static CareTakerSetPriceFragment newInstance(String username) {
         currentCareTakerUsername = username;
@@ -93,10 +98,13 @@ public class CareTakerSetPriceFragment extends Fragment {
         ButterKnife.bind(this, view);
         range.setVisibility(View.GONE);
         setPrice.setVisibility(View.GONE);
+        removePrice.setEnabled(false);
+        addPrice.setEnabled(false);
 
         pricesVM = ViewModelProviders.of(this).get(CareTakerSetPriceViewModel.class);
         pricesVM.loading.setValue(false);
-        pricesVM.fetchPetTypes(currentCareTakerUsername);
+
+        pricesVM.refreshPage(currentCareTakerUsername);
 
         pricesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         pricesRecyclerView.setAdapter(careTakerSetPriceAdapter);
@@ -107,7 +115,7 @@ public class CareTakerSetPriceFragment extends Fragment {
             public void onPriceCardSelected(PetTypeCost petTypeCost) {
                 range.setVisibility(View.VISIBLE);
                 setPrice.setVisibility(View.VISIBLE);
-                range.setText(String.format("Valid Range: %s - %s", petTypeCost.getMin().substring(0,2), petTypeCost.getMax().substring(0,2)));
+                range.setText(String.format("Valid: %s - %s", petTypeCost.getMin().substring(0,2), petTypeCost.getMax().substring(0,2)));
                 setPrice.setText(petTypeCost.getFee());
                 typeCost = petTypeCost;
             }
@@ -136,6 +144,16 @@ public class CareTakerSetPriceFragment extends Fragment {
             public void onClick(View v) {
                 pricesVM.addPetType(currentCareTakerUsername, selectedPetType, Integer.parseInt(selectedPetTypePrice));
                 pricesVM.refreshPage(currentCareTakerUsername);
+                refreshAddSpinner(pricesVM.getPetTypesToShow());
+            }
+        });
+
+        removePrice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pricesVM.deletePetType(currentCareTakerUsername, deletePetType);
+                pricesVM.refreshPage(currentCareTakerUsername);
+                refreshDeleteSpinner(pricesVM.getDeletePetTypesToShow());
             }
         });
     }
@@ -188,28 +206,53 @@ public class CareTakerSetPriceFragment extends Fragment {
         pricesVM.petTypeAdapter.observe(getViewLifecycleOwner(), typeArr -> {
             if (typeArr != null) {
                 petTypesList.setVisibility(View.GONE);
-                Log.e("petTypeAdapter", Integer.toString(typeArr.length));
-                if (typeArr.length == 0) {
-                    addPrice.setEnabled(false);
-                } else {
+                if (typeArr.length != 0) {
                     addPrice.setEnabled(true);
                 }
-                petTypeAdapterList = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, typeArr);
-                petTypeAdapterList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                petTypesList.setAdapter(petTypeAdapterList);
+                refreshAddSpinner(typeArr);
                 petTypesList.setVisibility(View.VISIBLE);
-                petTypesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        selectedPetType = typeArr[position];
-                        selectedPetTypePrice = Objects.requireNonNull(pricesVM.petTypeBasePrices.getValue())[position];
-                        Log.e("Selected Pet type", selectedPetType);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {}
-                });
             }
+        });
+        pricesVM.removePetTypeAdapter.observe(getViewLifecycleOwner(), typeArr -> {
+            if (typeArr != null) {
+                deletePetTypesList.setVisibility(View.GONE);
+                if (typeArr.length != 0) {
+                    removePrice.setEnabled(true);
+                }
+                refreshDeleteSpinner(typeArr);
+                deletePetTypesList.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void refreshAddSpinner(String[] arr) {
+        ArrayAdapter<String> petTypeAdapterList = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arr);
+        petTypeAdapterList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        petTypesList.setAdapter(petTypeAdapterList);
+        petTypesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedPetType = arr[position];
+                selectedPetTypePrice = Objects.requireNonNull(pricesVM.petTypeBasePrices.getValue())[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void refreshDeleteSpinner(String[] arr) {
+        ArrayAdapter<String> petTypeAdapterList = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arr);
+        petTypeAdapterList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        deletePetTypesList.setAdapter(petTypeAdapterList);
+        deletePetTypesList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                deletePetType = arr[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 

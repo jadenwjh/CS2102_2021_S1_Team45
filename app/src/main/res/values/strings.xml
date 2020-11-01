@@ -40,5 +40,6 @@
     <string name="add">Add</string>
     <string name="add_category">Add category</string>
     <string name="this_date_has_already_been_chosen">This date has already been chosen</string>
+    <string name="del">del</string>
 
 </resources>
