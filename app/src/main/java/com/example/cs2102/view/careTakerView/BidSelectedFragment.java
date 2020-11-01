@@ -111,11 +111,6 @@ public class BidSelectedFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
     private void bidsSelectedVMObserver() {
         bidSelectedViewModel.loading.observe(getViewLifecycleOwner(), aBoolean -> {
             if (aBoolean) {

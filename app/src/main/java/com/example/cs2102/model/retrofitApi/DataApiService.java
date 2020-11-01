@@ -150,4 +150,16 @@ public class DataApiService {
     /**
      * PET OWNER HOMEPAGE
      * */
+
+    // Listings Page
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getPetTypes(String username) {
+        return dataApi.getPetTypes(username);
+    }
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getPOListings(String type, String sdate, String edate) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("category", type);
+        params.put("sdate", sdate);
+        params.put("edate", edate);
+        return dataApi.getListings(params);
+    }
 }

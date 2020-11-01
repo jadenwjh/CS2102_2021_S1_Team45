@@ -72,5 +72,9 @@ public interface DataApi {
      * PET OWNER
      * */
 
+    @POST(Strings.PO_GET_LISTINGS)
+    Single<ArrayList<LinkedTreeMap<String,String>>> getListings(@Body HashMap<String, String> params);
 
+    @GET(Strings.ALL_PET_TYPES + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getPetTypes(@Path("username") String username);
 }

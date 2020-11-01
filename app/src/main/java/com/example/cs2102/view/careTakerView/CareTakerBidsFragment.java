@@ -98,17 +98,13 @@ public class CareTakerBidsFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
     private void bidsVMObserver() {
         bidsVM.petOwners.observe(getViewLifecycleOwner(), petOwners -> {
             if (petOwners != null && petOwners.size() != 0) {
                 List<PetOwnerBid> bids = new ArrayList<>();
                 for (LinkedTreeMap<String,String> petOwner : petOwners) {
-                    PetOwnerBid petOwnerBid = new PetOwnerBid(petOwner.get("petowner"),
+                    PetOwnerBid petOwnerBid = new PetOwnerBid(
+                            petOwner.get("petowner"),
                             petOwner.get("petname"),
                             petOwner.get("category"),
                             petOwner.get("avail").substring(0,10),

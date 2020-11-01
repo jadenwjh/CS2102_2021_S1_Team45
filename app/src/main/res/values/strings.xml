@@ -45,5 +45,9 @@
     <string name="pets">Pets</string>
     <string name="ongoing">Ongoing</string>
     <string name="review">review</string>
+    <string name="set_date_range">Set date range</string>
+    <string name="search">Search</string>
+    <string name="no_listings_available_for_selection">No listings available for selection</string>
+    <string name="you_currently_have_no_pets">You currently have no pets</string>
 
 </resources>

@@ -37,6 +37,8 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     @BindView(R.id.viewPrices)
     Button viewPrices;
 
+    private static final String CURRENT_FRAGMENT = "CareTakerFragment";
+    private FragmentManager fm;
     private FragmentTransaction ft;
     private CareTakerBidsFragment bidsFragment;
     private CareTakerSetPriceFragment priceFragment;
@@ -48,10 +50,6 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     public void setDateSetListener(DatePickerDialog.OnDateSetListener listener) {
         this.dateSetListener = listener;
     }
-
-    private FragmentManager fm;
-
-    private static final String CURRENT_FRAGMENT = "CareTakerFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,25 +126,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
 
         viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
 
-        homepageViewModel.loading.observe(this, isLoading -> {
-            if (isLoading) {
-                loadingBar.setVisibility(View.VISIBLE);
-            } else {
-                loadingBar.setVisibility(View.GONE);
-            }
-        });
-
-        homepageViewModel.loadErrorPT.observe(this, isLoading -> {
-            if (isLoading) {
-                Toast.makeText(this, "This date has already been chosen", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        homepageViewModel.loadErrorFT.observe(this, isLoading -> {
-            if (isLoading) {
-                Toast.makeText(this, "Violates 150 days constraint", Toast.LENGTH_SHORT).show();
-            }
-        });
+        careTakerHomepageObserver();
 
         loadingBar.setVisibility(View.GONE);
     }
@@ -181,6 +161,28 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
             default:
                 throw new RuntimeException(String.format("Unable to load %s fragment", key));
         }
+    }
+
+    private void careTakerHomepageObserver() {
+        homepageViewModel.loading.observe(this, isLoading -> {
+            if (isLoading) {
+                loadingBar.setVisibility(View.VISIBLE);
+            } else {
+                loadingBar.setVisibility(View.GONE);
+            }
+        });
+
+        homepageViewModel.loadErrorPT.observe(this, isLoading -> {
+            if (isLoading) {
+                Toast.makeText(this, "This date has already been chosen", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        homepageViewModel.loadErrorFT.observe(this, isLoading -> {
+            if (isLoading) {
+                Toast.makeText(this, "Violates 150 days constraint", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

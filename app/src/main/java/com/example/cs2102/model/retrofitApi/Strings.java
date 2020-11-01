@@ -7,6 +7,7 @@ public class Strings {
     public static final String LEAVES_AVAILABILITY = "CT Dates";
     public static final String BIDS = "Bids";
     public static final String PRICES = "Prices";
+    public static final String LISTINGS = "Listings";
 
     public static final String ADMIN = "admin";
     public static final String PET_OWNER = "petowner";
@@ -30,5 +31,6 @@ public class Strings {
     public static final String CT_BIDS = "caretaker/bids";
     public static final String CT_PART_TIME_FREE = "caretaker/available";
 
-
+    public static final String PO_GET_LISTINGS = "petowner/findCareTaker";
+    public static final String ALL_PET_TYPES = "petowner/pettypes";
 }

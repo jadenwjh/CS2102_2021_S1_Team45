@@ -182,11 +182,6 @@ public class CareTakerSetPriceFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
     private void petPricesVMObserver() {
         pricesVM.petTypeCosts.observe(getViewLifecycleOwner(), petPrices -> {
             noTypesMsg.setVisibility(View.GONE);
