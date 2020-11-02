@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.petOwnerView.PetsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pets"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="3"
+            android:text="@string/to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pet_needs" />
+
+        <EditText
+            android:id="@+id/pet_name"
+            android:layout_width="93dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="12dp"
+            android:hint="@string/pet_name"
+            android:inputType="text"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/delete_pet" />
+
+        <EditText
+            android:id="@+id/pet_profile"
+            android:layout_width="315dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="8dp"
+            android:hint="@string/profile"
+            android:inputType="text"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pet_name" />
+
+        <EditText
+            android:id="@+id/pet_needs"
+            android:layout_width="315dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="4dp"
+            android:hint="@string/requests"
+            android:inputType="text"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pet_profile" />
+
+        <Spinner
+            android:id="@+id/pet_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toEndOf="@+id/pet_name"
+            app:layout_constraintTop_toBottomOf="@+id/delete_pet" />
+
+        <Button
+            android:id="@+id/add_pet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="@string/add_pet"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pets" />
+
+        <Button
+            android:id="@+id/mod_pet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/edit_pet"
+            app:layout_constraintEnd_toStartOf="@+id/add_pet"
+            app:layout_constraintTop_toBottomOf="@+id/pets" />
+
+        <Button
+            android:id="@+id/delete_pet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/delete_pet"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pets" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.515" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
