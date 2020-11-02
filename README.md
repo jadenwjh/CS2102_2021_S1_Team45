@@ -414,17 +414,19 @@
     - `petname` : string
 
     ### Example:
-    - GET https://shielded-oasis-35437.herokuapp.com/petowner/pets/jeymerp9/Priscella
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/pet/jeymerp9/Priscella
 
     Output:
     `{"petowner":"jeymerp9","petname":"Priscella","profile":"Coracias caudata","specialreq":"orchestrate seamless partnerships","category":"dog"}`
 
 &nbsp;
-- ## Create a pet <div style="text-align: right">`POST /PetOwner/Pets`
+- ## Create or update a pet <div style="text-align: right">`POST /PetOwner/Pets`
 
     ### Body:
     - `petowner` : string
     - `petname` : string
+    > If intending to update an existing entry, the following are optional, its fine to just include what needs
+    to be updated
     - `profile` : string
     - `specialReq` : string
     - `category` : string, one of the existing pet types
@@ -449,7 +451,7 @@
 
 
 
-&nbsp;
+<!-- &nbsp;
 - ## Update a pet's info <div style="text-align: right"> `PUT /PetOwner/Pets/:petowner/:petname`</div>
 
     ### Params:
@@ -479,7 +481,7 @@
 
     Output:
 
-    `"Pet Gabbey belonging to daleksidze6 was updated"`
+    `"Pet Gabbey belonging to daleksidze6 was updated"` -->
 
 
 

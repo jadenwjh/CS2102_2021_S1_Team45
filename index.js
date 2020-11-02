@@ -328,7 +328,7 @@ app.get("/PetOwner/Pets/:petowner", async (req, res) => {
 });
 
 //get a Pet by petname and petowner
-app.get("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
+app.get("/PetOwner/Pet/:petowner/:petname", async (req, res) => {
   try {
     const getPet = await pool.query(
       `SELECT * FROM Pets 
@@ -354,20 +354,30 @@ app.get("/PetOwner/Pets/:petowner/:category", async (req, res) => {
 });
 
 
-//create a Pet
+//create or update a Pet
 app.post("/PetOwner/Pets", async (req, res) => {
+  var updateArray = [];
+
+  for (const [k, v] of Object.entries(req.body)) {
+    updateArray.push(` Pets.${k} = '${v}'`);
+  }
+
+  const query = `INSERT INTO Pets (petowner, petname, profile, specialReq, category)
+  VALUES ('${req.body.petowner}', 
+  '${req.body.petname}', 
+  '${req.body.profile}', 
+  '${req.body.specialreq}', 
+  '${req.body.category}') 
+  ON CONFLICT (petowner, petname) DO UPDATE 
+  SET ${updateArray} 
+  WHERE petowner = '${req.body.petowner}' AND petname = '${req.body.petname}';`
   try {
-    const query = `INSERT INTO Pets (petowner, petname, profile, specialReq, category)
-    VALUES ('${req.body.petowner}', 
-    '${req.body.petname}', 
-    '${req.body.profile}', 
-    '${req.body.specialReq}', 
-    '${req.body.category}') 
-    RETURNING *;`
+
     const newPet = await pool.query(query);
 
     res.json(newPet.rows[0]);
   } catch (err) {
+    console.log(query);
     console.error(err.message);
   }
 });
