@@ -148,6 +148,7 @@ public class PetOwnerListingFragment extends Fragment {
     private void showRangePicker() {
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
         CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        builder.setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar);
         builder.setTitleText(R.string.select_dates);
         builder.setCalendarConstraints(constraintsBuilder.build());
         MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
