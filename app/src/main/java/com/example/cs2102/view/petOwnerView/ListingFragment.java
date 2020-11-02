@@ -1,24 +1,20 @@
 package com.example.cs2102.view.petOwnerView;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.Listing;
@@ -53,6 +49,7 @@ public class ListingFragment extends Fragment {
     private ListingViewModel listingViewModel;
     private static Listing listing;
     private static String username;
+    private static String petName = "";
 
     public interface ListingSelectedListener {
         void onListingSubmittedExitFragment();
@@ -81,6 +78,7 @@ public class ListingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         listingViewModel = ViewModelProviders.of(this).get(ListingViewModel.class);
+        loadingBar.setVisibility(View.GONE);
 
         careTaker.setText(String.format("Care Taker: %s", listing.getCareTaker()));
         dates.setText(String.format("Dates: %s - %s", listing.getStartDate(), listing.getEndDate()));
@@ -89,9 +87,8 @@ public class ListingFragment extends Fragment {
         submitBid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String payment = paymentType.getSelectedItem().toString();
-                String petName = allPets.getSelectedItem().toString();
-                if (!payment.equals("") && !petName.equals("")) {
+                if (!petName.equals("")) {
+                    String payment = paymentType.getSelectedItem().toString();
                     listingViewModel.submitBid(
                             username,
                             petName,
@@ -110,6 +107,7 @@ public class ListingFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         listingSelectedObserver();
         generatePaymentTypes();
+        listingViewModel.fetchOwnedPets(username, listing.getPetType());
     }
 
     @Override
@@ -122,6 +120,17 @@ public class ListingFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         allPets.setAdapter(adapter);
+        allPets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                petName = arr[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     public void generatePaymentTypes() {

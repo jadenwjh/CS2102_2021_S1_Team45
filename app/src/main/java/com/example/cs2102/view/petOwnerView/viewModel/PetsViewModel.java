@@ -87,8 +87,8 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("fetchOwnedPets", "Failed");
+                        Log.e("fetchOwnedPets", e.getMessage());
                         loading.setValue(false);
-                        e.printStackTrace();
                     }
                 })
         );
@@ -111,6 +111,7 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("addPet", "Fail");
+                        Log.e("addPet", e.getMessage());
                         loading.setValue(false);
                         showError.setValue(true);
                     }
@@ -135,6 +136,7 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("updatePet", "Fail");
+                        Log.e("updatePet", e.getMessage());
                         loading.setValue(false);
                         showError.setValue(true);
                     }
@@ -159,6 +161,7 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("deletePet", "Fail");
+                        Log.e("deletePet", e.getMessage());
                         loading.setValue(false);
                         showError.setValue(true);
                     }

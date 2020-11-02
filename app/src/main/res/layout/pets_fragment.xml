@@ -31,6 +31,7 @@
 
         <EditText
             android:id="@+id/pet_name"
+            android:maxLength="10"
             android:layout_width="93dp"
             android:layout_height="32dp"
             android:layout_marginStart="60dp"
@@ -42,6 +43,7 @@
             app:layout_constraintTop_toBottomOf="@+id/delete_pet" />
 
         <EditText
+            android:maxLength="20"
             android:id="@+id/pet_profile"
             android:layout_width="315dp"
             android:layout_height="36dp"
@@ -54,6 +56,7 @@
             app:layout_constraintTop_toBottomOf="@+id/pet_name" />
 
         <EditText
+            android:maxLength="20"
             android:id="@+id/pet_needs"
             android:layout_width="315dp"
             android:layout_height="38dp"

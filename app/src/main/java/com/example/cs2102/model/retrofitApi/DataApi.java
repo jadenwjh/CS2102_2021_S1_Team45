@@ -76,6 +76,7 @@ public interface DataApi {
     @POST(Strings.SEND_BID_REQUEST)
     Completable sendBidRequest(@Body HashMap<String, Object> params);
 
+    //TODO: check that this function is ready
     @GET(Strings.PETS_PETOWNER + "/{username}/{category}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(@Path("username") String username,@Path("category") String petType);
 

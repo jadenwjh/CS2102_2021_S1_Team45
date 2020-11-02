@@ -8,14 +8,10 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.model.retrofitApi.Strings;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +37,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
     private FragmentManager fm;
     private FragmentTransaction ft;
     private PetOwnerListingFragment listingFragment;
+    private PetsFragment petsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +60,30 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
                 ft.replace(R.id.petOwner_fragment, selectedListing, CURRENT_FRAGMENT).commit();
             });
 
+            petsFragment = PetsFragment.newInstance(username);
+            petsFragment.setPetsFragmentRefreshListener(new PetsFragment.PetsFragmentRefreshListener() {
+                @Override
+                public void refreshPetsFragment() {
+                    ft = fm.beginTransaction();
+                    ft.detach(petsFragment);
+                    ft.attach(petsFragment);
+                    ft.commit();
+                }
+            });
+
             //default listing page
             ft.add(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
         }
 
         ButterKnife.bind(this);
 
-        //navigator listeners
+        viewListings.setOnClickListener(view -> {
+            switchFragment(Strings.LISTINGS);
+        });
+
+        viewPets.setOnClickListener(view -> {
+            switchFragment(Strings.PETS);
+        });
 
         loadingBar.setVisibility(View.GONE);
     }
@@ -94,6 +108,10 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
             case Strings.LISTINGS:
                 ft = fm.beginTransaction();
                 ft.replace(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
+                break;
+            case Strings.PETS:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.petOwner_fragment, petsFragment, CURRENT_FRAGMENT).commit();
                 break;
             default:
                 throw new RuntimeException(String.format("Unable to load %s fragment", key));

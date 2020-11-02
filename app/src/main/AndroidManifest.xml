@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".view.loginView.LoginActivity"
+            android:name=".view.loginView.LoginActivity" android:windowSoftInputMode="adjustPan"
             android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,10 +23,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.registerView.RegisterActivity" />
-        <activity android:name=".view.petOwnerView.PetOwnerHomepageActivity" />
-        <activity android:name=".view.adminView.AdminActivity" />
-        <activity android:name=".view.careTakerView.CareTakerHomepageActivity" />
+        <activity android:name=".view.registerView.RegisterActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".view.petOwnerView.PetOwnerHomepageActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".view.adminView.AdminActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".view.careTakerView.CareTakerHomepageActivity" android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

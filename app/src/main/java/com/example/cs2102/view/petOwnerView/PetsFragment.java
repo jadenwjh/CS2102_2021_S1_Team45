@@ -1,9 +1,13 @@
 package com.example.cs2102.view.petOwnerView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,10 +20,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
 import com.example.cs2102.view.petOwnerView.viewModel.PetsViewModel;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,8 +64,19 @@ public class PetsFragment extends Fragment {
     RecyclerView petsRecyclerView;
 
     private PetsViewModel petsViewModel;
-    private PetsAdapter petsAdapter; // = new PetsAdapter
+    private PetsAdapter petsAdapter = new PetsAdapter(new ArrayList<>());
     private static String petOwnerUsername;
+    private static String selectedType;
+
+    private PetsFragmentRefreshListener refreshListener;
+
+    public interface PetsFragmentRefreshListener {
+        void refreshPetsFragment();
+    }
+
+    public void setPetsFragmentRefreshListener(PetsFragmentRefreshListener impl) {
+        this.refreshListener = impl;
+    }
 
     public static PetsFragment newInstance(String username) {
         petOwnerUsername = username;
@@ -76,37 +94,51 @@ public class PetsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         petsViewModel = ViewModelProviders.of(this).get(PetsViewModel.class);
+        loadingBar.setVisibility(View.GONE);
+
+        petsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        petsRecyclerView.setAdapter(petsAdapter);
 
         addPet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String petName = name.getText().toString();
-                String petProfile = profile.getText().toString();
-                String needs = request.getText().toString();
-                String type = petType.getSelectedItem().toString();
-                petsViewModel.addPet(petOwnerUsername, petName, type, petProfile, needs);
-                petsViewModel.refreshPage(petOwnerUsername);
+                hideKeyboard(getActivity());
+                if (!selectedType.equals("")) {
+                    String petName = name.getText().toString();
+                    String petProfile = profile.getText().toString();
+                    String needs = request.getText().toString();
+                    petsViewModel.addPet(petOwnerUsername, petName, selectedType, petProfile, needs);
+                    petsViewModel.refreshPage(petOwnerUsername);
+                    refreshListener.refreshPetsFragment();
+                }
             }
         });
 
         modPet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String petName = name.getText().toString();
-                String petProfile = profile.getText().toString();
-                String needs = request.getText().toString();
-                String type = petType.getSelectedItem().toString();
-                petsViewModel.updatePet(petOwnerUsername, petName, type, petProfile, needs);
-                petsViewModel.refreshPage(petOwnerUsername);
+                hideKeyboard(getActivity());
+                if (!selectedType.equals("")) {
+                    String petName = name.getText().toString();
+                    String petProfile = profile.getText().toString();
+                    String needs = request.getText().toString();
+                    petsViewModel.updatePet(petOwnerUsername, petName, selectedType, petProfile, needs);
+                    petsViewModel.refreshPage(petOwnerUsername);
+                    refreshListener.refreshPetsFragment();
+                }
             }
         });
 
         deletePet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard(getActivity());
                 String petName = name.getText().toString();
-                petsViewModel.deletePet(petOwnerUsername, petName);
-                petsViewModel.refreshPage(petOwnerUsername);
+                if (!petName.equals("")) {
+                    petsViewModel.deletePet(petOwnerUsername, petName);
+                    petsViewModel.refreshPage(petOwnerUsername);
+                    refreshListener.refreshPetsFragment();
+                }
             }
         });
     }
@@ -115,6 +147,7 @@ public class PetsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         petObserver();
+        petsViewModel.refreshPage(petOwnerUsername);
     }
 
     @Override
@@ -126,7 +159,9 @@ public class PetsFragment extends Fragment {
     private void petObserver() {
         petsViewModel.allPets.observe(getViewLifecycleOwner(), petsArr -> {
             if (petsArr != null) {
+                petType.setVisibility(View.GONE);
                 generateTypes(petsArr);
+                petType.setVisibility(View.VISIBLE);
             }
         });
         petsViewModel.ownedPets.observe(getViewLifecycleOwner(), pets -> {
@@ -155,5 +190,23 @@ public class PetsFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arr);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         petType.setAdapter(adapter);
+        petType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedType = arr[i];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    private void hideKeyboard(Activity activity) {
+        if (activity.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }
