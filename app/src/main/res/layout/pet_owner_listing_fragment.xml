@@ -18,39 +18,50 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/all_listings"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:maxHeight="400dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <Spinner
-                android:id="@+id/petTypes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toStartOf="@+id/pet_date_picker"
-                app:layout_constraintTop_toBottomOf="@+id/all_listings" />
+                <Spinner
+                    android:id="@+id/petTypes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/pet_date_picker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/set_date_range"
-                app:layout_constraintEnd_toStartOf="@+id/search_listings"
-                app:layout_constraintTop_toBottomOf="@+id/all_listings" />
+                <Space
+                    android:layout_width="5sp"
+                    android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/search_listings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="32dp"
-                android:text="@string/search"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/all_listings" />
+                <Button
+                    android:id="@+id/pet_date_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pick_dates" />
+
+                <Space
+                    android:layout_width="5sp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/search_listings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search" />
+
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/listingLoading"

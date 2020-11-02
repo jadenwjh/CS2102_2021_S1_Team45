@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,101 +8,147 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/pets"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="200dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/hints"
+        <LinearLayout
+            android:id="@+id/pet_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:lines="3"
-            android:text="@string/to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name"
-            android:textSize="12sp"
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal"
+            android:weightSum="3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_needs" />
+            app:layout_constraintTop_toBottomOf="@+id/pets">
 
-        <EditText
-            android:id="@+id/pet_name"
-            android:maxLength="10"
-            android:layout_width="93dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="12dp"
-            android:hint="@string/pet_name"
-            android:inputType="text"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/delete_pet" />
+            <Button
+                android:id="@+id/add_pet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/add_pet" />
 
-        <EditText
-            android:maxLength="20"
-            android:id="@+id/pet_profile"
-            android:layout_width="315dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="8dp"
-            android:hint="@string/profile"
-            android:inputType="text"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_name" />
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="wrap_content" />
 
-        <EditText
-            android:maxLength="20"
-            android:id="@+id/pet_needs"
-            android:layout_width="315dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="60dp"
+            <Button
+                android:id="@+id/mod_pet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/edit_pet" />
+
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/delete_pet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/delete_pet" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/name_and_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:hint="@string/requests"
-            android:inputType="text"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_profile" />
-
-        <Spinner
-            android:id="@+id/pet_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintStart_toEndOf="@+id/pet_name"
-            app:layout_constraintTop_toBottomOf="@+id/delete_pet" />
-
-        <Button
-            android:id="@+id/add_pet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:text="@string/add_pet"
+            android:orientation="horizontal"
+            android:weightSum="2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pets" />
-
-        <Button
-            android:id="@+id/mod_pet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:text="@string/edit_pet"
-            app:layout_constraintEnd_toStartOf="@+id/add_pet"
-            app:layout_constraintTop_toBottomOf="@+id/pets" />
-
-        <Button
-            android:id="@+id/delete_pet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="@string/delete_pet"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pets" />
+            app:layout_constraintTop_toBottomOf="@+id/pet_buttons">
+
+            <EditText
+                android:id="@+id/pet_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/pet_name"
+                android:inputType="text"
+                android:maxLength="10"
+                android:minWidth="200sp"
+                android:textSize="12sp" />
+
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/pet_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/others_stuff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="vertical"
+            android:weightSum="3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_and_spinner">
+
+            <EditText
+                android:id="@+id/pet_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/profile"
+                android:inputType="text"
+                android:maxLength="20"
+                android:minWidth="200sp"
+                android:textSize="12sp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="2dp" />
+
+            <EditText
+                android:id="@+id/pet_needs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/requests"
+                android:inputType="text"
+                android:maxLength="20"
+                android:minWidth="200sp"
+                android:textSize="12sp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="2dp" />
+
+            <TextView
+                android:id="@+id/hints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:lines="3"
+                android:text="@string/to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name"
+                android:textSize="12sp" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="300dp" />
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/loading"
@@ -117,4 +163,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</ScrollView>

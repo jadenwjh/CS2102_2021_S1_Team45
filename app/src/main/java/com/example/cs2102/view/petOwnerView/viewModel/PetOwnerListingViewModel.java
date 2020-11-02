@@ -5,10 +5,12 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.cs2102.model.Pet;
 import com.example.cs2102.model.retrofitApi.DataApiService;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -21,14 +23,46 @@ public class PetOwnerListingViewModel extends ViewModel {
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
     public MutableLiveData<Boolean> emptyLists = new MutableLiveData<>();
     public MutableLiveData<Boolean> noPets = new MutableLiveData<>();
-    public MutableLiveData<String[]> petTypes = new MutableLiveData<>();
+    public MutableLiveData<ArrayList<Pet>> ownedPets = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
     public void refreshListings(String category, String start, String end, String username) {
         fetchListings(category, start, end);
-        fetchPetTypes(username);
+        fetchOwnedPets(username);
+    }
+
+    public void fetchOwnedPets(String username) {
+        loading.setValue(true);
+        disposable.add(dataApiService.getOwnedPets(username)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,String>>>() {
+                    @Override
+                    public void onSuccess(ArrayList<LinkedTreeMap<String,String>> _pets) {
+                        ArrayList<Pet> pets = new ArrayList<>();
+                        for (LinkedTreeMap<String,String> pet : _pets) {
+                            String name = pet.get("petname");
+                            String type = pet.get("category");
+                            String profile = pet.get("profile");
+                            String needs = pet.get("specialreq");
+                            Pet currentPet = new Pet(name, type, profile, needs);
+                            pets.add(currentPet);
+                        }
+                        ownedPets.setValue(pets);
+                        loading.setValue(false);
+                        Log.e("fetchOwnedPets", "Success");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("fetchOwnedPets", "Failed");
+                        Log.e("fetchOwnedPets", e.getMessage());
+                        loading.setValue(false);
+                    }
+                })
+        );
     }
 
     public void fetchListings(String category, String start, String end) {
@@ -52,39 +86,6 @@ public class PetOwnerListingViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("fetchListings", "Failed");
-                        loading.setValue(false);
-                        e.printStackTrace();
-                    }
-                })
-        );
-    }
-
-    public void fetchPetTypes(String username) {
-        noPets.setValue(false);
-        loading.setValue(true);
-        disposable.add(dataApiService.getPetTypes(username)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,String>>>() {
-                    @Override
-                    public void onSuccess(ArrayList<LinkedTreeMap<String,String>> _pets) {
-                        String[] types = new String[_pets.size()];
-                        int i = 0;
-                        for (LinkedTreeMap<String,String> pet : _pets) {
-                            types[i] = pet.get("category");
-                            i++;
-                        }
-                        if (types.length == 0) {
-                            noPets.setValue(true);
-                        }
-                        petTypes.setValue(types);
-                        loading.setValue(false);
-                        Log.e("fetchPetTypes", "Success");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("fetchPetTypes", "Failed");
                         loading.setValue(false);
                         e.printStackTrace();
                     }

@@ -1,7 +1,6 @@
 <component name="libraryTable">
   <library name="Gradle: com.wdullaer:materialdatetimepicker:4.2.3@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/5430c255890a44f283de83c9f4ac455b/jetified-materialdatetimepicker-4.2.3/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/5430c255890a44f283de83c9f4ac455b/jetified-materialdatetimepicker-4.2.3/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/5430c255890a44f283de83c9f4ac455b/jetified-materialdatetimepicker-4.2.3/res" />
     </CLASSES>

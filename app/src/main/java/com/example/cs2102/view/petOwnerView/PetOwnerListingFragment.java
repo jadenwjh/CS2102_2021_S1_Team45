@@ -1,6 +1,7 @@
 package com.example.cs2102.view.petOwnerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.Listing;
+import com.example.cs2102.model.Pet;
 import com.example.cs2102.view.petOwnerView.viewModel.PetOwnerListingViewModel;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -62,9 +65,10 @@ public class PetOwnerListingFragment extends Fragment {
     @BindView(R.id.all_listings)
     RecyclerView listingsRecyclerView;
 
-    private static String type = "";
+    private static Pet currentPet;
     private static String endDate = "";
     private static String startDate = "";
+    private static int currentPosition;
 
     private static String currentPetOwnerUsername;
 
@@ -98,6 +102,7 @@ public class PetOwnerListingFragment extends Fragment {
         ButterKnife.bind(this, view);
         search.setEnabled(false);
         noPets.setVisibility(View.GONE);
+        petSpinner.setVisibility(View.GONE);
 
         petOwnerListingViewModel = ViewModelProviders.of(this).get(PetOwnerListingViewModel.class);
         petOwnerListingViewModel.loading.setValue(false);
@@ -106,21 +111,23 @@ public class PetOwnerListingFragment extends Fragment {
         listingsRecyclerView.setAdapter(listingAdapter);
 
         listingAdapter.setListingListener(listing -> {
-            ListingFragment currentListing = ListingFragment.newInstance(currentPetOwnerUsername, listing);
+            ListingFragment currentListing = ListingFragment.newInstance(currentPetOwnerUsername, listing, currentPet);
             selectedListener.onListingSelected(currentListing);
         });
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!type.equals("") && !startDate.equals("") && !endDate.equals("")) {
-                    petOwnerListingViewModel.refreshListings(type, startDate, endDate, currentPetOwnerUsername);
+                if (currentPet != null && !startDate.equals("") && !endDate.equals("")) {
+                    petOwnerListingViewModel.refreshListings(currentPet.getType(), startDate, endDate, currentPetOwnerUsername);
+                } else {
+                    Toast.makeText(getContext(), "Please select date range", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         refreshLayout.setOnRefreshListener(() -> {
-            petOwnerListingViewModel.refreshListings(type, startDate, endDate, currentPetOwnerUsername);
+            petOwnerListingViewModel.refreshListings(currentPet.getType(), startDate, endDate, currentPetOwnerUsername);
             refreshLayout.setRefreshing(false);
         });
 
@@ -136,7 +143,7 @@ public class PetOwnerListingFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         listingsObserver();
-        petOwnerListingViewModel.fetchPetTypes(currentPetOwnerUsername);
+        petOwnerListingViewModel.fetchOwnedPets(currentPetOwnerUsername);
     }
 
     @Override
@@ -159,6 +166,8 @@ public class PetOwnerListingFragment extends Fragment {
                 SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd");
                 startDate = spf.format(new Date(selection.first));
                 endDate = spf.format(new Date(selection.second));
+                String setButton = String.format("%s/%s-%s/%s", startDate.substring(8,10), startDate.substring(5,7), endDate.substring(8,10), endDate.substring(5,7));
+                datePicker.setText(setButton);
                 picker.dismiss();
             }
         });
@@ -171,12 +180,14 @@ public class PetOwnerListingFragment extends Fragment {
         petSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                type = arr[position];
+                currentPet = petOwnerListingViewModel.ownedPets.getValue().get(position);
+                currentPosition = position;
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+        petSpinner.setSelection(currentPosition);
     }
 
     private void listingsObserver() {
@@ -207,11 +218,17 @@ public class PetOwnerListingFragment extends Fragment {
                 }
             }
         });
-        petOwnerListingViewModel.petTypes.observe(getViewLifecycleOwner(), typeArr -> {
-            if (typeArr != null) {
+        petOwnerListingViewModel.ownedPets.observe(getViewLifecycleOwner(), list -> {
+            if (list != null) {
                 petSpinner.setVisibility(View.GONE);
-                if (typeArr.length != 0) {
+                if (list.size() != 0) {
                     search.setEnabled(true);
+                }
+                String[] typeArr = new String[list.size()];
+                int i = 0;
+                for (Pet p : list) {
+                    typeArr[i] = p.getName();
+                    i++;
                 }
                 refreshSpinner(typeArr);
                 petSpinner.setVisibility(View.VISIBLE);

@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import retrofit2.Call;
+import retrofit2.adapter.rxjava2.Result;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
@@ -75,8 +77,7 @@ public interface DataApi {
 
     @POST(Strings.SEND_BID_REQUEST)
     Completable sendBidRequest(@Body HashMap<String, Object> params);
-
-    //TODO: check that this function is ready
+    
     @GET(Strings.PETS_PETOWNER + "/{username}/{category}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(@Path("username") String username,@Path("category") String petType);
 
@@ -94,4 +95,5 @@ public interface DataApi {
 
     @HTTP(method = "DELETE", path = Strings.PETS_PETOWNER + "/{username}/{petName}", hasBody = true)
     Completable deletePetOwnerPet(@Path("username") String username, @Path("petName") String petName, @Body HashMap<String, String> params);
+
 }

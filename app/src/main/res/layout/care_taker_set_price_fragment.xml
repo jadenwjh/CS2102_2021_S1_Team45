@@ -19,9 +19,124 @@
                 android:id="@+id/all_pets"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:layout_constraintHeight_max="250dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/add_edit_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/all_pets">
+
+                <Spinner
+                    android:id="@+id/petTypesList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/priceRange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/editPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/add_set_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:weightSum="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/add_edit_price">
+
+                <Button
+                    android:id="@+id/setPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/set" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/addNewPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/add" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/delete_pet_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/add_set_buttons">
+
+                <Spinner
+                    android:id="@+id/deletePetTypesList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Space
+                    android:layout_width="10sp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/removePrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/del" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/delete_pet_line" />
 
             <TextView
                 android:id="@+id/careTakerNoTypes"
@@ -55,72 +170,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/setPrice"
-                android:layout_width="52dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="60dp"
-                android:text="@string/set"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets" />
-
-            <Button
-                android:id="@+id/addNewPrice"
-                android:layout_width="52dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="12dp"
-                android:text="@string/add"
-                app:layout_constraintEnd_toStartOf="@+id/editPrice"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets" />
-
-            <TextView
-                android:id="@+id/priceRange"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="12dp"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="@+id/setPrice"
-                app:layout_constraintTop_toBottomOf="@+id/setPrice" />
-
-            <EditText
-                android:id="@+id/editPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:inputType="number"
-                android:maxLength="3"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/setPrice"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets" />
-
-            <Spinner
-                android:id="@+id/petTypesList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/addNewPrice"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets" />
-
-            <Spinner
-                android:id="@+id/deletePetTypesList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/removePrice"
-                app:layout_constraintTop_toBottomOf="@+id/petTypesList" />
-
-            <Button
-                android:id="@+id/removePrice"
-                android:layout_width="52dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="4dp"
-                android:text="@string/del"
-                app:layout_constraintEnd_toEndOf="@+id/addNewPrice"
-                app:layout_constraintTop_toBottomOf="@+id/addNewPrice" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

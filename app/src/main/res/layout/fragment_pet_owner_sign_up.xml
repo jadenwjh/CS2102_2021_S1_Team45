@@ -10,11 +10,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center"
+            android:weightSum="8"
             tools:context=".view.registerView.PetOwnerSignUpFragment">
 
                 <EditText
                     android:id="@+id/username"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="96dp"
@@ -26,7 +30,9 @@
 
                 <EditText
                     android:id="@+id/password"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -38,7 +44,9 @@
 
                 <EditText
                     android:id="@+id/email"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -50,7 +58,9 @@
 
                 <EditText
                     android:id="@+id/number"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -62,7 +72,9 @@
 
                 <EditText
                     android:id="@+id/address"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -74,7 +86,9 @@
 
                 <EditText
                     android:id="@+id/creditCard"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -86,7 +100,9 @@
 
                 <EditText
                     android:id="@+id/bankAcc"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -98,7 +114,9 @@
 
                 <EditText
                     android:id="@+id/profile"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:minWidth="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
@@ -112,8 +130,11 @@
                     android:id="@+id/register_PO"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:text="@string/register" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp" />
 
         </LinearLayout>
 </ScrollView>

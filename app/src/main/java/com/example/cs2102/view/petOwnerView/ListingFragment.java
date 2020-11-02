@@ -18,15 +18,13 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.Listing;
+import com.example.cs2102.model.Pet;
 import com.example.cs2102.view.petOwnerView.viewModel.ListingViewModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ListingFragment extends Fragment {
-
-    @BindView(R.id.get_own_pets)
-    Spinner allPets;
 
     @BindView(R.id.date_range_listing)
     TextView dates;
@@ -46,10 +44,16 @@ public class ListingFragment extends Fragment {
     @BindView(R.id.loading)
     ProgressBar loadingBar;
 
+    @BindView(R.id.current_pet_name)
+    TextView currentPetName;
+
+    @BindView(R.id.current_pet_type)
+    TextView currentPetType;
+
     private ListingViewModel listingViewModel;
     private static Listing listing;
     private static String username;
-    private static String petName = "";
+    private static Pet petForBid;
 
     public interface ListingSelectedListener {
         void onListingSubmittedExitFragment();
@@ -61,9 +65,10 @@ public class ListingFragment extends Fragment {
         this.listingSelectedListener = listenerImpl;
     }
 
-    public static ListingFragment newInstance(String name, Listing list) {
+    public static ListingFragment newInstance(String name, Listing list, Pet pet) {
         username = name;
         listing = list;
+        petForBid = pet;
         return new ListingFragment();
     }
 
@@ -83,20 +88,23 @@ public class ListingFragment extends Fragment {
         careTaker.setText(String.format("Care Taker: %s", listing.getCareTaker()));
         dates.setText(String.format("Dates: %s - %s", listing.getStartDate(), listing.getEndDate()));
         price.setText(String.format("Price: $%s", listing.getPrice()));
+        currentPetName.setText(String.format("Pet Name: %s", petForBid.getName()));
+        currentPetType.setText(String.format("Category: %s", petForBid.getType()));
 
         submitBid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!petName.equals("")) {
+                if (!petForBid.getName().equals("")) {
                     String payment = paymentType.getSelectedItem().toString();
                     listingViewModel.submitBid(
                             username,
-                            petName,
+                            petForBid.getName(),
                             listing.getCareTaker(),
                             listing.getStartDate(),
                             listing.getEndDate(),
                             payment,
-                            Float.parseFloat(listing.getPrice()));
+                            Float.parseFloat(listing.getPrice()),
+                            getContext());
                 }
             }
         });
@@ -107,30 +115,12 @@ public class ListingFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         listingSelectedObserver();
         generatePaymentTypes();
-        listingViewModel.fetchOwnedPets(username, listing.getPetType());
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-    }
-
-    private void refreshSpinner(String[] arr) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arr);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        allPets.setAdapter(adapter);
-        allPets.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                petName = arr[i];
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
     }
 
     public void generatePaymentTypes() {
@@ -151,13 +141,6 @@ public class ListingFragment extends Fragment {
                 loadingBar.setVisibility(View.VISIBLE);
             } else {
                 loadingBar.setVisibility(View.GONE);
-            }
-        });
-        listingViewModel.ownedPets.observe(getViewLifecycleOwner(), nameArr -> {
-            if (nameArr != null) {
-                allPets.setVisibility(View.GONE);
-                refreshSpinner(nameArr);
-                allPets.setVisibility(View.VISIBLE);
             }
         });
     }

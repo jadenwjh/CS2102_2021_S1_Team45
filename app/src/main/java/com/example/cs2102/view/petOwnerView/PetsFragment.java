@@ -107,7 +107,7 @@ public class PetsFragment extends Fragment {
                     String petName = name.getText().toString();
                     String petProfile = profile.getText().toString();
                     String needs = request.getText().toString();
-                    petsViewModel.addPet(petOwnerUsername, petName, selectedType, petProfile, needs);
+                    petsViewModel.addPet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
                     petsViewModel.refreshPage(petOwnerUsername);
                     refreshListener.refreshPetsFragment();
                 }
@@ -122,7 +122,7 @@ public class PetsFragment extends Fragment {
                     String petName = name.getText().toString();
                     String petProfile = profile.getText().toString();
                     String needs = request.getText().toString();
-                    petsViewModel.updatePet(petOwnerUsername, petName, selectedType, petProfile, needs);
+                    petsViewModel.updatePet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
                     petsViewModel.refreshPage(petOwnerUsername);
                     refreshListener.refreshPetsFragment();
                 }
@@ -135,7 +135,7 @@ public class PetsFragment extends Fragment {
                 hideKeyboard(getActivity());
                 String petName = name.getText().toString();
                 if (!petName.equals("")) {
-                    petsViewModel.deletePet(petOwnerUsername, petName);
+                    petsViewModel.deletePet(petOwnerUsername, petName, getContext());
                     petsViewModel.refreshPage(petOwnerUsername);
                     refreshListener.refreshPetsFragment();
                 }
@@ -177,11 +177,6 @@ public class PetsFragment extends Fragment {
                 if (isLoading) {
                     petsRecyclerView.setVisibility(View.GONE);
                 }
-            }
-        });
-        petsViewModel.showError.observe(getViewLifecycleOwner(), error -> {
-            if (error != null && error) {
-                Toast.makeText(getContext(), "Error modifying your pets, check if you filled parameters correctly", Toast.LENGTH_SHORT).show();
             }
         });
     }

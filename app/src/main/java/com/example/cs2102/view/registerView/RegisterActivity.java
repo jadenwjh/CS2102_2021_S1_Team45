@@ -1,8 +1,12 @@
 package com.example.cs2102.view.registerView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
@@ -121,6 +125,25 @@ public class RegisterActivity extends AppCompatActivity {
             }
             default:
                 throw new RuntimeException("Already at current fragment");
+        }
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            super.onBackPressed();
+            return true;
+        }
+
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Activity activity = this;
+        if (activity.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
         }
     }
 }

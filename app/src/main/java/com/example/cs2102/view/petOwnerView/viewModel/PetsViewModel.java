@@ -1,6 +1,8 @@
 package com.example.cs2102.view.petOwnerView.viewModel;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -23,7 +25,6 @@ public class PetsViewModel extends ViewModel {
     public MutableLiveData<String[]> allPets = new MutableLiveData<>();
     public MutableLiveData<List<Pet>> ownedPets = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
-    public MutableLiveData<Boolean> showError = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -94,7 +95,7 @@ public class PetsViewModel extends ViewModel {
         );
     }
 
-    public void addPet(String username, String petname, String type, String profile, String requests) {
+    public void addPet(String username, String petname, String type, String profile, String requests, Context context) {
         loading.setValue(true);
         disposable.add(dataApiService.addNewPetOwnerPet(username, petname, type, profile, requests)
                 .subscribeOn(Schedulers.newThread())
@@ -104,22 +105,22 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.e("addPet", "Success");
+                        Toast.makeText(context, "Successfully added new pet", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
-                        showError.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e("addPet", "Fail");
                         Log.e("addPet", e.getMessage());
+                        Toast.makeText(context, "Your pet cannot be added as the name already exists or the parameters are not filled", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
-                        showError.setValue(true);
                     }
                 })
         );
     }
 
-    public void updatePet(String username, String petname, String type, String profile, String requests) {
+    public void updatePet(String username, String petname, String type, String profile, String requests, Context context) {
         loading.setValue(true);
         disposable.add(dataApiService.updatePetOwnerPet(username, petname, type, profile, requests)
                 .subscribeOn(Schedulers.newThread())
@@ -129,22 +130,22 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.e("updatePet", "Success");
+                        Toast.makeText(context, "Successfully edited your pet", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
-                        showError.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e("updatePet", "Fail");
                         Log.e("updatePet", e.getMessage());
+                        Toast.makeText(context, "Your pet cannot be modified, please check if the parameters are correct", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
-                        showError.setValue(true);
                     }
                 })
         );
     }
 
-    public void deletePet(String username, String petname) {
+    public void deletePet(String username, String petname, Context context) {
         loading.setValue(true);
         disposable.add(dataApiService.deletePetOwnerPet(username, petname)
                 .subscribeOn(Schedulers.newThread())
@@ -154,16 +155,16 @@ public class PetsViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.e("deletePet", "Success");
+                        Toast.makeText(context, "Successfully deleted your pet", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
-                        showError.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e("deletePet", "Fail");
                         Log.e("deletePet", e.getMessage());
+                        Toast.makeText(context, "Your pet cannot be deleted as it is currently part of a bid or the name does not exist", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
-                        showError.setValue(true);
                     }
                 })
         );

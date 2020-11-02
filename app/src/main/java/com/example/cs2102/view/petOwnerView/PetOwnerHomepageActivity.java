@@ -1,9 +1,15 @@
 package com.example.cs2102.view.petOwnerView;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -12,6 +18,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.model.retrofitApi.Strings;
+import com.example.cs2102.view.adminView.AdminActivity;
+import com.example.cs2102.view.loginView.LoginActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,10 +34,6 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
     @BindView(R.id.viewPets)
     Button viewPets;
-
-    @BindView(R.id.viewOngoing)
-    Button viewOngoing;
-
     @BindView(R.id.viewReview)
     Button viewReview;
 
@@ -92,12 +96,10 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         if (hide) {
             viewListings.setVisibility(View.INVISIBLE);
             viewPets.setVisibility(View.INVISIBLE);
-            viewOngoing.setVisibility(View.INVISIBLE);
             viewReview.setVisibility(View.INVISIBLE);
         } else {
             viewListings.setVisibility(View.VISIBLE);
             viewPets.setVisibility(View.VISIBLE);
-            viewOngoing.setVisibility(View.VISIBLE);
             viewReview.setVisibility(View.VISIBLE);
         }
     }
@@ -118,4 +120,26 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Toast.makeText(this, "You have logged out successfully", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (listingFragment.getUserVisibleHint()) {
+            switchFragment(Strings.LISTINGS);
+        }
+        Activity activity = this;
+        if (activity.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
 }

@@ -1,7 +1,14 @@
 package com.example.cs2102.view.careTakerView;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -16,6 +23,7 @@ import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
 import com.example.cs2102.model.retrofitApi.Strings;
+import com.example.cs2102.view.loginView.LoginActivity;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
@@ -102,6 +110,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
             availabilityFragment.setAvailabilityDatePicker(days -> {
                 String date = "";
                 DatePickerDialog datePicker = DatePickerDialog.newInstance(dateSetListener, now);
+                datePicker.setAccentColor(Color.BLACK);
                 datePicker.setSelectableDays(days);
                 datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
             });
@@ -187,6 +196,25 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        switchFragment(Strings.BIDS);
+        if (bidsFragment.getUserVisibleHint()) {
+            switchFragment(Strings.BIDS);
+        } else {
+            Activity activity = this;
+            if (activity.getCurrentFocus() != null) {
+                InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+            }
+        }
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Toast.makeText(this, "You have logged out successfully", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
     }
 }

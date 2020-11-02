@@ -9,11 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="center"
+        android:weightSum="11"
         tools:context=".view.registerView.CareTakerSignUpFragment">
 
         <EditText
             android:id="@+id/username"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:minWidth="150dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="96dp"
@@ -25,10 +29,12 @@
 
         <EditText
             android:id="@+id/password"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
+            android:minWidth="150dp"
             android:layout_marginEnd="24dp"
             android:autofillHints="@string/prompt_password"
             android:hint="@string/prompt_password"
@@ -37,7 +43,9 @@
 
         <EditText
             android:id="@+id/email"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:minWidth="150dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
@@ -49,9 +57,11 @@
 
         <EditText
             android:id="@+id/number"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:minWidth="150dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             android:inputType="number"
@@ -60,23 +70,27 @@
             android:selectAllOnFocus="true" />
 
         <EditText
+            android:layout_weight="1"
             android:id="@+id/address"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             android:inputType="text"
+            android:minWidth="150dp"
             android:hint="@string/enter_your_address"
             android:autofillHints="@string/enter_your_address"
             android:selectAllOnFocus="true" />
 
         <EditText
+            android:layout_weight="1"
             android:id="@+id/creditCard"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
+            android:minWidth="150dp"
             android:layout_marginEnd="24dp"
             android:inputType="number"
             android:hint="@string/enter_your_credit_card_number"
@@ -85,10 +99,12 @@
 
         <EditText
             android:id="@+id/bankAcc"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
+            android:minWidth="150dp"
             android:layout_marginEnd="24dp"
             android:inputType="number"
             android:hint="@string/enter_your_bank_account_number"
@@ -97,7 +113,9 @@
 
         <EditText
             android:id="@+id/profile"
-            android:layout_width="match_parent"
+            android:minWidth="150dp"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
@@ -109,7 +127,9 @@
 
         <EditText
             android:id="@+id/referral"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:minWidth="150dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
@@ -121,6 +141,7 @@
 
         <Switch
             android:id="@+id/isFT"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -128,11 +149,16 @@
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <Button
+            android:layout_weight="1"
             android:id="@+id/register_CT"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/register" />
+        
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="400dp" />
 
     </LinearLayout>
 </ScrollView>
