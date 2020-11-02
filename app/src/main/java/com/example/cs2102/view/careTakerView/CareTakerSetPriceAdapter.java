@@ -1,9 +1,6 @@
 package com.example.cs2102.view.careTakerView;
 
-import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +11,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
-import com.example.cs2102.model.PetOwner;
 import com.example.cs2102.model.PetTypeCost;
 
 import java.util.List;

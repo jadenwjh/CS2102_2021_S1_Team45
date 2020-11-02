@@ -89,6 +89,10 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
             switchFragment(Strings.PETS);
         });
 
+        viewReview.setOnClickListener(view -> {
+            switchFragment(Strings.LISTINGS);
+        });
+
         loadingBar.setVisibility(View.GONE);
     }
 

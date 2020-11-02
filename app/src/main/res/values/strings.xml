@@ -68,5 +68,12 @@
     <string name="sign_in">Sign in</string>
     <string name="pick_dates">Pick Dates</string>
     <string name="payment_type">Payment type:</string>
+    <string name="pet">Pet:</string>
+    <string name="price_config">Price Config</string>
+    <string name="caretakers">CareTakers</string>
+    <string name="ct">CT</string>
+    <string name="salary">Salary</string>
+    <string name="prices">Prices</string>
+    <string name="ratings">Ratings</string>
 
 </resources>

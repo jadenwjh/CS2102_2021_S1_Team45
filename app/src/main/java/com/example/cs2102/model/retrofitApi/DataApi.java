@@ -77,7 +77,7 @@ public interface DataApi {
 
     @POST(Strings.SEND_BID_REQUEST)
     Completable sendBidRequest(@Body HashMap<String, Object> params);
-    
+
     @GET(Strings.PETS_PETOWNER + "/{username}/{category}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(@Path("username") String username,@Path("category") String petType);
 
@@ -95,5 +95,13 @@ public interface DataApi {
 
     @HTTP(method = "DELETE", path = Strings.PETS_PETOWNER + "/{username}/{petName}", hasBody = true)
     Completable deletePetOwnerPet(@Path("username") String username, @Path("petName") String petName, @Body HashMap<String, String> params);
+
+    /**
+     * ADMIN
+     * */
+
+    @PUT(Strings.ALL_PET_TYPES)
+    Completable updateBasePrice(@Body HashMap<String,Object> params);
+
 
 }
