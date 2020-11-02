@@ -1,12 +1,9 @@
 package com.example.cs2102.model.retrofitApi;
 
-import com.example.cs2102.model.CareTaker;
-import com.example.cs2102.model.PetOwner;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
@@ -176,5 +173,37 @@ public class DataApiService {
     }
     public Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(String username, String petType) {
         return dataApi.getPetNamesOfType(username, petType);
+    }
+
+    // Pets Page
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getOwnedPets(String username) {
+        return dataApi.currentlyOwnedPets(username);
+    }
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getAllPetTypes() {
+        return dataApi.getAllPetTypes();
+    }
+    public Completable addNewPetOwnerPet(String username, String petname, String type, String profile, String requests) {
+        HashMap<String,String> params = new HashMap<>();
+        params.put("petowner", username);
+        params.put("petname", petname);
+        params.put("profile", profile);
+        params.put("specialReq", requests);
+        params.put("category", type);
+        return dataApi.addNewPetOwnerPet(params);
+    }
+    public Completable updatePetOwnerPet(String username, String petname, String type, String profile, String requests) {
+        HashMap<String,String> params = new HashMap<>();
+        params.put("petowner", username);
+        params.put("petname", petname);
+        params.put("profile", profile);
+        params.put("specialReq", requests);
+        params.put("category", type);
+        return dataApi.updatePetOwnerPet(username, petname, params);
+    }
+    public Completable deletePetOwnerPet(String username, String petName) {
+        HashMap<String,String> params = new HashMap<>();
+        params.put("petowner", username);
+        params.put("petname", petName);
+        return dataApi.deletePetOwnerPet(username, petName, params);
     }
 }

@@ -32,6 +32,8 @@ public class Strings {
     public static final String CT_PART_TIME_FREE = "caretaker/available";
 
     public static final String PO_GET_LISTINGS = "petowner/findCareTaker";
-    public static final String ALL_PET_TYPES = "petowner/pettypes";
+    public static final String PETS_PETOWNER = "petowner/pets";
     public static final String SEND_BID_REQUEST = "PetOwner/Bids";
+    public static final String ALL_PET_TYPES = "Admin/PetTypes";
+    public static final String ADD_PETOWNER_PET = "PetOwner/Pets";
 }

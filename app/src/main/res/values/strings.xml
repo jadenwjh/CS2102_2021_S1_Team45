@@ -57,5 +57,12 @@
     <string name="no_listings_available_for_selection">No listings available for selection</string>
     <string name="you_currently_have_no_pets">You currently have no pets</string>
     <string name="submit_bid">Submit Bid</string>
+    <string name="add_pet">Add pet</string>
+    <string name="delete_pet">Delete pet</string>
+    <string name="pet_name">pet name</string>
+    <string name="profile">profile</string>
+    <string name="requests">requests</string>
+    <string name="to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name">To add, fill in all entries \nTo modify, same but with target name + type \nTo delete, fill in name</string>
+    <string name="edit_pet">Edit pet</string>
 
 </resources>

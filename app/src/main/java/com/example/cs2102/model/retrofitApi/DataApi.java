@@ -1,23 +1,18 @@
 package com.example.cs2102.model.retrofitApi;
 
-import com.example.cs2102.model.CareTaker;
-import com.example.cs2102.model.PetOwner;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface DataApi {
 
@@ -75,13 +70,27 @@ public interface DataApi {
     @POST(Strings.PO_GET_LISTINGS)
     Single<ArrayList<LinkedTreeMap<String,String>>> getListings(@Body HashMap<String, String> params);
 
-    @GET(Strings.ALL_PET_TYPES + "/{username}")
+    @GET(Strings.PETS_PETOWNER + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetTypes(@Path("username") String username);
 
     @POST(Strings.SEND_BID_REQUEST)
     Completable sendBidRequest(@Body HashMap<String, Object> params);
 
-    //TODO: Update this function
-    @GET(Strings.ALL_PET_TYPES + "/{username}")
-    Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(@Path("username") String username, String petType);
+    @GET(Strings.PETS_PETOWNER + "/{username}/{category}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(@Path("username") String username,@Path("category") String petType);
+
+    @GET(Strings.PETS_PETOWNER + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> currentlyOwnedPets(@Path("username") String username);
+
+    @GET(Strings.ALL_PET_TYPES)
+    Single<ArrayList<LinkedTreeMap<String,String>>> getAllPetTypes();
+
+    @POST(Strings.ADD_PETOWNER_PET)
+    Completable addNewPetOwnerPet(@Body HashMap<String, String> params);
+
+    @PUT(Strings.PETS_PETOWNER + "/{username}/{petName}")
+    Completable updatePetOwnerPet(@Path("username") String username, @Path("petName") String petName, @Body HashMap<String, String> params);
+
+    @HTTP(method = "DELETE", path = Strings.PETS_PETOWNER + "/{username}/{petName}", hasBody = true)
+    Completable deletePetOwnerPet(@Path("username") String username, @Path("petName") String petName, @Body HashMap<String, String> params);
 }
