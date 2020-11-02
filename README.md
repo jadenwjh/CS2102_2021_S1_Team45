@@ -392,13 +392,26 @@
     `[{"petowner":"dayerst2","petname":"Zabrina","profile":"Phalaropus lobatus","specialreq":"deliver real-time e-markets","category":"bird"},{"petowner":"dayerst2","petname":"Candra","profile":"Loxodonta africana","specialreq":"embrace customized markets","category":"hamster"}]`
 
 
+&nbsp;
+- ## get all Pets of a petowner belonging to a pettype <div style="text-align: right">`GET /PetOwner/Pets/:petowner/:category`
 
+    ### Params:
+    - `petowner` : string
+    - `category` : string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/pets/jeymerp9/dog
+
+    Output:
+    `[{"petowner":"jeymerp9","petname":"Priscella","profile":"Coracias caudata","specialreq":"orchestrate seamless partnerships","category":"dog"}]`
+    > Can have more than 1 pet
 
 &nbsp;
 - ## get a Pet by petname and petowner <div style="text-align: right">`GET /PetOwner/Pets/:petowner/:petname`
 
     ### Params:
     - `petowner` : string
+    - `petname` : string
 
     ### Example:
     - GET https://shielded-oasis-35437.herokuapp.com/petowner/pets/jeymerp9/Priscella

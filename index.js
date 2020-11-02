@@ -340,6 +340,20 @@ app.get("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
   }
 });
 
+//get all Pets of a petowner belonging to a pettype
+app.get("/PetOwner/Pets/:petowner/:category", async (req, res) => {
+  try {
+    const getPets = await pool.query(
+      `SELECT * FROM Pets 
+      WHERE petowner = '${req.params.petowner}' AND category = '${req.params.category}';`
+    );
+    res.json(getPets.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
 //create a Pet
 app.post("/PetOwner/Pets", async (req, res) => {
   try {
