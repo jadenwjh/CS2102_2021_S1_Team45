@@ -187,7 +187,7 @@ public class DataApiService {
         params.put("petowner", username);
         params.put("petname", petname);
         params.put("profile", profile);
-        params.put("specialReq", requests);
+        params.put("specialreq", requests);
         params.put("category", type);
         return dataApi.addNewPetOwnerPet(params);
     }
@@ -205,6 +205,14 @@ public class DataApiService {
         params.put("petowner", username);
         params.put("petname", petName);
         return dataApi.deletePetOwnerPet(username, petName, params);
+    }
+
+    //Bids
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getOngoingBids(String username) {
+        return dataApi.getOngoingBids(username);
+    }
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getExpiredBids(String username) {
+        return dataApi.getExpiredBids(username);
     }
 
     /**

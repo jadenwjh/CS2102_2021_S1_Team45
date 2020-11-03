@@ -37,4 +37,6 @@ public class Strings {
     public static final String SEND_BID_REQUEST = "PetOwner/Bids";
     public static final String ALL_PET_TYPES = "Admin/PetTypes";
     public static final String ADD_PETOWNER_PET = "PetOwner/Pets";
+    public static final String ONGOING_BIDS = "petowner/bids";
+    public static final String EXPIRED_BIDS = "PetOwner/Bids";
 }

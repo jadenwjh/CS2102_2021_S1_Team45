@@ -77,6 +77,9 @@ public class PetsViewModel extends ViewModel {
                             String type = pet.get("category");
                             String profile = pet.get("profile");
                             String needs = pet.get("specialreq");
+                            if (name.length() == 0) {
+                                continue;
+                            }
                             Pet currentPet = new Pet(name, type, profile, needs);
                             pets.add(currentPet);
                         }

@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.Listing;
-import com.example.cs2102.model.PetOwnerBid;
-import com.example.cs2102.view.careTakerView.CareTakerBidsAdapter;
 
 import java.util.List;
 
