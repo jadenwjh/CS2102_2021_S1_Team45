@@ -319,6 +319,7 @@ LANGUAGE plpgsql;
 ------------------------------------------
 
 
+
 DROP TRIGGER IF EXISTS checkIsValidBid ON Bids; 
 CREATE OR REPLACE FUNCTION isValidBid()
 RETURNS TRIGGER AS $$
@@ -334,6 +335,10 @@ RETURNS TRIGGER AS $$
 		IF NOT isupdate THEN /*Insertion of a new bid*/
 			IF NEW.avail<=(SELECT currentDate()) THEN
 				RAISE EXCEPTION 'bids should only be for dates tomorrow onwards (i.e. greater than current date)';
+				RETURN NULL;
+			END IF;
+			IF NEW.caretaker=NEW.petowner THEN
+				RAISE EXCEPTION 'a user who is both a caretaker and petowner cannot bid for his own services';
 				RETURN NULL;
 			END IF;
 			IF NOT (SELECT isAvailable(NEW.caretaker, NEW.avail)) THEN

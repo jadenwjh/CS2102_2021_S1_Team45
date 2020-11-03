@@ -100,7 +100,7 @@
 
 &nbsp;
 
-## Login/Register
+## Login/Register/Delete
 --------------------
 
 - ## login:<div style="text-align: right">`POST /Users/login`</div>
@@ -196,6 +196,40 @@
         'isPartTime': True,
         'admin': 'pdepport0'}`
 
+&nbsp;
+
+- ## Delete:<div style="text-align: right">`DELETE /Users/delete`</div>
+    
+    ### Body
+    - `username` : string
+
+    - `password` : string
+
+    ### Example
+        - DELETE https://shielded-oasis-35437.herokuapp.com/Users/delete
+
+        Body:
+
+        ```
+        {
+            'username': 'ccarnewp8',
+            'password': 'pqTDqBWnC'
+        }
+        ```
+
+        Output:
+        
+        `{'username': 'ccarnewp8',
+        'email': 'bkieldp8@xing.com',
+        'password': 'pqTDqBWnC',
+        'profile': 'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.',
+        'address': '52393 Killdeer Terrace',
+        'phoneNum': 89298662,
+        'creditCard': 70902008,
+        'bankAcc': 823127208,
+        'acctype': 'both',
+        'isPartTime': True,
+        'admin': 'pdepport0'}`
 
 &nbsp;
 
@@ -812,10 +846,10 @@
     `{"basePrice": 101,"category": "meowth"}`
 
 &nbsp;
-- ## Get all caretakers and their ratings <div style="text-align: right">`GET /Admin/summary`
+- ## Get all caretakers and their ratings managed by an admin<div style="text-align: right">`GET /Admin/summary/:admin`
 
     ### Example:
-    GET https://shielded-oasis-35437.herokuapp.com/Admin/summary
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/summary/pdepport0
 
     Output:
     
@@ -824,13 +858,13 @@
 
 
 &nbsp;
-- ## Get number of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:date`
+- ## Get number of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:admin/:date`
 
     ### Params:
     - `date` : string
 
     ### Example:
-    GET https://shielded-oasis-35437.herokuapp.com/Admin/numpets/2020-08-02
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/numpets/pdepport0/2020-08-02
 
     Output:
     
@@ -839,26 +873,26 @@
 
 
 &nbsp;
-- ## Get total number of pet days in a month <div style="text-align: right">`GET /Admin/numdays/:date`
+- ## Get total number of pet days in a month <div style="text-align: right">`GET /Admin/numdays/:admin/:date`
 
     ### Params:
     - `date` : string
 
     ### Example:
-    GET https://shielded-oasis-35437.herokuapp.com/Admin/numdays/2020-08-02
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/numdays/pdepport0/2020-08-02
 
     Output:
     
     `{"petdays":"5"}`
 
 &nbsp;
-- ## Get all salaries of caretakers in amonth <div style="text-align: right"> `GET /Admin/salary/:date`
+- ## Get all salaries of CTs under an admin <div style="text-align: right"> `GET /Admin/salary/:admin/:date`
 
     ### Params:
     - `date` : string
 
     ### Example:
-    GET https://shielded-oasis-35437.herokuapp.com/Admin/salary/2020-08-02
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/salary/pdepport0/2020-08-02
 
     Output:
     

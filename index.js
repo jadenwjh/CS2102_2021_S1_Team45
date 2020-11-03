@@ -29,9 +29,9 @@ app.get("/", async (req, res) => {
 */ 
 
 /* 
-=======================
-|    login/register   |
-=======================
+==============================
+|    login/register/delete   |
+==============================
 */ 
 
 // Login
@@ -113,6 +113,25 @@ app.post("/Users/register", async (req, res) => {
     console.error(err.message);
   }
 });
+
+// Delete
+app.delete("/Users/delete", async (req, res) => {
+  try {
+    const delUser = await pool.query(
+      `DELETE FROM Users 
+      WHERE '${req.body.username}' = username
+      AND '${req.body.password}' = password RETURNING *;`
+    );
+    if (!Array.isArray(getUsers.rows) || !getUsers.rows.length) {
+      throw Error("Cannot delete. Check for existing approved bids.");
+    }
+    res.json(deluser.rows[0]);
+
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 
 /* 
 =======================
@@ -675,13 +694,14 @@ app.post("/Admin/PetTypes", async (req, res) => {
   }
 });
 
-// Get all caretakers and rating
-app.get("/Admin/summary", async (req, res) => {
+// Get all caretakers and rating under an admin
+app.get("/Admin/summary/:admin", async (req, res) => {
   try {
     const caretakerSummary = await pool.query(
-      `SELECT Bids.caretaker, AVG(rating) AS averageRating
-      FROM Bids
-      GROUP BY caretaker
+      `SELECT b.caretaker, AVG(rating) AS averageRating
+      FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
+      WHERE c.manager = '${req.params.admin}'
+      GROUP BY b.caretaker
       ORDER BY averageRating;`
     );
 
@@ -691,15 +711,16 @@ app.get("/Admin/summary", async (req, res) => {
   }
 });
 
-// Get number of pets taken care of in a month
-app.get("/Admin/numpets/:date", async (req, res) => {
+// Get number of pets taken care of in a month by CTs under an admin
+app.get("/Admin/numpets/:admin/:date", async (req, res) => {
   try {
     const numpets = await pool.query(
       `SELECT SUM(count) as Totalpets
       FROM (
       SELECT 1 as count
-      FROM Bids b 
+      FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
       WHERE b.status = 'a'
+      AND c.manager = '${req.params.admin}'
       AND b.avail <= CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)  + INTERVAL '1 month' - INTERVAL '1 day'
       AND b.avail >= CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
       GROUP BY b.petowner, b.petname, b.caretaker, b.edate ) as t1
@@ -712,14 +733,15 @@ app.get("/Admin/numpets/:date", async (req, res) => {
   }
 });
 
-// Get total number of pet days in a month
-app.get("/Admin/numdays/:date", async (req, res) => {
+// Get total number of pet days in a month by CTs under an admin
+app.get("/Admin/numdays/:admin/:date", async (req, res) => {
   try {
     const numdays = await pool.query(
       `SELECT COUNT(*) as petdays 
-      FROM Bids AS b
-      WHERE b.status='a' 
-      AND avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
+      FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
+      WHERE b.status = 'a'
+      AND c.manager = '${req.params.admin}'
+      AND b.avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
       AND CAST(date_trunc('month', DATE '${req.params.date}') AS DATE) + INTERVAL '1 month' - INTERVAL '1 day'; `
     );
 
@@ -729,8 +751,8 @@ app.get("/Admin/numdays/:date", async (req, res) => {
   }
 });
 
-// Get all salaries
-app.get("/Admin/salary/:date", async (req, res) => {
+// Get all salaries of CTs under an admin
+app.get("/Admin/salary/:admin/:date", async (req, res) => {
   try {
     const month = `CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)`
     query = `SELECT bb.caretaker, sum*0.75 AS ptsalary
@@ -752,8 +774,9 @@ app.get("/Admin/salary/:date", async (req, res) => {
       AND bw.isPaid = TRUE 
       AND bw.status = 'a' 
       GROUP BY bw.caretaker  
-    ) AS bb
+    ) AS bb INNER JOIN caretakers c ON bb.caretaker = c.username
     WHERE bb.caretaker IN (SELECT username FROM Parttimers)
+    AND c.manager = '${req.params.admin}'
 
     UNION
     /*for fulltimers */
@@ -776,9 +799,10 @@ app.get("/Admin/salary/:date", async (req, res) => {
       AND bw.isPaid = TRUE 
       AND bw.status = 'a' 
       GROUP BY bw.caretaker 
-    ) AS bb
+    ) AS bb INNER JOIN caretakers c ON bb.caretaker = c.username
     WHERE bb.caretaker NOT IN (SELECT p.username FROM Parttimers p)
     AND petdays > 60 
+    AND c.manager = '${req.params.admin}'
 
     UNION 
 
@@ -799,9 +823,10 @@ app.get("/Admin/salary/:date", async (req, res) => {
       AND bw.isPaid = TRUE 
       AND bw.status = 'a' 
       GROUP BY bw.caretaker 
-    ) AS bb
+    ) AS bb INNER JOIN caretakers c ON bb.caretaker = c.username
     WHERE bb.caretaker NOT IN (SELECT p.username FROM Parttimers p)
-    AND petdays <= 60;`
+    AND petdays <= 60
+    AND c.manager = '${req.params.admin}';`
     const salaries = await pool.query(query);
 
     res.json(salaries.rows);
