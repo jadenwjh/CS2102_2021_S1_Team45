@@ -693,6 +693,28 @@
     `"jgastickep2 now charges 22 for 'bird'"`
 
 &nbsp;
+- ## Get earnings for the month <div style="text-align: right">`POST /CareTaker/salary`
+
+    ### Body:
+    - `caretaker` : string
+    - `date` : date string, any day in the month of interest will work.
+
+    ### Example:
+    - POST https://shielded-oasis-35437.herokuapp.com//CareTaker/salary
+
+    Body:
+    ```
+    {
+        "caretaker": "jgastickep2",
+        "date": "2020-07-02"
+    }
+    ```
+
+    Output:
+    `{"salary":3000}`
+
+
+&nbsp;
 - ## For fulltimers: apply for leave  <div style="text-align: right">`POST /CareTaker/leaves`
 
     ### Body:
@@ -800,5 +822,35 @@
     `[{"caretaker":"jgastickep2","averagerating":"4.2000000000000000"}]`
 
 
+
 &nbsp;
-- ## Get all salaries (in progress)
+- ## Get number of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:date`
+
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/numpets/2020-08-02
+
+    Output:
+    
+    `{"totalpets":"1"}`
+
+
+
+&nbsp;
+- ## Get total number of pet days in a month <div style="text-align: right">`GET /Admin/numdays/:date`
+
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/numdays/2020-08-02
+
+    Output:
+    
+    `{"petdays":"5"}`
+
+&nbsp;
+- ## Get all salaries of caretakers in amonth <div style="text-align: right"> `GET /Admin/salary/:date`
+
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/salary/2020-08-02
+
+    Output:
+    
+    `[{"caretaker":"jgastickep2","ptsalary":3000}, ...]`

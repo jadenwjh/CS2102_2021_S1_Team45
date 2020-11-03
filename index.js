@@ -153,7 +153,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND B1.caretaker = B2.caretaker
         AND B1.edate = B2.edate) IS NULL 
       AND status = 'p'
-      AND (SELECT CURRENT_DATE) <= B1.edate
+      AND (SELECT currentDate()) <= B1.edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY edate;`
@@ -201,7 +201,7 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL 
       AND status='a'
-      AND (SELECT CURRENT_DATE) >= edate
+      AND (SELECT currentDate()) >= edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY Bids.edate;`
@@ -577,6 +577,18 @@ app.put("/CareTaker/pricing", async (req, res) => {
   }
 });
 
+// Get earnings for the month
+app.post("/CareTaker/salary", async (req, res) => {
+  try {
+    const abletocare = await pool.query(
+      `SELECT salary FROM viewMySalary('${req.body.caretaker}', CAST(date_trunc('month', DATE '${req.body.date}') AS DATE)); `
+    );
+    res.json(abletocare.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 /*  fulltime
     --------
 */
@@ -667,8 +679,9 @@ app.post("/Admin/PetTypes", async (req, res) => {
 app.get("/Admin/summary", async (req, res) => {
   try {
     const caretakerSummary = await pool.query(
-      `SELECT caretaker, AVG(rating) AS averageRating from Bids 
-      GROUP BY caretaker 
+      `SELECT Bids.caretaker, AVG(rating) AS averageRating
+      FROM Bids
+      GROUP BY caretaker
       ORDER BY averageRating;`
     );
 
@@ -677,10 +690,126 @@ app.get("/Admin/summary", async (req, res) => {
     console.error(err.message);
   }
 });
-// TODO update
+
+// Get number of pets taken care of in a month
+app.get("/Admin/numpets/:date", async (req, res) => {
+  try {
+    const numpets = await pool.query(
+      `SELECT SUM(count) as Totalpets
+      FROM (
+      SELECT 1 as count
+      FROM Bids b 
+      WHERE b.status = 'a'
+      AND b.avail <= CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)  + INTERVAL '1 month' - INTERVAL '1 day'
+      AND b.avail >= CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
+      GROUP BY b.petowner, b.petname, b.caretaker, b.edate ) as t1
+      `
+    );
+
+    res.json(numpets.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Get total number of pet days in a month
+app.get("/Admin/numdays/:date", async (req, res) => {
+  try {
+    const numdays = await pool.query(
+      `SELECT COUNT(*) as petdays 
+      FROM Bids AS b
+      WHERE b.status='a' 
+      AND avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
+      AND CAST(date_trunc('month', DATE '${req.params.date}') AS DATE) + INTERVAL '1 month' - INTERVAL '1 day'; `
+    );
+
+    res.json(numdays.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
 // Get all salaries
-// TODO 
+app.get("/Admin/salary/:date", async (req, res) => {
+  try {
+    const month = `CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)`
+    query = `SELECT bb.caretaker, sum*0.75 AS ptsalary
+    FROM (
+      SELECT b.caretaker, SUM(price)
+      FROM Bids b 
+      WHERE b.avail <= ${month} + interval '1 month'
+      AND b.avail >= ${month} 
+      AND b.isPaid = TRUE 
+      AND b.status = 'a' 
+      GROUP BY b.caretaker
+
+      UNION 
+
+      SELECT bw.caretaker, SUM(price)
+      FROM BidsWithoutPetOwner bw
+      WHERE bw.avail <= ${month} + interval '1 month'
+      AND bw.avail >= ${month} 
+      AND bw.isPaid = TRUE 
+      AND bw.status = 'a' 
+      GROUP BY bw.caretaker  
+    ) AS bb
+    WHERE bb.caretaker IN (SELECT username FROM Parttimers)
+
+    UNION
+    /*for fulltimers */
+    /*fulltimers wage*/
+
+    SELECT bb.caretaker, 3000+ ((wage - 3000) *0.8 ) AS FTsalary
+    FROM (
+      SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
+      FROM Bids b 
+      WHERE b.avail <= ${month} + interval '1 month'
+      AND b.avail >= ${month} 
+      AND b.isPaid = TRUE 
+      AND b.status = 'a' 
+      GROUP BY b.caretaker 
+      UNION 
+      SELECT bw.caretaker, COUNT(*) as petdays, SUM(price) as wage
+      FROM BidsWithoutPetOwner bw 
+      WHERE bw.avail <= ${month} + interval '1 month'
+      AND bw.avail >= ${month} 
+      AND bw.isPaid = TRUE 
+      AND bw.status = 'a' 
+      GROUP BY bw.caretaker 
+    ) AS bb
+    WHERE bb.caretaker NOT IN (SELECT p.username FROM Parttimers p)
+    AND petdays > 60 
+
+    UNION 
+
+    SELECT caretaker, 3000 AS FTsalary
+    FROM (
+      SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
+      FROM Bids b 
+      WHERE b.avail <= ${month} + interval '1 month'
+      AND b.avail >= ${month} 
+      AND b.isPaid = TRUE 
+      AND b.status = 'a' 
+      GROUP BY b.caretaker 
+      UNION 
+      SELECT bw.caretaker, COUNT(*) as petdays, SUM(price) as wage
+      FROM BidsWithoutPetOwner bw 
+      WHERE bw.avail <= ${month} + interval '1 month'
+      AND bw.avail >= ${month} 
+      AND bw.isPaid = TRUE 
+      AND bw.status = 'a' 
+      GROUP BY bw.caretaker 
+    ) AS bb
+    WHERE bb.caretaker NOT IN (SELECT p.username FROM Parttimers p)
+    AND petdays <= 60;`
+    const salaries = await pool.query(query);
+
+    res.json(salaries.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 
 /* 
     ###########################

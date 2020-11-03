@@ -141,7 +141,7 @@ CREATE TABLE InvalidatedBids ( /*For pet owners to check their bids rejected due
 CREATE OR REPLACE FUNCTION currentDate() /*To track today's date, currently uses dummy*/
 RETURNS DATE AS $$
 	BEGIN
-		RETURN (SELECT CAST('2020-12-01'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
+		RETURN (SELECT CURRENT_DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
 	END; $$
 LANGUAGE plpgsql;
 
@@ -689,7 +689,7 @@ addCareTaker(username VARCHAR, email VARCHAR, profile VARCHAR,
 $$ 
 	DECLARE sdate DATE;
 	DECLARE edate DATE;
-	
+
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
 			INSERT INTO Users VALUES(username, email, profile, address, phone);
@@ -782,3 +782,88 @@ CREATE OR REPLACE PROCEDURE applyLeave(ctname VARCHAR, startdate DATE, enddate D
 		END LOOP;
 	END; $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION 
+viewMySalary(myUsername VARCHAR, startofMonth DATE) 
+RETURNS TABLE (caretaker VARCHAR, salary FLOAT) AS $$
+	BEGIN 
+		/*parttimers*/	
+		IF myUsername IN (SELECT p.username FROM Parttimers p) THEN 
+			RETURN QUERY (
+			SELECT bb.caretaker, sum*0.75 AS ptsalary
+			FROM (
+				SELECT b.caretaker, SUM(price)
+				FROM Bids b 
+				WHERE b.avail < startofMonth + interval '1 month'
+				AND b.avail >= startofMonth 
+				AND b.isPaid = TRUE 
+				AND b.status = 'a' 
+				GROUP BY b.caretaker 
+
+				UNION 
+
+				SELECT bw.caretaker, SUM(price)
+				FROM BidsWithoutPetOwner bw
+				WHERE bw.avail < startofMonth + interval '1 month'
+				AND bw.avail >= startofMonth
+				AND bw.isPaid = TRUE 
+				AND bw.status = 'a' 
+				GROUP BY bw.caretaker
+			) AS bb
+			WHERE bb.caretaker = myUsername);
+		END IF;
+
+		/*fulltimer*/ 
+		IF myUsername IN (SELECT c.username FROM Caretakers c EXCEPT (SELECT pt.username FROM Parttimers pt)) THEN 
+			RETURN QUERY (
+			SELECT bb.caretaker, 3000 + ((wage - 3000) * 0.8 ) AS FTsalary
+			FROM (
+				SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
+				FROM Bids b 
+				WHERE b.avail < startofMonth + interval '1 month'
+				AND b.avail >= startofMonth
+				AND b.isPaid = TRUE 
+				AND b.status = 'a' 
+				GROUP BY b.caretaker 
+
+				UNION 
+
+				SELECT bw.caretaker, COUNT(*) as petdays, SUM(price)
+				FROM BidsWithoutPetOwner bw
+				WHERE bw.avail < startofMonth + interval '1 month'
+				AND bw.avail >= startofMonth 
+				AND bw.isPaid = TRUE 
+				AND bw.status = 'a' 
+				GROUP BY bw.caretaker
+			) AS bb
+			WHERE petdays > 60 
+			AND bb.caretaker = myUsername
+
+			UNION 
+
+			SELECT bb.caretaker, 3000 AS FTsalary
+			FROM (
+				SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
+				FROM Bids b 
+				WHERE b.avail < startofMonth + interval '1 month'
+				AND b.avail >= startofMonth
+				AND b.isPaid = TRUE 
+				AND b.status = 'a' 
+				GROUP BY b.caretaker 
+
+				UNION 
+
+				SELECT bw.caretaker, COUNT(*) as petdays, SUM(price)
+				FROM BidsWithoutPetOwner bw
+				WHERE bw.avail < startofMonth + interval '1 month'
+				AND bw.avail >= startofMonth 
+				AND bw.isPaid = TRUE 
+				AND bw.status = 'a' 
+				GROUP BY bw.caretaker 
+			) AS bb
+			WHERE petdays <= 60 
+			AND bb.caretaker = myUsername);
+		END IF; 
+	END;  $$
+LANGUAGE plpgsql;
+
