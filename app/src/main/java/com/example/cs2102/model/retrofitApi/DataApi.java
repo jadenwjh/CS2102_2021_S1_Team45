@@ -100,8 +100,7 @@ public interface DataApi {
     @GET(Strings.EXPIRED_BIDS + "/{username}/history")
     Single<ArrayList<LinkedTreeMap<String,String>>> getExpiredBids(@Path("username") String username);
 
-    //TODO check if can set isPaid
-    @POST(Strings.REVIEW)
+    @POST(Strings.LEAVE_RATING)
     Completable leaveReview(@Body HashMap<String, Object> params);
 
     /**

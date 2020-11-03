@@ -8,10 +8,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.retrofitApi.DataApiService;
+import com.google.gson.internal.LinkedTreeMap;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class CareTakerHomepageViewModel extends ViewModel {
@@ -19,9 +21,33 @@ public class CareTakerHomepageViewModel extends ViewModel {
     public MutableLiveData<Boolean> loadErrorPT = new MutableLiveData<>();
     public MutableLiveData<Boolean> loadErrorFT = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+    public MutableLiveData<String> contract = new MutableLiveData<>();
+    public MutableLiveData<Boolean> contractFetched = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
+
+    public void fetchContract(String careTakerName) {
+        contractFetched.setValue(false);
+        disposable.add(dataApiService.getCTContract(careTakerName)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<LinkedTreeMap<String,String>>() {
+                    @Override
+                    public void onSuccess(LinkedTreeMap<String,String> ct) {
+                        String con = ct.get("contract");
+                        contract.setValue(con);
+                        contractFetched.setValue(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("Fetch contract", "Failed");
+                        e.printStackTrace();
+                    }
+                })
+        );
+    }
 
     public void requestToSendAvailability(String careTakerUsername, String date, Context context) {
         loading.setValue(true);

@@ -32,17 +32,4 @@ public class UserProfile {
     public String address;
     public String phoneNum;
     public String accType;
-
-    //is CareTaker
-    public String contract;
-
-    public void setUserContract(String type) {
-        this.contract = type;
-    }
-
-    //is PetOwner
-    public String petname;
-    public String petprofile;
-    public String specialreq;
-    public String category;
 }

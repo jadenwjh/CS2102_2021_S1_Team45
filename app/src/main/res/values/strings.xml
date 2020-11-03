@@ -91,5 +91,6 @@
     <string name="rating">Rating:</string>
     <string name="submit">Submit</string>
     <string name="transfer_type">Transfer type</string>
+    <string name="both">both</string>
 
 </resources>

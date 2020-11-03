@@ -70,6 +70,21 @@ public class DataApiService {
         params.put("admin", admin);
         return dataApi.addCareTaker(params);
     }
+    public Completable addBoth(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, boolean isPT, String admin) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("username", username);
+        params.put("email",email);
+        params.put("password", password);
+        params.put("profile", profile);
+        params.put("address", address);
+        params.put("phoneNum", String.valueOf(phoneNum));
+        params.put("creditCard", String.valueOf(creditCard));
+        params.put("bankAcc", String.valueOf(bankAcc));
+        params.put("acctype", "both");
+        params.put("isPartTime", isPT);
+        params.put("admin", admin);
+        return dataApi.addCareTaker(params);
+    }
     public Single<ArrayList<LinkedTreeMap<String,String>>> verifyLogin(String uName, String pw, String type) {
         HashMap<String, String> params = new HashMap<>();
         params.put("username", uName);

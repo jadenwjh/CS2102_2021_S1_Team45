@@ -1,6 +1,7 @@
 package com.example.cs2102.view.petOwnerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -106,18 +108,23 @@ public class ReviewFragment extends Fragment {
             boolean isPaid = hasPaid.isChecked();
             String writtenReview = reviewText.getText().toString();
             int rate = Integer.parseInt(setRating.getSelectedItem().toString());
-            if (isPaid && writtenReview.trim().length() != 0 && rate != 0) {
-                reviewViewModel.submitReview(
-                        careTakerBid.getCareTaker(),
-                        careTakerBid.getPetName(),
-                        careTakerBid.getCareTaker(),
-                        careTakerBid.getStartDate().substring(0,10),
-                        rate,
-                        writtenReview,
-                        getContext(),
-                        true
-                );
-                exitReviewFragmentCallback.onExitReview();
+            if (isPaid) {
+                if (writtenReview.trim().length() != 0 && rate != 0) {
+                    reviewViewModel.submitReview(
+                            careTakerBid.getPetOwner(),
+                            careTakerBid.getPetName(),
+                            careTakerBid.getCareTaker(),
+                            careTakerBid.getStartDate().substring(0,10),
+                            rate,
+                            writtenReview,
+                            getContext(),
+                            true
+                    );
+                } else {
+                    Toast.makeText(getContext(), "Ensure that you left both review and rating", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getContext(), "Ensure that you have paid before leaving review and rating", Toast.LENGTH_SHORT).show();
             }
         });
     }

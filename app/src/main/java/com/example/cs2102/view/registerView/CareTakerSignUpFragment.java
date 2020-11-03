@@ -82,10 +82,6 @@ public class CareTakerSignUpFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        if (registerListener != null) {
-            Log.e("POSignUp", "registerListener is impl");
-        }
-
         register.setOnClickListener(currView -> {
             Log.e("CTSignUp", "Register clicked");
             String uname = username.getText().toString();
@@ -97,7 +93,7 @@ public class CareTakerSignUpFragment extends Fragment {
             int bank = Integer.parseInt(bankAcc.getText().toString());
             String acc = Strings.CARE_TAKER;
             String pro = profile.getText().toString();
-            boolean isFullTime = isFT.isChecked();
+            boolean isFullTime = !isFT.isChecked();
             String adminUsername = admin.getText().toString();
 
             registerListener.onRegisterCareTaker(uname,mail,pw,pro,add,num,cc,bank,acc,isFullTime,adminUsername);

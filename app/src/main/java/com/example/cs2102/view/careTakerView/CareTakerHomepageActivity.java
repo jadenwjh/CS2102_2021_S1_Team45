@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -68,74 +69,81 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
-        if (savedInstanceState == null) {
-            priceFragment = CareTakerSetPriceFragment.newInstance(username);
-            priceFragment.setCareTakerSetPriceRefresh(new CareTakerSetPriceFragment.CareTakerSetPriceRefresh() {
-                @Override
-                public void refreshFragment() {
-                    ft = fm.beginTransaction();
-                    ft.detach(priceFragment);
-                    ft.attach(priceFragment);
-                    ft.commit();
+        homepageViewModel.fetchContract(username);
+        homepageViewModel.contractFetched.observe(this, isReady -> {
+            if (isReady) {
+                String contract = homepageViewModel.contract.getValue();
+                Log.e("Fetched contract", contract);
+                if (savedInstanceState == null) {
+                    priceFragment = CareTakerSetPriceFragment.newInstance(username);
+                    priceFragment.setCareTakerSetPriceRefresh(new CareTakerSetPriceFragment.CareTakerSetPriceRefresh() {
+                        @Override
+                        public void refreshFragment() {
+                            ft = fm.beginTransaction();
+                            ft.detach(priceFragment);
+                            ft.attach(priceFragment);
+                            ft.commit();
+                        }
+                    });
+
+                    bidsFragment = CareTakerBidsFragment.newInstance(username);
+                    bidsFragment.setCareTakerBidsFragmentListener(selectedBid -> {
+                        selectedBid.setBidSelectedFragmentListener(() -> {
+                            switchFragment(Strings.BIDS);
+                        });
+                        ft = fm.beginTransaction();
+                        toggleHideNavigator(true);
+                        ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
+                    });
+
+                    setDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+                            String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
+                            if (contract.equals(Strings.PART_TIME)) {
+                                homepageViewModel.requestToSendAvailability(username, date, CareTakerHomepageActivity.this);
+                            }
+                            if (contract.equals(Strings.FULL_TIME)) {
+                                homepageViewModel.requestToApplyLeave(username, date, CareTakerHomepageActivity.this);
+                            }
+                        }
+                    });
+
+                    availabilityFragment = CareTakerAvailabilityFragment.newInstance(contract);
+                    Calendar now = Calendar.getInstance();
+                    availabilityFragment.setAvailabilityDatePicker(days -> {
+                        String date = "";
+                        DatePickerDialog datePicker = DatePickerDialog.newInstance(dateSetListener, now);
+                        datePicker.setAccentColor(Color.BLACK);
+                        datePicker.setSelectableDays(days);
+                        datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
+                    });
+
+                    //default bid page
+                    ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
                 }
-            });
 
-            bidsFragment = CareTakerBidsFragment.newInstance(username);
-            bidsFragment.setCareTakerBidsFragmentListener(selectedBid -> {
-                selectedBid.setBidSelectedFragmentListener(() -> {
-                    switchFragment(Strings.BIDS);
-                });
-                ft = fm.beginTransaction();
-                toggleHideNavigator(true);
-                ft.replace(R.id.careTaker_fragment, selectedBid, CURRENT_FRAGMENT).commit();
-            });
+                ButterKnife.bind(this);
 
-            setDateSetListener(new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                    String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
-                    if (userProfile.contract.equals(Strings.PART_TIME)) {
-                        homepageViewModel.requestToSendAvailability(username, date, CareTakerHomepageActivity.this);
-                    }
-                    if (userProfile.contract.equals(Strings.FULL_TIME)) {
-                        homepageViewModel.requestToApplyLeave(username, date, CareTakerHomepageActivity.this);
-                    }
+                if (contract.equals(Strings.FULL_TIME)) {
+                    viewLeavesOrFree.setText(R.string.leaves);
                 }
-            });
 
-            availabilityFragment = CareTakerAvailabilityFragment.newInstance(userProfile.contract);
-            Calendar now = Calendar.getInstance();
-            availabilityFragment.setAvailabilityDatePicker(days -> {
-                String date = "";
-                DatePickerDialog datePicker = DatePickerDialog.newInstance(dateSetListener, now);
-                datePicker.setAccentColor(Color.BLACK);
-                datePicker.setSelectableDays(days);
-                datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
-            });
+                if (contract.equals(Strings.PART_TIME)) {
+                    viewLeavesOrFree.setText(R.string.availability);
+                }
 
-            //default bid page
-            ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
-        }
+                viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.LEAVES_AVAILABILITY));
 
-        ButterKnife.bind(this);
+                viewBids.setOnClickListener(view -> switchFragment(Strings.BIDS));
 
-        if (userProfile.contract.equals(Strings.FULL_TIME)) {
-            viewLeavesOrFree.setText(R.string.leaves);
-        }
+                viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
 
-        if (userProfile.contract.equals(Strings.PART_TIME)) {
-            viewLeavesOrFree.setText(R.string.availability);
-        }
+                careTakerHomepageObserver();
 
-        viewLeavesOrFree.setOnClickListener(view -> switchFragment(Strings.LEAVES_AVAILABILITY));
-
-        viewBids.setOnClickListener(view -> switchFragment(Strings.BIDS));
-
-        viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
-
-        careTakerHomepageObserver();
-
-        loadingBar.setVisibility(View.GONE);
+                loadingBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void toggleHideNavigator(boolean hide) {
@@ -178,13 +186,11 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 loadingBar.setVisibility(View.GONE);
             }
         });
-
         homepageViewModel.loadErrorPT.observe(this, isLoading -> {
             if (isLoading) {
                 Toast.makeText(this, "This date has already been chosen", Toast.LENGTH_SHORT).show();
             }
         });
-
         homepageViewModel.loadErrorFT.observe(this, isLoading -> {
             if (isLoading) {
                 Toast.makeText(this, "Violates 150 days constraint", Toast.LENGTH_SHORT).show();

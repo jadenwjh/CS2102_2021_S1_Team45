@@ -1,6 +1,7 @@
 package com.example.cs2102.view.petOwnerView;
 
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.google.gson.internal.LinkedTreeMap;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -155,6 +157,26 @@ public class PetOwnerListingFragment extends Fragment {
     private void showRangePicker() {
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
         CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        constraintsBuilder.setValidator(new CalendarConstraints.DateValidator() {
+            @Override
+            public boolean isValid(long date) {
+                if (date < Calendar.getInstance().getTimeInMillis()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+
+            }
+        });
         builder.setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar);
         builder.setTitleText(R.string.select_dates);
         builder.setCalendarConstraints(constraintsBuilder.build());

@@ -113,11 +113,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginObserver() {
         loginViewModel.loginSuccess.observe(this, success -> {
             if (success && userProfile.accType != null) {
-                if (userProfile.accType.equals(Strings.CARE_TAKER)) {
-                    loginViewModel.fetchContract(userProfile.username);
-                } else {
-                    startUserPage(userProfile.accType);
-                }
+                startUserPage(userProfile.accType);
             }
         });
 
@@ -129,11 +125,6 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 loadingBar.setVisibility(View.INVISIBLE);
             }
-        });
-
-        loginViewModel.contract.observe(this, con -> {
-            userProfile.setUserContract(con);
-            startUserPage(userProfile.accType);
         });
 
         loginViewModel.userProfile.observe(this, profile -> userProfile.setUserProfile(profile.get("username"), profile.get("password"), profile.get("email"), profile.get("profile"), profile.get("address"), profile.get("phoneNum"), profile.get("acctype")));

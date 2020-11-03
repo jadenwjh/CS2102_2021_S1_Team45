@@ -80,6 +80,35 @@ public class RegisterViewModel extends ViewModel {
         );
     }
 
+    public void registerAsBoth(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, boolean isPT, String admin) {
+        Log.e(this.toString(), String.format("Username:%s, Email:%s, Password:%s, Profile:%s, Address:%s, phoneNum:%s, credit:%d, bank:%d, FullTime:%s, Admin:%s", username,email,password,profile,address,phoneNum,creditCard,bankAcc,isPT,admin));
+        loading.setValue(true);
+        registered.setValue(false);
+        Log.e(this.toString(), "attempting to register BOTH");
+        disposable.add(dataApiService.addBoth(username, email, password, profile, address, phoneNum, creditCard, bankAcc, isPT, admin)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Log.e(this.toString(), "success");
+                        registered.setValue(true);
+                        loadError.setValue(false);
+                        loading.setValue(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("RequestError", String.valueOf(e));
+                        Log.e(this.toString(), "failed");
+                        registered.setValue(false);
+                        loadError.setValue(true);
+                        loading.setValue(false);
+                    }
+                })
+        );
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();

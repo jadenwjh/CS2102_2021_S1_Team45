@@ -25,6 +25,13 @@ public class ReviewViewModel extends ViewModel {
     public void submitReview(String petOwner, String petName, String careTaker, String avail, int rating, String review, Context context, boolean isPaid) {
         reviewSubmitted.setValue(false);
         loading.setValue(true);
+        Log.e("Review send values", petOwner);
+        Log.e("Review send values", petName);
+        Log.e("Review send values", careTaker);
+        Log.e("Review send values", avail);
+        Log.e("Review send values", Integer.toString(rating));
+        Log.e("Review send values", review);
+        Log.e("Review send values", isPaid ? "true" : "false");
         disposable.add(dataApiService.leaveReview(petOwner, petName, careTaker, avail, rating, review, isPaid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

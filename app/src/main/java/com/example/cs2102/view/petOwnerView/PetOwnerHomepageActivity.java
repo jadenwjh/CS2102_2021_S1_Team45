@@ -3,6 +3,7 @@ package com.example.cs2102.view.petOwnerView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -80,6 +81,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
             bidsFragment.setBidsFragmentReviewListener(selectedBid -> {
                 selectedBid.setExitReviewFragmentCallback(() -> {
                     switchFragment(Strings.BIDS);
+                    bidsFragment.historyButton.setBackgroundColor(Color.CYAN);
                 });
                 ft = fm.beginTransaction();
                 toggleHideNavigator(true);
