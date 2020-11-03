@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -151,7 +152,9 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (listingFragment.getUserVisibleHint()) {
+        if (fm.findFragmentByTag(CURRENT_FRAGMENT) instanceof ReviewFragment) {
+            switchFragment(Strings.BIDS);
+        } else if (listingFragment.getUserVisibleHint()) {
             switchFragment(Strings.LISTINGS);
         }
         hideKeyboard(this);
