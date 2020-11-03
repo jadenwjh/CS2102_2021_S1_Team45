@@ -142,6 +142,7 @@ app.get("/PetOwner/:petowner", async (req, res) => {
 app.get("/PetOwner/Bids/:petowner", async (req, res) => {
   try {
     const getRating = await pool.query(
+      // Smallest avail(sdate) from each group
       `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
       FROM Bids AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
       WHERE B1.petowner = '${req.params.petowner}'
@@ -150,7 +151,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND B1.petowner = B2.petowner
         AND B1.petname = B2.petname
         AND B1.caretaker = B2.caretaker
-        AND B1.edate = B2.edate) IS NULL
+        AND B1.edate = B2.edate) IS NULL 
       AND status = 'p'
       AND (SELECT CURRENT_DATE) <= B1.edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
@@ -166,6 +167,9 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
 // Leave rating and reviews for caretaker
 app.post("/PetOwner/RatingsReviews", async (req, res) => {
   try {
+    if(!req.body.hasOwnProperty('rating') || !req.body.hasOwnProperty('review')){
+      throw Error("Ratings and/or reviews are missing!")
+    };
     const _ = await pool.query(
       `CALL rateCareTaker('${req.body.petowner}', '${req.body.petname}',
       '${req.body.caretaker}', '${req.body.avail}', ${req.body.rating}, '${req.body.review}');
