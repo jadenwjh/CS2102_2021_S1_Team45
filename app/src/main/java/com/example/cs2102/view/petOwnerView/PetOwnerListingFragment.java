@@ -245,4 +245,8 @@ public class PetOwnerListingFragment extends Fragment {
             }
         });
     }
+    public void clearSelection() {
+        endDate = "";
+        startDate = "";
+    }
 }

@@ -124,6 +124,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         switch (key) {
             case Strings.LISTINGS:
                 ft = fm.beginTransaction();
+                listingFragment.clearSelection();
                 ft.replace(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.PETS:
