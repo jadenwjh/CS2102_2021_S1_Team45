@@ -17,7 +17,7 @@ import retrofit2.http.Path;
 public interface DataApi {
 
     /**
-     * LOGIN + REGISTER
+     * LOGIN + REGISTER + DELETE
      * */
 
     @POST(Strings.LOGIN)
@@ -28,6 +28,9 @@ public interface DataApi {
 
     @POST(Strings.REGISTER)
     Completable addCareTaker(@Body HashMap<String, Object> params);
+
+    @HTTP(method = "DELETE", path = Strings.DELETE_USER, hasBody = true)
+    Completable deleteUser(@Body HashMap<String, String> params);
 
     /**
      * CARE TAKER

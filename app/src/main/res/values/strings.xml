@@ -92,5 +92,6 @@
     <string name="submit">Submit</string>
     <string name="transfer_type">Transfer type</string>
     <string name="both">both</string>
+    <string name="delete_account">Delete account</string>
 
 </resources>

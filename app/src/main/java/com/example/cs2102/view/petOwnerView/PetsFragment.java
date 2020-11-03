@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -106,8 +107,18 @@ public class PetsFragment extends Fragment {
                     String petName = name.getText().toString();
                     String petProfile = profile.getText().toString();
                     String needs = request.getText().toString();
-                    petsViewModel.addPet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
-                    actionObserver();
+                    if (petName.trim().length() != 0) {
+                        if (petProfile.trim().length() != 0 || needs.trim().length() != 0) {
+                            petsViewModel.addPet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
+                            actionObserver();
+                        } else {
+                            Toast.makeText(getContext(), "Your pet profile and requirements cannot be blank", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Your pet name cannot be blank", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Your pet type cannot be blank", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -120,8 +131,18 @@ public class PetsFragment extends Fragment {
                     String petName = name.getText().toString();
                     String petProfile = profile.getText().toString();
                     String needs = request.getText().toString();
-                    petsViewModel.updatePet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
-                    actionObserver();
+                    if (petName.trim().length() != 0) {
+                        if (petProfile.trim().length() != 0 || needs.trim().length() != 0) {
+                            petsViewModel.updatePet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
+                            actionObserver();
+                        } else {
+                            Toast.makeText(getContext(), "Your pet profile and requirements cannot be blank", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Your pet name cannot be blank", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Your pet type cannot be blank", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -131,9 +152,11 @@ public class PetsFragment extends Fragment {
             public void onClick(View view) {
                 hideKeyboard(getActivity());
                 String petName = name.getText().toString();
-                if (!petName.equals("")) {
+                if (petName.trim().length() != 0) {
                     petsViewModel.deletePet(petOwnerUsername, petName, getContext());
                     actionObserver();
+                } else {
+                    Toast.makeText(getContext(), "Your pet name cannot be blank", Toast.LENGTH_SHORT).show();
                 }
             }
         });

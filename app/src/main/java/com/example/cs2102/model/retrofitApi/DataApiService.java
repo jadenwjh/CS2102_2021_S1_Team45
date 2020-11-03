@@ -39,7 +39,7 @@ public class DataApiService {
     }
 
     /**
-     * LOGIN + REGISTER
+     * LOGIN + REGISTER + DELETE
      * */
 
     public Completable addPetOwner(String username, String email, String password, String profile, String address, int phoneNum, int creditCard, int bankAcc, String acctype) {
@@ -91,6 +91,12 @@ public class DataApiService {
         params.put("password", pw);
         params.put("acctype",type);
         return dataApi.verifyUser(params);
+    }
+    public Completable deleteUser(String username, String password) {
+        HashMap<String,String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
+        return dataApi.deleteUser(params);
     }
 
     /**

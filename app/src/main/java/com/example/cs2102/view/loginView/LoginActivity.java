@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -21,8 +22,11 @@ import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.model.retrofitApi.Strings;
 import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
+import com.example.cs2102.view.deleteView.DeleteActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepageActivity;
 import com.example.cs2102.view.registerView.RegisterActivity;
+
+import org.w3c.dom.Text;
 
 import java.util.regex.Pattern;
 
@@ -49,6 +53,10 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.loading)
     ProgressBar loadingBar;
 
+    @BindView(R.id.delete)
+    TextView delete;
+
+
     private LoginViewModel loginViewModel;
     private UserProfile userProfile;
 
@@ -72,6 +80,10 @@ public class LoginActivity extends AppCompatActivity {
             checkValidity(pw);
             loginViewModel.loginAttempt(uName, pw, t);
         });
+
+        signUp.setOnClickListener(view -> startRegisterPage());
+
+        delete.setOnClickListener(view -> startDeleteUser());
 
         loginObserver();
     }
@@ -117,8 +129,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        signUp.setOnClickListener(view -> startRegisterPage());
-
         loginViewModel.loading.observe(this, aBoolean -> {
             if (aBoolean) {
                 loadingBar.setVisibility(View.VISIBLE);
@@ -133,6 +143,11 @@ public class LoginActivity extends AppCompatActivity {
     private void startRegisterPage() {
         Intent registerUser = new Intent(this, RegisterActivity.class);
         startActivity(registerUser);
+    }
+
+    private void startDeleteUser() {
+        Intent deleteUser = new Intent(this, DeleteActivity.class);
+        startActivity(deleteUser);
     }
 
     private void hideKeyboard(Activity activity) {
