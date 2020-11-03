@@ -1,5 +1,6 @@
 package com.example.cs2102.view.petOwnerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +84,7 @@ public class PetOwnerBidsAdapter extends RecyclerView.Adapter<PetOwnerBidsAdapte
             ButterKnife.bind(this, itemView);
 
             bidCard.setOnClickListener(v -> {
-                if (status.getText().toString().equals("Accepted")) {
+                if (status.getText().toString().equals("Status: Accepted")) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         CareTakerBid bid = careTakerBids.get(position);
@@ -94,10 +95,10 @@ public class PetOwnerBidsAdapter extends RecyclerView.Adapter<PetOwnerBidsAdapte
         }
 
         void bind(CareTakerBid bid) {
-            careTaker.setText(bid.getCareTaker());
-            petName.setText(bid.getPetName());
-            price.setText(bid.getPrice());
-            date.setText(String.format("Date: %s - %s", bid.getStartDate(), bid.getEndDate()));
+            careTaker.setText(String.format("Care Taker: %s", bid.getCareTaker()));
+            petName.setText(String.format("Pet: %s", bid.getPetName()));
+            price.setText(String.format("Price: $%s", bid.getPrice()));
+            date.setText(String.format("Date: %s to %s", bid.getStartDate().substring(0,10), bid.getEndDate().substring(0,10)));
             String currentStatus = bid.getStatus().equals("p") ? "Pending" : "Accepted";
             status.setText(String.format("Status: %s", currentStatus));
         }

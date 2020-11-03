@@ -22,10 +22,10 @@ public class ListingViewModel extends ViewModel {
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void submitBid(String username, String petName, String careTaker, String sdate, String edate, String payment, float price, Context context) {
+    public void submitBid(String username, String petName, String careTaker, String sdate, String edate, String payment, float price, String transfer, Context context) {
         bidSubmitted.setValue(false);
         loading.setValue(true);
-        disposable.add(dataApiService.submitPObid(username, petName, careTaker, sdate, edate, payment, price)
+        disposable.add(dataApiService.submitPObid(username, petName, careTaker, sdate, edate, payment, price, transfer)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {

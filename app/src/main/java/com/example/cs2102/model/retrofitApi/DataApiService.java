@@ -159,14 +159,14 @@ public class DataApiService {
         params.put("edate", edate);
         return dataApi.getListings(params);
     }
-    public Completable submitPObid(String username, String petName, String careTaker, String sdate, String edate, String payment, float price) {
+    public Completable submitPObid(String username, String petName, String careTaker, String sdate, String edate, String payment, float price, String transfer) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("petowner", username);
         params.put("petname", petName);
         params.put("caretaker", careTaker);
         params.put("sdate", sdate);
         params.put("edate", edate);
-        params.put("transferType", payment);
+        params.put("transferType", transfer);
         params.put("paymentType", payment);
         params.put("price", price);
         return dataApi.sendBidRequest(params);

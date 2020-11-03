@@ -88,13 +88,16 @@ public class ReviewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        loadingBar.setVisibility(View.VISIBLE);
+        loadingBar.setVisibility(View.GONE);
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
         generateRatings();
 
+        String sdate = careTakerBid.getStartDate().substring(0,10);
+        String edate = careTakerBid.getEndDate().substring(0,10);
+
         caretaker.setText(String.format("Care Taker: %s", careTakerBid.getCareTaker()));
         petname.setText(String.format("Pet name: %s", careTakerBid.getPetName()));
-        dateRange.setText(String.format("Date: %s - %s", careTakerBid.getStartDate(), careTakerBid.getEndDate()));
+        dateRange.setText(String.format("Date: %s to %s", sdate, edate));
         priceText.setText(String.format("Price: $%s", careTakerBid.getPrice()));
         transferType.setText(String.format("Transfer type: %s", careTakerBid.getTransfer()));
         paymentType.setText(String.format("Payment type: %s", careTakerBid.getPayment()));
@@ -108,7 +111,7 @@ public class ReviewFragment extends Fragment {
                         careTakerBid.getCareTaker(),
                         careTakerBid.getPetName(),
                         careTakerBid.getCareTaker(),
-                        careTakerBid.getStartDate(),
+                        careTakerBid.getStartDate().substring(0,10),
                         rate,
                         writtenReview,
                         getContext(),

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -37,6 +38,9 @@ public class ListingFragment extends Fragment {
 
     @BindView(R.id.listing_payment)
     Spinner paymentType;
+
+    @BindView(R.id.listing_transfer)
+    EditText transferType;
 
     @BindView(R.id.submit_bid)
     Button submitBid;
@@ -94,7 +98,8 @@ public class ListingFragment extends Fragment {
         submitBid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!petForBid.getName().equals("")) {
+                String t = transferType.getText().toString();
+                if (!petForBid.getName().equals("") && t.trim().length() != 0) {
                     String payment = paymentType.getSelectedItem().toString();
                     listingViewModel.submitBid(
                             username,
@@ -104,6 +109,7 @@ public class ListingFragment extends Fragment {
                             listing.getEndDate(),
                             payment,
                             Float.parseFloat(listing.getPrice()),
+                            t,
                             getContext());
                 }
             }

@@ -90,5 +90,6 @@
     <string name="have_you_paid">Have you paid?</string>
     <string name="rating">Rating:</string>
     <string name="submit">Submit</string>
+    <string name="transfer_type">Transfer type</string>
 
 </resources>
