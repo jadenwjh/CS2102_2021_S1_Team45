@@ -368,7 +368,7 @@ app.post("/PetOwner/Pets", async (req, res) => {
   '${req.body.profile}', 
   '${req.body.specialreq}', 
   '${req.body.category}') 
-  RETURNING *';`
+  RETURNING *;`
   try {
 
     const newPet = await pool.query(query);
@@ -646,15 +646,19 @@ app.get("/Admin/PetTypes", async (req, res) => {
   }
 });
 
-// Set pettype price
-app.put("/Admin/PetTypes", async (req, res) => {
+// Create a new pettype, or change pettype price if pettype exists
+app.post("/Admin/PetTypes", async (req, res) => {
   try {
-    const _ = await pool.query(
-      `UPDATE PetTypes SET basePrice = ${req.body.basePrice} 
-      WHERE category = '${req.body.category}';`
+    const newpt = await pool.query(
+      `INSERT INTO PetTypes (category, baseprice)
+      VALUES ('${req.body.category}', ${req.body.basePrice})
+      ON CONFLICT (category)
+      DO 
+        UPDATE SET basePrice = ${req.body.basePrice}
+      RETURNING *;`
     );
 
-    res.json(`PetType ${req.body.category} was updated`);
+    res.json(newpt.rows[0]);
   } catch (err) {
     console.error(err.message);
   }

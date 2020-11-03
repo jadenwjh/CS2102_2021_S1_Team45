@@ -765,14 +765,14 @@
 
 
 &nbsp;
-- ## Set base price for a pet type <div style="text-align: right">`PUT /Admin/PetTypes`
+- ## Create a new pettype, or change pettype price if pettype exists <div style="text-align: right">`POST /Admin/PetTypes`
 
     ### Body:
     - `basePrice` : float
     - `category` : string, pet type whose base price to change
 
     ### Example:
-    PUT https://shielded-oasis-35437.herokuapp.com/Admin/PetTypes
+    POST https://shielded-oasis-35437.herokuapp.com/Admin/PetTypes
 
     Body:
     ```
@@ -784,7 +784,7 @@
 
     Output: 
 
-    `PetType meowth was updated`
+    `{"basePrice": 101,"category": "meowth"}`
 
 &nbsp;
 - ## Get all caretakers and their ratings <div style="text-align: right">`GET /Admin/summary`
