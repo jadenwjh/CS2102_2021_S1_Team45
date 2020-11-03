@@ -8,23 +8,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.retrofitApi.DataApiService;
-import com.google.gson.internal.LinkedTreeMap;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.adapter.rxjava2.Result;
 
 public class ListingViewModel extends ViewModel {
 
@@ -52,6 +40,7 @@ public class ListingViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         Log.e("submitBid", "Failed");
+                        Toast.makeText(context, "This pet is served by a CT during this date range", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
                         e.printStackTrace();
                     }

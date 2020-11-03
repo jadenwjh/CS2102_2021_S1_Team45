@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -14,15 +13,14 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
-import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
 import com.example.cs2102.model.retrofitApi.Strings;
+import com.example.cs2102.view.careTakerView.viewModel.CareTakerHomepageViewModel;
 import com.example.cs2102.view.loginView.LoginActivity;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -97,10 +95,10 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
                     String date = String.format("%d-%d-%d", year, monthOfYear, dayOfMonth);
                     if (userProfile.contract.equals(Strings.PART_TIME)) {
-                        homepageViewModel.requestToSendAvailability(username, date);
+                        homepageViewModel.requestToSendAvailability(username, date, CareTakerHomepageActivity.this);
                     }
                     if (userProfile.contract.equals(Strings.FULL_TIME)) {
-                        homepageViewModel.requestToApplyLeave(username, date);
+                        homepageViewModel.requestToApplyLeave(username, date, CareTakerHomepageActivity.this);
                     }
                 }
             });

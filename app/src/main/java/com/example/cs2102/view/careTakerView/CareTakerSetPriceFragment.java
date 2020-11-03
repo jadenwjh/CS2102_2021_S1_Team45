@@ -73,6 +73,9 @@ public class CareTakerSetPriceFragment extends Fragment {
     @BindView(R.id.deletePetTypesList)
     Spinner deletePetTypesList;
 
+    @BindView(R.id.set_pet_hint)
+    TextView setHint;
+
     private static String currentCareTakerUsername;
 
     private CareTakerSetPriceViewModel pricesVM;
@@ -108,6 +111,7 @@ public class CareTakerSetPriceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         range.setVisibility(View.GONE);
+        setHint.setVisibility(View.VISIBLE);
         setPrice.setVisibility(View.GONE);
         removePrice.setEnabled(false);
         addPrice.setEnabled(false);
@@ -121,6 +125,7 @@ public class CareTakerSetPriceFragment extends Fragment {
         careTakerSetPriceAdapter.setPricesListener(new CareTakerSetPriceAdapter.PricesListener() {
             @Override
             public void onPriceCardSelected(PetTypeCost petTypeCost) {
+                setHint.setVisibility(View.GONE);
                 range.setVisibility(View.VISIBLE);
                 setPrice.setVisibility(View.VISIBLE);
                 range.setText(String.format("Valid: %s - %s", petTypeCost.getMin().substring(0,2), petTypeCost.getMax().substring(0,2)));
@@ -140,8 +145,8 @@ public class CareTakerSetPriceFragment extends Fragment {
                 hideKeyboard(getActivity());
                 if (typeCost != null) {
                     pricesVM.updatePetTypeCost(currentCareTakerUsername, typeCost.getType(), Integer.parseInt(setPrice.getText().toString()));
-                    pricesVM.refreshPage(currentCareTakerUsername);
                     range.setVisibility(View.GONE);
+                    setHint.setVisibility(View.VISIBLE);
                     setPrice.setVisibility(View.GONE);
                     careTakerSetPriceRefresh.refreshFragment();
                 }
@@ -152,7 +157,6 @@ public class CareTakerSetPriceFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 pricesVM.addPetType(currentCareTakerUsername, selectedPetType, Integer.parseInt(selectedPetTypePrice));
-                pricesVM.refreshPage(currentCareTakerUsername);
                 refreshAddSpinner(pricesVM.getPetTypesToShow());
                 careTakerSetPriceRefresh.refreshFragment();
             }
@@ -162,7 +166,6 @@ public class CareTakerSetPriceFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 pricesVM.deletePetType(currentCareTakerUsername, deletePetType);
-                pricesVM.refreshPage(currentCareTakerUsername);
                 refreshDeleteSpinner(pricesVM.getDeletePetTypesToShow());
                 careTakerSetPriceRefresh.refreshFragment();
             }
@@ -219,6 +222,8 @@ public class CareTakerSetPriceFragment extends Fragment {
                 petTypesList.setVisibility(View.GONE);
                 if (typeArr.length != 0) {
                     addPrice.setEnabled(true);
+                } else {
+                    addPrice.setEnabled(false);
                 }
                 refreshAddSpinner(typeArr);
                 petTypesList.setVisibility(View.VISIBLE);

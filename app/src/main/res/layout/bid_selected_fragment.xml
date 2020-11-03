@@ -10,25 +10,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/acceptBid"
+        <LinearLayout
+            android:id="@+id/bids_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="68dp"
             android:layout_marginTop="32dp"
-            android:text="@string/accept_bid"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/payment" />
+            app:layout_constraintTop_toBottomOf="@+id/payment">
 
-        <Button
-            android:id="@+id/rejectBid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="84dp"
-            android:layout_marginTop="32dp"
-            android:text="@string/reject_bid"
-            app:layout_constraintStart_toEndOf="@+id/acceptBid"
-            app:layout_constraintTop_toBottomOf="@+id/payment" />
+            <Button
+                android:id="@+id/acceptBid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/accept_bid" />
+
+            <Space
+                android:layout_width="10sp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/rejectBid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reject_bid" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/pet_owner_name"
