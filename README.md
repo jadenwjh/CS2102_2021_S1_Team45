@@ -425,10 +425,8 @@
     ### Body:
     - `petowner` : string
     - `petname` : string
-    > If intending to update an existing entry, the following are optional, its fine to just include what needs
-    to be updated
     - `profile` : string
-    - `specialReq` : string
+    - `specialreq` : string
     - `category` : string, one of the existing pet types
 
     ### Example:
