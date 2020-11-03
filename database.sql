@@ -141,7 +141,7 @@ CREATE TABLE InvalidatedBids ( /*For pet owners to check their bids rejected due
 CREATE OR REPLACE FUNCTION currentDate() /*To track today's date, currently uses dummy*/
 RETURNS DATE AS $$
 	BEGIN
-		RETURN (SELECT CAST('2019-12-31'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
+		RETURN (SELECT CAST('2020-06-01'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
 	END; $$
 LANGUAGE plpgsql;
 

@@ -229,7 +229,7 @@
 
         Output:
 
-        > Bids that are pending / accepted with no ratings
+        > Bids that are pending / accepted, before the currentDate() can be found here
 
         `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-04T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}]`
 
@@ -282,7 +282,7 @@
 
     Output:
 
-    > Only contains bids that have been rejected or rated
+    > Bids that are accepted, end date after the currentDate(), with no ratings can be found here
 
     `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-01-01T00:00:00.000Z","edate":"2020-01-05T00:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"r","review":null,"rating":null},{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-01-02T00:00:00.000Z","edate":"2020-01-05T00:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"r","review":null,"rating":null}, ...]`
 
@@ -420,7 +420,7 @@
     `{"petowner":"jeymerp9","petname":"Priscella","profile":"Coracias caudata","specialreq":"orchestrate seamless partnerships","category":"dog"}`
 
 &nbsp;
-- ## Create or update a pet <div style="text-align: right">`POST /PetOwner/Pets`
+- ## Create a pet <div style="text-align: right">`POST /PetOwner/Pets`
 
     ### Body:
     - `petowner` : string
@@ -451,7 +451,7 @@
 
 
 
-<!-- &nbsp;
+&nbsp;
 - ## Update a pet's info <div style="text-align: right"> `PUT /PetOwner/Pets/:petowner/:petname`</div>
 
     ### Params:
@@ -481,7 +481,7 @@
 
     Output:
 
-    `"Pet Gabbey belonging to daleksidze6 was updated"` -->
+    `"Pet Gabbey belonging to daleksidze6 was updated"`
 
 
 

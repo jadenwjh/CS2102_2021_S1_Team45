@@ -163,7 +163,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL
       AND status != 'r'
-      AND (SELECT currentDate()) <= Bids.edate
+      AND (SELECT currentDate()) >= Bids.edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY edate;`
@@ -202,7 +202,7 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL 
       AND status='a'
-      AND (SELECT currentDate()) >= edate
+      AND (SELECT currentDate()) <= edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY Bids.edate;`
@@ -354,7 +354,7 @@ app.get("/PetOwner/Pets/:petowner/:category", async (req, res) => {
 });
 
 
-//create or update a Pet
+//create a Pet
 app.post("/PetOwner/Pets", async (req, res) => {
   var updateArray = [];
 
@@ -368,9 +368,7 @@ app.post("/PetOwner/Pets", async (req, res) => {
   '${req.body.profile}', 
   '${req.body.specialreq}', 
   '${req.body.category}') 
-  ON CONFLICT (petowner, petname) DO UPDATE 
-  SET ${updateArray} 
-  WHERE petowner = '${req.body.petowner}' AND petname = '${req.body.petname}';`
+  RETURNING *';`
   try {
 
     const newPet = await pool.query(query);
