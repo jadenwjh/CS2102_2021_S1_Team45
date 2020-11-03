@@ -234,7 +234,7 @@
         `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-04T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}]`
 
 &nbsp;
-- ## Leave rating and reviews for caretaker <div style="text-align: right">`POST /PetOwner/RatingsReviews`  </div>
+- ## Leave rating and reviews for caretaker, as well as sending payment<div style="text-align: right">`POST /PetOwner/RatingsReviews`  </div>
 
     ### Body:
 
@@ -250,6 +250,8 @@
 
     - `review` : string
 
+    - `isPaid`: boolean
+
     ### Example 
     - POST https://shielded-oasis-35437.herokuapp.com/PetOwner/RatingsReviews
 
@@ -262,6 +264,7 @@
             "avail": "2020-06-05",
             "rating": 5,
             "review": "very good!!!"
+            "isPaid": true
         }
         ```
 

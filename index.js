@@ -154,16 +154,16 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
   try {
     const getRating = await pool.query(
       `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
-      FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
-      WHERE Bids.petowner = '${req.params.petowner}'
-      AND (SELECT rating FROM Bids AS B2 
-        WHERE Bids.edate = B2.avail
-        AND Bids.petowner = B2.petowner
-        AND Bids.petname = B2.petname
-        AND Bids.caretaker = B2.caretaker
-        AND Bids.edate = B2.edate) IS NULL
-      AND status != 'r'
-      AND (SELECT currentDate()) >= Bids.edate
+      FROM Bids AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
+      WHERE B1.petowner = '${req.params.petowner}'
+      AND (SELECT sum(B2.rating) FROM Bids AS B2 
+        WHERE B1.edate = B2.avail
+        AND B1.petowner = B2.petowner
+        AND B1.petname = B2.petname
+        AND B1.caretaker = B2.caretaker
+        AND B1.edate = B2.edate) IS NULL
+      AND status = 'p'
+      AND (SELECT currentDate()) <= B1.edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY edate;`
@@ -179,7 +179,13 @@ app.post("/PetOwner/RatingsReviews", async (req, res) => {
   try {
     const _ = await pool.query(
       `CALL rateCareTaker('${req.body.petowner}', '${req.body.petname}',
-      '${req.body.caretaker}', '${req.body.avail}', ${req.body.rating}, '${req.body.review}');`
+      '${req.body.caretaker}', '${req.body.avail}', ${req.body.rating}, '${req.body.review}');
+      
+      UPDATE Bids SET isPaid = ${req.body.isPaid} 
+      WHERE avail = '${req.body.avail}'
+      AND petowner = '${req.body.petowner}'
+      AND petname = '${req.body.petname}'
+      AND caretaker = '${req.body.caretaker}'; `
     );
     res.json("Ratings and reviews updated");
   } catch (err) {
@@ -195,14 +201,14 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
       `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
       FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
       WHERE Bids.petowner = '${req.params.petowner}'
-      AND (SELECT rating FROM Bids AS B2 
+      AND (SELECT sum(B2.rating) FROM Bids AS B2 
         WHERE Bids.edate = B2.avail
         AND Bids.petowner = B2.petowner
         AND Bids.petname = B2.petname
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL 
       AND status='a'
-      AND (SELECT currentDate()) <= edate
+      AND (SELECT currentDate()) >= edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY Bids.edate;`
