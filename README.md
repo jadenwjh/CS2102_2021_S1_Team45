@@ -826,6 +826,9 @@
 &nbsp;
 - ## Get number of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:date`
 
+    ### Params:
+    - `date` : string
+
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/numpets/2020-08-02
 
@@ -838,6 +841,9 @@
 &nbsp;
 - ## Get total number of pet days in a month <div style="text-align: right">`GET /Admin/numdays/:date`
 
+    ### Params:
+    - `date` : string
+
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/numdays/2020-08-02
 
@@ -847,6 +853,9 @@
 
 &nbsp;
 - ## Get all salaries of caretakers in amonth <div style="text-align: right"> `GET /Admin/salary/:date`
+
+    ### Params:
+    - `date` : string
 
     ### Example:
     GET https://shielded-oasis-35437.herokuapp.com/Admin/salary/2020-08-02
