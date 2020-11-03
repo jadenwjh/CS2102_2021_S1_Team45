@@ -99,17 +99,6 @@ app.post("/Users/register", async (req, res) => {
         '${req.body.admin}');
         `
       );
-      if (req.body.isPartTime === false) {
-        queryStr = queryStr.concat(
-          `
-          CALL addAvailabledates(
-            '${req.body.username}', 
-            date(date_trunc('year', now())), 
-            date(date_trunc('year', now()) + interval '2 year' - interval '1 day')
-            );
-          `
-        )
-      }
     } 
     if (!["petowner", "caretaker", "both"].includes(req.body.acctype)) {
       throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker', 'both'], case insensitive.")
@@ -163,7 +152,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND B1.caretaker = B2.caretaker
         AND B1.edate = B2.edate) IS NULL
       AND status = 'p'
-      AND (SELECT currentDate()) <= B1.edate
+      AND (SELECT CURRENT_DATE) <= B1.edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY edate;`
@@ -208,7 +197,7 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
         AND Bids.caretaker = B2.caretaker
         AND Bids.edate = B2.edate) IS NULL 
       AND status='a'
-      AND (SELECT currentDate()) >= edate
+      AND (SELECT CURRENT_DATE) >= edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
       ORDER BY Bids.edate;`

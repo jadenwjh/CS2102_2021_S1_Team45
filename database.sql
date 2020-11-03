@@ -141,7 +141,7 @@ CREATE TABLE InvalidatedBids ( /*For pet owners to check their bids rejected due
 CREATE OR REPLACE FUNCTION currentDate() /*To track today's date, currently uses dummy*/
 RETURNS DATE AS $$
 	BEGIN
-		RETURN (SELECT CAST('2020-06-01'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
+		RETURN (SELECT CAST('2020-12-01'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
 	END; $$
 LANGUAGE plpgsql;
 
@@ -687,6 +687,9 @@ CREATE OR REPLACE PROCEDURE
 addCareTaker(username VARCHAR, email VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER, creditcard INTEGER, bankacc INTEGER, isPartTime BOOLEAN, manager VARCHAR) AS 
 $$ 
+	DECLARE sdate DATE;
+	DECLARE edate DATE;
+	
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
 			INSERT INTO Users VALUES(username, email, profile, address, phone);
@@ -698,6 +701,12 @@ $$
 		IF isPartTime THEN
 			INSERT INTO PartTimers VALUES(username);
 		END IF;
+		SELECT CURRENT_DATE INTO sdate;
+		SELECT CURRENT_DATE + INTERVAL '2 year' – INTERVAL '1 day' INTO edate;
+		IF isPartTime = false THEN 
+			CALL addAvailableDates(username, sdate, edate);
+		END IF; 
+
 	END; $$
 LANGUAGE plpgsql;
 
