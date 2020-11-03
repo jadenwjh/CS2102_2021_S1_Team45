@@ -10,7 +10,6 @@ import com.example.cs2102.model.retrofitApi.DataApiService;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -44,6 +43,9 @@ public class PetOwnerListingViewModel extends ViewModel {
                         ArrayList<Pet> pets = new ArrayList<>();
                         for (LinkedTreeMap<String,String> pet : _pets) {
                             String name = pet.get("petname");
+                            if (name.trim().length() == 0) {
+                                continue;
+                            }
                             String type = pet.get("category");
                             String profile = pet.get("profile");
                             String needs = pet.get("specialreq");

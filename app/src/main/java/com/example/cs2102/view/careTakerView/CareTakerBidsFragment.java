@@ -1,7 +1,6 @@
 package com.example.cs2102.view.careTakerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,13 +112,11 @@ public class CareTakerBidsFragment extends Fragment {
                             petOwner.get("paymenttype"));
                     bids.add(petOwnerBid);
                 }
-                Log.e("Number of bids fetched", Integer.toString(petOwners.size()));
                 careTakerBidsAdapter.updatePetOwners(bids);
                 bidsRecyclerView.setVisibility(View.VISIBLE);
                 bidsRecyclerView.setAdapter(careTakerBidsAdapter);
             } else {
                 Toast.makeText(getContext(), "You have no bids", Toast.LENGTH_SHORT).show();
-                Log.e("bidsVMObserver", "You have no bids");
             }
         });
         bidsVM.loading.observe(getViewLifecycleOwner(), isLoading -> {

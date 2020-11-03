@@ -25,6 +25,7 @@ public class PetsViewModel extends ViewModel {
     public MutableLiveData<String[]> allPets = new MutableLiveData<>();
     public MutableLiveData<List<Pet>> ownedPets = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+    public MutableLiveData<Boolean> modifyLoading = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -100,6 +101,7 @@ public class PetsViewModel extends ViewModel {
 
     public void addPet(String username, String petname, String type, String profile, String requests, Context context) {
         loading.setValue(true);
+        modifyLoading.setValue(true);
         disposable.add(dataApiService.addNewPetOwnerPet(username, petname, type, profile, requests)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -110,6 +112,7 @@ public class PetsViewModel extends ViewModel {
                         Log.e("addPet", "Success");
                         Toast.makeText(context, "Successfully added new pet", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        modifyLoading.setValue(false);
                     }
 
                     @Override
@@ -118,6 +121,7 @@ public class PetsViewModel extends ViewModel {
                         Log.e("addPet", e.getMessage());
                         Toast.makeText(context, "Your pet cannot be added as the name already exists or the parameters are not filled", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        modifyLoading.setValue(false);
                     }
                 })
         );
@@ -125,6 +129,7 @@ public class PetsViewModel extends ViewModel {
 
     public void updatePet(String username, String petname, String type, String profile, String requests, Context context) {
         loading.setValue(true);
+        modifyLoading.setValue(true);
         disposable.add(dataApiService.updatePetOwnerPet(username, petname, type, profile, requests)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -135,6 +140,7 @@ public class PetsViewModel extends ViewModel {
                         Log.e("updatePet", "Success");
                         Toast.makeText(context, "Successfully edited your pet", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        modifyLoading.setValue(false);
                     }
 
                     @Override
@@ -143,6 +149,7 @@ public class PetsViewModel extends ViewModel {
                         Log.e("updatePet", e.getMessage());
                         Toast.makeText(context, "Your pet cannot be modified, please check if the parameters are correct", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        modifyLoading.setValue(false);
                     }
                 })
         );
@@ -150,6 +157,7 @@ public class PetsViewModel extends ViewModel {
 
     public void deletePet(String username, String petname, Context context) {
         loading.setValue(true);
+        modifyLoading.setValue(true);
         disposable.add(dataApiService.deletePetOwnerPet(username, petname)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -160,6 +168,7 @@ public class PetsViewModel extends ViewModel {
                         Log.e("deletePet", "Success");
                         Toast.makeText(context, "Successfully deleted your pet", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        modifyLoading.setValue(false);
                     }
 
                     @Override
@@ -168,6 +177,7 @@ public class PetsViewModel extends ViewModel {
                         Log.e("deletePet", e.getMessage());
                         Toast.makeText(context, "Your pet cannot be deleted as it is currently part of a bid or the name does not exist", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        modifyLoading.setValue(false);
                     }
                 })
         );

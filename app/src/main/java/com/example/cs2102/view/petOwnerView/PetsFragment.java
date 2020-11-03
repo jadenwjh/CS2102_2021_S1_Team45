@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -108,8 +107,7 @@ public class PetsFragment extends Fragment {
                     String petProfile = profile.getText().toString();
                     String needs = request.getText().toString();
                     petsViewModel.addPet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
-                    petsViewModel.refreshPage(petOwnerUsername);
-                    refreshListener.refreshPetsFragment();
+                    actionObserver();
                 }
             }
         });
@@ -123,8 +121,7 @@ public class PetsFragment extends Fragment {
                     String petProfile = profile.getText().toString();
                     String needs = request.getText().toString();
                     petsViewModel.updatePet(petOwnerUsername, petName, selectedType, petProfile, needs, getContext());
-                    petsViewModel.refreshPage(petOwnerUsername);
-                    refreshListener.refreshPetsFragment();
+                    actionObserver();
                 }
             }
         });
@@ -136,8 +133,7 @@ public class PetsFragment extends Fragment {
                 String petName = name.getText().toString();
                 if (!petName.equals("")) {
                     petsViewModel.deletePet(petOwnerUsername, petName, getContext());
-                    petsViewModel.refreshPage(petOwnerUsername);
-                    refreshListener.refreshPetsFragment();
+                    actionObserver();
                 }
             }
         });
@@ -177,6 +173,15 @@ public class PetsFragment extends Fragment {
                 if (isLoading) {
                     petsRecyclerView.setVisibility(View.GONE);
                 }
+            }
+        });
+    }
+
+    private void actionObserver() {
+        petsViewModel.modifyLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading!= null && isLoading) {
+                petsViewModel.refreshPage(petOwnerUsername);
+                refreshListener.refreshPetsFragment();
             }
         });
     }

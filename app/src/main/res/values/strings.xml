@@ -18,6 +18,14 @@
         <item>cash</item>
     </string-array>
 
+    <string-array name="user_rating">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
 
     <string name="pet_owner">Pet Owner</string>
     <string name="care_taker">Care Taker</string>
@@ -77,5 +85,10 @@
     <string name="add_new_category">Add new category: </string>
     <string name="delete_category">Delete category:</string>
     <string name="select_a_pet">Select a pet</string>
+    <string name="pending">Pending</string>
+    <string name="successful">Successful</string>
+    <string name="have_you_paid">Have you paid?</string>
+    <string name="rating">Rating:</string>
+    <string name="submit">Submit</string>
 
 </resources>

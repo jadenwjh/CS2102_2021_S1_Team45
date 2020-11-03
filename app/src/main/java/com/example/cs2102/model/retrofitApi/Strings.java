@@ -9,6 +9,7 @@ public class Strings {
     public static final String PRICES = "Prices";
     public static final String LISTINGS = "Listings";
     public static final String PETS = "Pets";
+    public static final String REVIEW = "Review";
 
     public static final String ADMIN = "admin";
     public static final String PET_OWNER = "petowner";

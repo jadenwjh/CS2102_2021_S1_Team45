@@ -16,6 +16,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
+// TODO fetching ongoing bids has a bug at backend, havnt test fetchAcceptedBids
+
 public class PetOwnerBidsViewModel extends ViewModel {
 
     public MutableLiveData<ArrayList<CareTakerBid>> ongoingBids = new MutableLiveData<>();

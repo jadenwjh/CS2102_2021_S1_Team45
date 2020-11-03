@@ -148,7 +148,7 @@ public class CareTakerSetPriceFragment extends Fragment {
                     range.setVisibility(View.GONE);
                     setHint.setVisibility(View.VISIBLE);
                     setPrice.setVisibility(View.GONE);
-                    careTakerSetPriceRefresh.refreshFragment();
+                    actionObserver();
                 }
             }
         });
@@ -158,7 +158,7 @@ public class CareTakerSetPriceFragment extends Fragment {
             public void onClick(View v) {
                 pricesVM.addPetType(currentCareTakerUsername, selectedPetType, Integer.parseInt(selectedPetTypePrice));
                 refreshAddSpinner(pricesVM.getPetTypesToShow());
-                careTakerSetPriceRefresh.refreshFragment();
+                actionObserver();
             }
         });
 
@@ -167,7 +167,7 @@ public class CareTakerSetPriceFragment extends Fragment {
             public void onClick(View v) {
                 pricesVM.deletePetType(currentCareTakerUsername, deletePetType);
                 refreshDeleteSpinner(pricesVM.getDeletePetTypesToShow());
-                careTakerSetPriceRefresh.refreshFragment();
+                actionObserver();
             }
         });
     }
@@ -237,6 +237,14 @@ public class CareTakerSetPriceFragment extends Fragment {
                 }
                 refreshDeleteSpinner(typeArr);
                 deletePetTypesList.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void actionObserver() {
+        pricesVM.actionLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null && isLoading) {
+                careTakerSetPriceRefresh.refreshFragment();
             }
         });
     }

@@ -214,6 +214,17 @@ public class DataApiService {
     public Single<ArrayList<LinkedTreeMap<String,String>>> getExpiredBids(String username) {
         return dataApi.getExpiredBids(username);
     }
+    public Completable leaveReview(String petOwner, String petName, String careTaker, String avail, int rating, String review, boolean isPaid) {
+        HashMap<String,Object> params = new HashMap<>();
+        params.put("petowner", petOwner);
+        params.put("petname", petName);
+        params.put("caretaker", careTaker);
+        params.put("avail", avail);
+        params.put("rating", rating);
+        params.put("review", review);
+        params.put("isPaid", isPaid);
+        return dataApi.leaveReview(params);
+    }
 
     /**
      * ADMIN HOMEPAGE

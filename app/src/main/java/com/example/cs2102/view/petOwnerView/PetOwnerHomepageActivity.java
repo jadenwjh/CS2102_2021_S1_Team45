@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.model.retrofitApi.Strings;
-import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.loginView.LoginActivity;
 
 import butterknife.BindView;
@@ -42,6 +41,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
     private FragmentTransaction ft;
     private PetOwnerListingFragment listingFragment;
     private PetsFragment petsFragment;
+    private PetOwnerBidsFragment bidsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,16 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
                 }
             });
 
+            bidsFragment = PetOwnerBidsFragment.newInstance(username);
+            bidsFragment.setBidsFragmentReviewListener(selectedBid -> {
+                selectedBid.setExitReviewFragmentCallback(() -> {
+                    switchFragment(Strings.BIDS);
+                });
+                ft = fm.beginTransaction();
+                toggleHideNavigator(true);
+                ft.replace(R.id.petOwner_fragment, selectedBid, CURRENT_FRAGMENT).commit();
+            });
+
             //default listing page
             ft.add(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
         }
@@ -90,7 +100,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         });
 
         viewReview.setOnClickListener(view -> {
-            switchFragment(Strings.LISTINGS);
+            switchFragment(Strings.BIDS);
         });
 
         loadingBar.setVisibility(View.GONE);
@@ -119,6 +129,10 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
                 ft = fm.beginTransaction();
                 ft.replace(R.id.petOwner_fragment, petsFragment, CURRENT_FRAGMENT).commit();
                 break;
+            case Strings.BIDS:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.petOwner_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
+                break;
             default:
                 throw new RuntimeException(String.format("Unable to load %s fragment", key));
         }
@@ -140,7 +154,10 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         if (listingFragment.getUserVisibleHint()) {
             switchFragment(Strings.LISTINGS);
         }
-        Activity activity = this;
+        hideKeyboard(this);
+    }
+
+    private void hideKeyboard(Activity activity) {
         if (activity.getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);

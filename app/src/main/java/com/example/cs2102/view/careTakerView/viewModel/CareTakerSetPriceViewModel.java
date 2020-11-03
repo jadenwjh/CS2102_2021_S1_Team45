@@ -1,13 +1,10 @@
 package com.example.cs2102.view.careTakerView.viewModel;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.cs2102.model.Pet;
-import com.example.cs2102.model.PetType;
 import com.example.cs2102.model.PetTypeCost;
 import com.example.cs2102.model.retrofitApi.DataApiService;
 import com.google.gson.internal.LinkedTreeMap;
@@ -15,8 +12,6 @@ import com.google.gson.internal.LinkedTreeMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Scheduler;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableCompletableObserver;
@@ -27,6 +22,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> loadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
+    public MutableLiveData<Boolean> actionLoading = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> setPriceError = new MutableLiveData<Boolean>();
     public MutableLiveData<List<PetTypeCost>> petTypeCosts = new MutableLiveData<>();
     public MutableLiveData<PetTypeCost> selectedPetTypeCost = new MutableLiveData<>();
@@ -97,6 +93,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
 
     public void updatePetTypeCost(String careTakerUsername, String petType, int price) {
         loading.setValue(true);
+        actionLoading.setValue(true);
         disposable.add(dataApiService.updatePricePetType(careTakerUsername, petType, price)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -107,6 +104,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                         Log.e("updatePetTypeCost", "Success");
                         loading.setValue(false);
                         setPriceError.setValue(false);
+                        actionLoading.setValue(false);
                     }
 
                     @Override
@@ -114,6 +112,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                         Log.e("updatePetTypeCost", "Fail");
                         loading.setValue(false);
                         setPriceError.setValue(true);
+                        actionLoading.setValue(false);
                     }
                 })
         );
@@ -154,6 +153,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
     public void addPetType(String careTakerUsername, String petType, int price) {
         Log.e("addPetType", String.format("username: %s, pettype: %s, price: %d", careTakerUsername, petType, price));
         loading.setValue(true);
+        actionLoading.setValue(true);
         disposable.add(dataApiService.addPetTypeForCT(careTakerUsername, petType, price)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -163,6 +163,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                     public void onComplete() {
                         Log.e("addPetType", "Success");
                         loading.setValue(false);
+                        actionLoading.setValue(false);
                     }
 
                     @Override
@@ -170,6 +171,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                         Log.e("addPetType", "Fail");
                         Log.e("addPetType", e.getMessage());
                         loading.setValue(false);
+                        actionLoading.setValue(false);
                     }
                 })
         );
@@ -178,6 +180,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
     public void deletePetType(String careTakerUsername, String petType) {
         Log.e("deletePetType", String.format("username: %s, pettype: %s", careTakerUsername, petType));
         loading.setValue(true);
+        actionLoading.setValue(true);
         disposable.add(dataApiService.deletePetTypeForCT(careTakerUsername, petType)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -187,6 +190,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                     public void onComplete() {
                         Log.e("deletePetType", "Success");
                         loading.setValue(false);
+                        actionLoading.setValue(false);
                     }
 
                     @Override
@@ -194,6 +198,7 @@ public class CareTakerSetPriceViewModel extends ViewModel {
                         Log.e("deletePetType", "Fail");
                         Log.e("deletePetType", e.getMessage());
                         loading.setValue(false);
+                        actionLoading.setValue(false);
                     }
                 })
         );

@@ -18,11 +18,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
+import com.example.cs2102.model.retrofitApi.Strings;
 import com.example.cs2102.view.adminView.AdminActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepageActivity;
 import com.example.cs2102.view.registerView.RegisterActivity;
-import com.example.cs2102.model.retrofitApi.Strings;
 
 import java.util.regex.Pattern;
 
@@ -73,6 +73,44 @@ public class LoginActivity extends AppCompatActivity {
             loginViewModel.loginAttempt(uName, pw, t);
         });
 
+        loginObserver();
+    }
+
+    private void generateMenu() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.user_selection, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        userType.setAdapter(adapter);
+    }
+
+    private void checkValidity(String input) {
+        if (input.contains(" ")) {
+            Log.d("WhiteSpaceError", "do not use spaces");
+            return;
+        }
+        if (!Pattern.matches("[a-zA-Z]+", input)) {
+            Log.d("SpecialCharactersError", "use only alphabets");
+        }
+    }
+
+    private void startUserPage(String type) {
+        switch (type) {
+            case Strings.ADMIN:
+                startActivity(new Intent(this, AdminActivity.class));
+                finish();
+                break;
+            case Strings.PET_OWNER:
+                startActivity(new Intent(this, PetOwnerHomepageActivity.class));
+                finish();
+                break;
+            case Strings.CARE_TAKER:
+                startActivity(new Intent(this, CareTakerHomepageActivity.class));
+                finish();
+                break;
+        }
+    }
+
+    private void loginObserver() {
         loginViewModel.loginSuccess.observe(this, success -> {
             if (success && userProfile.accType != null) {
                 if (userProfile.accType.equals(Strings.CARE_TAKER)) {
@@ -99,40 +137,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginViewModel.userProfile.observe(this, profile -> userProfile.setUserProfile(profile.get("username"), profile.get("password"), profile.get("email"), profile.get("profile"), profile.get("address"), profile.get("phoneNum"), profile.get("acctype")));
-    }
-
-    public void generateMenu() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.user_selection, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        userType.setAdapter(adapter);
-    }
-
-    public void checkValidity(String input) {
-        if (input.contains(" ")) {
-            Log.d("WhiteSpaceError", "do not use spaces");
-            return;
-        }
-        if (!Pattern.matches("[a-zA-Z]+", input)) {
-            Log.d("SpecialCharactersError", "use only alphabets");
-        }
-    }
-
-    private void startUserPage(String type) {
-        switch (type) {
-            case Strings.ADMIN:
-                startActivity(new Intent(this, AdminActivity.class));
-                finish();
-                break;
-            case Strings.PET_OWNER:
-                startActivity(new Intent(this, PetOwnerHomepageActivity.class));
-                finish();
-                break;
-            case Strings.CARE_TAKER:
-                startActivity(new Intent(this, CareTakerHomepageActivity.class));
-                finish();
-                break;
-        }
     }
 
     private void startRegisterPage() {
