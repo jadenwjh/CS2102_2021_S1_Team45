@@ -24,6 +24,8 @@ public class AdminSetPriceViewModel extends ViewModel {
 
     public MutableLiveData<List<PetType>> petBasePrices = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+    public MutableLiveData<Boolean> updatedPrice = new MutableLiveData<>();
+
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -57,8 +59,10 @@ public class AdminSetPriceViewModel extends ViewModel {
         );
     }
 
+    //add update same
     public void updateBasePrice(String type, float price, Context context) {
         loading.setValue(true);
+        updatedPrice.setValue(false);
         disposable.add(dataApiService.updatePetBasePrice(type, price)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -68,6 +72,7 @@ public class AdminSetPriceViewModel extends ViewModel {
                         loading.setValue(false);
                         Toast.makeText(context, "Successfully updated base price", Toast.LENGTH_SHORT).show();
                         Log.e("updateBasePrice", "Success");
+                        updatedPrice.setValue(true);
                     }
 
                     @Override
@@ -75,6 +80,7 @@ public class AdminSetPriceViewModel extends ViewModel {
                         Log.e("updateBasePrice", "Failed");
                         Toast.makeText(context, "Failed to update base price", Toast.LENGTH_SHORT).show();
                         loading.setValue(false);
+                        updatedPrice.setValue(false);
                     }
                 })
         );

@@ -259,4 +259,8 @@ public class DataApiService {
         params.put("category", type);
         return dataApi.updateBasePrice(params);
     }
+
+    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchRatings(String username) {
+        return dataApi.getRatings(username);
+    }
 }

@@ -93,5 +93,10 @@
     <string name="transfer_type">Transfer type</string>
     <string name="both">both</string>
     <string name="delete_account">Delete account</string>
+    <string name="existing">Existing:</string>
+    <string name="pet_type">Pet type</string>
+    <string name="modify_price">Modify price:</string>
+    <string name="new_price">New price</string>
+    <string name="there_is_nothing_to_view">There is nothing to view</string>
 
 </resources>

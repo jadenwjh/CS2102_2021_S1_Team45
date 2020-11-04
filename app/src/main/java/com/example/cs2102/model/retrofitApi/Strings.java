@@ -10,6 +10,9 @@ public class Strings {
     public static final String LISTINGS = "Listings";
     public static final String PETS = "Pets";
     public static final String REVIEW = "Review";
+    public static final String MOD_BASE_PRICE = "BasePrices";
+    public static final String SALARY = "CTSalary";
+    public static final String RATING = "CTRating";
 
     public static final String ADMIN = "admin";
     public static final String PET_OWNER = "petowner";
@@ -43,4 +46,6 @@ public class Strings {
     public static final String ONGOING_BIDS = "petowner/bids";
     public static final String EXPIRED_BIDS = "PetOwner/Bids";
     public static final String LEAVE_RATING = "PetOwner/RatingsReviews";
+
+    public static final String GET_RATINGS = "Admin/summary";
 }

@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.adminView.AdminActivity">
+    tools:context=".view.adminView.AdminHomepageActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
+        android:id="@+id/admin_fragment"
         android:layout_height="500dp"
         android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,17 +29,6 @@
             android:weightSum="3">
 
             <Button
-                android:id="@+id/viewCT"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ratings" />
-
-            <Space
-                android:layout_width="10sp"
-                android:layout_height="wrap_content"/>
-
-            <Button
                 android:id="@+id/setBasePrice"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
@@ -50,11 +40,22 @@
                 android:layout_height="wrap_content"/>
 
             <Button
-                android:id="@+id/salary"
+                android:id="@+id/viewCT"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/salary" />
+
+            <Space
+                android:layout_width="10sp"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/ratings"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ratings" />
 
         </LinearLayout>
 

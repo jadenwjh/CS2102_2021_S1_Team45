@@ -44,6 +44,9 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     @BindView(R.id.viewPrices)
     Button viewPrices;
 
+    @BindView(R.id.viewSalary)
+    Button viewSalary;
+
     private static final String CURRENT_FRAGMENT = "CareTakerFragment";
     private FragmentManager fm;
     private FragmentTransaction ft;

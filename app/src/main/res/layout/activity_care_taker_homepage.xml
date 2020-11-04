@@ -27,7 +27,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:weightSum="3">
+            android:weightSum="4">
 
             <Button
                 android:id="@+id/viewPrices"
@@ -37,7 +37,7 @@
                 android:text="@string/prices" />
 
             <Space
-                android:layout_width="10sp"
+                android:layout_width="5sp"
                 android:layout_height="wrap_content"/>
 
             <Button
@@ -48,13 +48,25 @@
                 android:text="@string/bids" />
 
             <Space
-                android:layout_width="10sp"
+                android:layout_width="5sp"
                 android:layout_height="wrap_content"/>
 
 
             <Button
                 android:id="@+id/viewLeaves"
                 android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="5sp"
+                android:layout_height="wrap_content"/>
+
+
+            <Button
+                android:id="@+id/viewSalary"
+                android:layout_weight="1"
+                android:text="@string/salary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

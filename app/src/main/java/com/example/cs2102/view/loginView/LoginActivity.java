@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -20,13 +21,11 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.cs2102.R;
 import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.model.retrofitApi.Strings;
-import com.example.cs2102.view.adminView.AdminActivity;
+import com.example.cs2102.view.adminView.AdminHomepageActivity;
 import com.example.cs2102.view.careTakerView.CareTakerHomepageActivity;
 import com.example.cs2102.view.deleteView.DeleteActivity;
 import com.example.cs2102.view.petOwnerView.PetOwnerHomepageActivity;
 import com.example.cs2102.view.registerView.RegisterActivity;
-
-import org.w3c.dom.Text;
 
 import java.util.regex.Pattern;
 
@@ -108,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     private void startUserPage(String type) {
         switch (type) {
             case Strings.ADMIN:
-                startActivity(new Intent(this, AdminActivity.class));
+                startActivity(new Intent(this, AdminHomepageActivity.class));
                 finish();
                 break;
             case Strings.PET_OWNER:
@@ -125,7 +124,14 @@ public class LoginActivity extends AppCompatActivity {
     private void loginObserver() {
         loginViewModel.loginSuccess.observe(this, success -> {
             if (success && userProfile.accType != null) {
+                Log.e("Account", userProfile.accType);
                 startUserPage(userProfile.accType);
+            }
+        });
+
+        loginViewModel.loginFailed.observe(this, failed -> {
+            if (failed) {
+                Toast.makeText(this, "Check that your credentials are correctly filled", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -71,7 +71,6 @@ public class CareTakerBidsFragment extends Fragment {
         bidsVM.loading.setValue(false);
 
         bidsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        bidsRecyclerView.setAdapter(careTakerBidsAdapter);
 
         careTakerBidsAdapter.setBidsListener(petOwner -> {
             BidSelectedFragment currentBid = BidSelectedFragment.newInstance(currentCareTakerUsername, petOwner);
@@ -113,8 +112,8 @@ public class CareTakerBidsFragment extends Fragment {
                     bids.add(petOwnerBid);
                 }
                 careTakerBidsAdapter.updatePetOwners(bids);
-                bidsRecyclerView.setVisibility(View.VISIBLE);
                 bidsRecyclerView.setAdapter(careTakerBidsAdapter);
+                bidsRecyclerView.setVisibility(View.VISIBLE);
             } else {
                 Toast.makeText(getContext(), "You have no bids", Toast.LENGTH_SHORT).show();
             }

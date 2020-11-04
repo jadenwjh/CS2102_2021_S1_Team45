@@ -110,7 +110,9 @@ public interface DataApi {
      * ADMIN
      * */
 
-    //TODO will change to POST in the future
-    @PUT(Strings.ALL_PET_TYPES)
+    @POST(Strings.ALL_PET_TYPES)
     Completable updateBasePrice(@Body HashMap<String,Object> params);
+
+    @GET(Strings.GET_RATINGS + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getRatings(@Path("username") String username);
 }

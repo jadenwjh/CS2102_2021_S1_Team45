@@ -23,9 +23,9 @@ import io.reactivex.schedulers.Schedulers;
 
 public class LoginViewModel extends ViewModel {
 
-    public MutableLiveData<Boolean> loadError = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
     public MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
+    public MutableLiveData<Boolean> loginFailed = new MutableLiveData<>();
     public MutableLiveData<LinkedTreeMap<String,String>> userProfile = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
@@ -34,6 +34,7 @@ public class LoginViewModel extends ViewModel {
     public void loginAttempt(String username, String password, String type) {
         Log.e("Login", String.format("Username:%s, Password:%s, Type:%s", username,password,type));
         loginSuccess.setValue(false);
+        loginFailed.setValue(false);
         loading.setValue(true);
         disposable.add(dataApiService.verifyLogin(username, password, type)
                 .subscribeOn(Schedulers.newThread())
@@ -45,7 +46,6 @@ public class LoginViewModel extends ViewModel {
                         Log.e("Login", "Success");
                         userProfile.setValue(details.get(0));
                         Log.e("User Details", details.get(0).toString());
-                        loadError.setValue(false);
                         loading.setValue(false);
                         loginSuccess.setValue(true);
 
@@ -55,7 +55,7 @@ public class LoginViewModel extends ViewModel {
                     public void onError(Throwable e) {
                         Log.e("RequestError", String.valueOf(e));
                         Log.e("Login", "Failed");
-                        loadError.setValue(true);
+                        loginFailed.setValue(true);
                         loading.setValue(false);
                         e.printStackTrace();
                     }
