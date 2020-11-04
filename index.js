@@ -406,15 +406,20 @@ app.put("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
     var updateArray = [];
 
     for (const [k, v] of Object.entries(req.body)) {
-      updateArray.push(`${k} = '${v}'`);
+      if (k in ["profile", "specialReq", "specialreq"]) {
+        updateArray.push(`${k} = '${v}'`);
+      }
+    }
+    if (!updateArray.length) {
+      throw Error("No valid pet attributes to update!");
     }
 
     const updatePet = await pool.query(
       `UPDATE Pets SET ${updateArray} 
-      WHERE petowner = '${req.params.petowner}' AND petname = '${req.params.petname}';`
+      WHERE petowner = '${req.params.petowner}' AND petname = '${req.params.petname}' RETURNING *;`
     );
 
-    res.json(`Pet ${req.params.petname} belonging to ${req.params.petowner} was updated`);
+    res.json(updatePet.rows);
   } catch (err) {
     console.error(err.message);
   }
@@ -425,9 +430,9 @@ app.delete("/PetOwner/Pets/:petowner/:petname", async (req, res) => {
   try {
     const deletePet = await pool.query(
       `DELETE FROM Pets 
-      WHERE petowner = '${req.params.petowner}' AND petname = '${req.params.petname}';`
+      WHERE petowner = '${req.params.petowner}' AND petname = '${req.params.petname}' RETURNING *;`
     );
-    res.json(`Pet ${req.params.petname} belonging to ${req.params.petowner} was deleted`);
+    res.json(deletePet.rows);
   } catch (err) {
     console.error(err.message);
   }

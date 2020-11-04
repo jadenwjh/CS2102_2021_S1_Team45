@@ -357,7 +357,7 @@ RETURNS TRIGGER AS $$
 				RAISE EXCEPTION 'bid price is below caretakers fee per day for that pet';
 				RETURN NULL;
 			END IF;
-			IF NEW.status!='p' OR NEW.rating IS NOT NULL THEN 
+			IF NEW.status!='p' OR NEW.rating IS NOT NULL OR NEW.review IS NOT NULL THEN 
 				RAISE EXCEPTION 'initial status and rating for bid should be pending and null';
 				RETURN NULL;
 			END IF;
@@ -410,6 +410,10 @@ RETURNS TRIGGER AS $$
 		END IF;
 		/*Update on rating*/
 		IF NEW.rating!=OLD.rating OR (NEW.rating IS NOT NULL AND OLD.rating IS NULL) OR (NEW.rating IS NULL AND OLD.rating IS NOT NULL) THEN
+			IF OLD.avail!=OLD.edate THEN 
+				RAISE EXCEPTION 'Can only rated once for each transaction, the availability should equal end date for the bid to be rated';
+				RETURN NULL;
+			END IF;			
 			IF NEW.rating IS NOT NULL THEN 		
 				IF OLD.status!='a' THEN 
 					RAISE EXCEPTION 'cannot update ratings on bid that is not approved';
@@ -443,6 +447,13 @@ RETURNS TRIGGER AS $$
 			ELSE /*new rating is null and old rating is not null*/
 				RAISE EXCEPTION 'cannot update rating that has been set already to null';
 				RETURN NULL;			
+			END IF;
+		END IF;
+		/*update on review*/
+		IF NEW.review!=OLD.review OR (NEW.review IS NOT NULL AND OLD.review IS NULL) OR (NEW.review IS NULL AND OLD.review IS NOT NULL) THEN
+			IF OLD.avail!=OLD.edate THEN 
+				RAISE EXCEPTION 'Can only review once for each transaction, the availability should equal end date for the bid to be reviewed';
+				RETURN NULL;
 			END IF;
 		END IF;
 		RETURN NEW;
