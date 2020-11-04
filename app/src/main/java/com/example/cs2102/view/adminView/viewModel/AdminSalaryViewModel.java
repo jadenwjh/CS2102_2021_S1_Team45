@@ -23,6 +23,7 @@ public class AdminSalaryViewModel extends ViewModel {
     public MutableLiveData<AdminStats> stats = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
     public MutableLiveData<Boolean> fetchedData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> nothing = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -30,6 +31,7 @@ public class AdminSalaryViewModel extends ViewModel {
     public void fetchSalary(String username, String date) {
         loading.setValue(true);
         fetchedData.setValue(false);
+        nothing.setValue(false);
         disposable.add(dataApiService.fetchSalarys(username, date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -41,10 +43,8 @@ public class AdminSalaryViewModel extends ViewModel {
                         for (LinkedTreeMap<String, String> row : linkedTreeMaps) {
                             String name = row.get("caretaker");
                             String amount = row.get("ptsalary");
-                            if (name.trim().length() != 0) {
-                                Salary current = new Salary(name, amount);
-                                list.add(current);
-                            }
+                            Salary current = new Salary(name, amount);
+                            list.add(current);
                         }
                         salarys.setValue(list);
                         fetchStats(username, date);
@@ -53,6 +53,7 @@ public class AdminSalaryViewModel extends ViewModel {
                     @Override
                     public void onError(Throwable e) {
                         loading.setValue(false);
+                        nothing.setValue(true);
                     }
                 })
         );

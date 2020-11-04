@@ -37,19 +37,15 @@ public class CareTakerSalaryViewModel extends ViewModel {
 
                     @Override
                     public void onSuccess(@NonNull LinkedTreeMap<String, String> map) {
-                        if (map.isEmpty()) {
-                            Log.e("Nothing", "Map is empty");
-                            nothing.setValue(true);
-                        } else {
-                            String value = map.get("salary");
-                            salary.setValue(value);
-                        }
+                        String value = map.get("salary");
+                        salary.setValue(value);
                         loading.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         loading.setValue(false);
+                        nothing.setValue(true);
                     }
                 })
         );

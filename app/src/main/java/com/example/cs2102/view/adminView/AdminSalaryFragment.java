@@ -98,9 +98,6 @@ public class AdminSalaryFragment extends Fragment {
             if (fetched) {
                 AdminStats stat = adminSalaryViewModel.stats.getValue();
                 stats.setText(String.format("Total pets served: %s. Pet-days: %s", stat.getTotalpets() == null ? "0" : stat.getTotalpets(), stat.getPetdays()));
-            } else {
-                String error = "No service for this month";
-                stats.setText(error);
             }
         });
         adminSalaryViewModel.salarys.observe(getViewLifecycleOwner(), salarys -> {
@@ -116,6 +113,12 @@ public class AdminSalaryFragment extends Fragment {
                 salaryList.setVisibility(View.GONE);
             } else {
                 loadingBar.setVisibility(View.GONE);
+            }
+        });
+        adminSalaryViewModel.nothing.observe(getViewLifecycleOwner(), isNothing -> {
+            if (isNothing) {
+                String error = "No service for this month";
+                stats.setText(error);
             }
         });
     }
