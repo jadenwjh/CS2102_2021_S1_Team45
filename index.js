@@ -622,7 +622,18 @@ app.post("/CareTaker/salary", async (req, res) => {
 // Apply for leave
 app.post("/CareTaker/leaves", async (req, res) => {
   try {
-    const _ = await pool.query(`CALL applyLeave('${req.body.username}', '${req.body.sdate}', '${req.body.edate}');`);
+    const checkTaken = await pool.query(
+      `SELECT * FROM availability 
+      WHERE caretaker='${req.body.username}' 
+      AND avail BETWEEN DATE '${req.body.sdate}' AND DATE '${req.body.edate}';`
+    )
+    if (checkTaken.rows.length==0) {
+      throw Error(`'${req.body.username}' has already taken leaves between '${req.body.sdate}' AND '${req.body.edate}'!`);
+    }
+
+    const _ = await pool.query(
+      `CALL applyLeave('${req.body.username}', '${req.body.sdate}', '${req.body.edate}');`
+    );
 
     res.json(`Leave application ${req.body.sdate} - ${req.body.edate} successful for '${req.body.username}'`);
   } catch (err) {
