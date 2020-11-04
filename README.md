@@ -856,7 +856,7 @@
     `[{"caretaker":"jgastickep2","averagerating":"4.2000000000000000"}]`
 
 &nbsp;
-- ## Get statistics of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:admin/:date`
+- ## Get statistics of pets taken care of in a month <div style="text-align: right">`GET /Admin/petstats/:admin/:date`
 
     ### Params:
     - `date` : string
