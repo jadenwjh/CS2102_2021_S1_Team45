@@ -855,8 +855,19 @@
     
     `[{"caretaker":"jgastickep2","averagerating":"4.2000000000000000"}]`
 
+&nbsp;
+- ## Get statistics of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:admin/:date`
 
+    ### Params:
+    - `date` : string
 
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/petstats/pdepport0/2020-08-02
+
+    Output:
+    
+    `{"totalpets":"1", "petdays":"5"}`
+<!-- 
 &nbsp;
 - ## Get number of pets taken care of in a month <div style="text-align: right">`GET /Admin/numpets/:admin/:date`
 
@@ -883,7 +894,7 @@
 
     Output:
     
-    `{"petdays":"5"}`
+    `{"petdays":"5"}` -->
 
 &nbsp;
 - ## Get all salaries of CTs under an admin <div style="text-align: right"> `GET /Admin/salary/:admin/:date`

@@ -712,7 +712,7 @@ app.get("/Admin/summary/:admin", async (req, res) => {
 });
 
 // Get number of pets taken care of in a month by CTs under an admin
-app.get("/Admin/numpets/:admin/:date", async (req, res) => {
+app.get("/Admin/petstats/:admin/:date", async (req, res) => {
   try {
     const numpets = await pool.query(
       `SELECT SUM(count) as Totalpets
@@ -726,16 +726,6 @@ app.get("/Admin/numpets/:admin/:date", async (req, res) => {
       GROUP BY b.petowner, b.petname, b.caretaker, b.edate ) as t1
       `
     );
-
-    res.json(numpets.rows[0]);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-// Get total number of pet days in a month by CTs under an admin
-app.get("/Admin/numdays/:admin/:date", async (req, res) => {
-  try {
     const numdays = await pool.query(
       `SELECT COUNT(*) as petdays 
       FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
@@ -744,12 +734,30 @@ app.get("/Admin/numdays/:admin/:date", async (req, res) => {
       AND b.avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
       AND CAST(date_trunc('month', DATE '${req.params.date}') AS DATE) + INTERVAL '1 month' - INTERVAL '1 day'; `
     );
-
-    res.json(numdays.rows[0]);
+    var obj = Object.assign(numpets.rows[0], numdays.rows[0]);
+    res.json(obj);
   } catch (err) {
     console.error(err.message);
   }
 });
+
+// // Get total number of pet days in a month by CTs under an admin
+// app.get("/Admin/numdays/:admin/:date", async (req, res) => {
+//   try {
+//     const numdays = await pool.query(
+//       `SELECT COUNT(*) as petdays 
+//       FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
+//       WHERE b.status = 'a'
+//       AND c.manager = '${req.params.admin}'
+//       AND b.avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
+//       AND CAST(date_trunc('month', DATE '${req.params.date}') AS DATE) + INTERVAL '1 month' - INTERVAL '1 day'; `
+//     );
+
+//     res.json(numdays.rows[0]);
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+// });
 
 // Get all salaries of CTs under an admin
 app.get("/Admin/salary/:admin/:date", async (req, res) => {
