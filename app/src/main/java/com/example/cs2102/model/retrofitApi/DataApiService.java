@@ -165,6 +165,14 @@ public class DataApiService {
         return dataApi.setPartTimeFree(params);
     }
 
+    // Salary page
+    public Single<LinkedTreeMap<String,String>> fetchCTSalary(String username, String date) {
+        HashMap<String,String> params = new HashMap<>();
+        params.put("caretaker", username);
+        params.put("date", date);
+        return dataApi.getCTSalary(params);
+    }
+
     /**
      * PET OWNER HOMEPAGE
      * */
@@ -228,7 +236,7 @@ public class DataApiService {
         return dataApi.deletePetOwnerPet(username, petName, params);
     }
 
-    //Bids
+    // Bids page
     public Single<ArrayList<LinkedTreeMap<String,String>>> getOngoingBids(String username) {
         return dataApi.getOngoingBids(username);
     }
@@ -259,8 +267,13 @@ public class DataApiService {
         params.put("category", type);
         return dataApi.updateBasePrice(params);
     }
-
     public Single<ArrayList<LinkedTreeMap<String,String>>> fetchRatings(String username) {
         return dataApi.getRatings(username);
+    }
+    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchSalarys(String username, String date) {
+        return dataApi.getSalary(username, date);
+    }
+    public Single<LinkedTreeMap<String,String>> fetchAdminStats(String username, String date) {
+        return dataApi.getStats(username, date);
     }
 }

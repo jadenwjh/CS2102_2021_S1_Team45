@@ -3,6 +3,7 @@ package com.example.cs2102.view.adminView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -42,6 +43,7 @@ public class AdminHomepageActivity extends AppCompatActivity {
     private FragmentTransaction ft;
     private AdminSetPriceFragment priceFragment;
     private AdminRatingFragment ratingFragment;
+    private AdminSalaryFragment salaryFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +61,17 @@ public class AdminHomepageActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             priceFragment = AdminSetPriceFragment.newInstance();
             ratingFragment = AdminRatingFragment.newInstance(username);
+            salaryFragment = AdminSalaryFragment.newInstance(username);
 
-            ft.add(R.id.admin_fragment, ratingFragment, CURRENT_FRAGMENT).commit();
+            ft.add(R.id.admin_fragment, salaryFragment, CURRENT_FRAGMENT).commit();
+            viewSalary.setBackgroundColor(Color.CYAN);
         }
 
         viewPetPrice.setOnClickListener(v -> switchFragment(Strings.MOD_BASE_PRICE));
 
         viewRating.setOnClickListener(v -> switchFragment(Strings.RATING));
+
+        viewSalary.setOnClickListener(v -> switchFragment(Strings.SALARY));
 
         loadingBar.setVisibility(View.GONE);
     }
@@ -91,16 +97,22 @@ public class AdminHomepageActivity extends AppCompatActivity {
     }
 
     private void switchFragment(String key) {
+        viewRating.setBackgroundColor(Color.BLACK);
+        viewPetPrice.setBackgroundColor(Color.BLACK);
+        viewSalary.setBackgroundColor(Color.BLACK);
         switch (key) {
             case Strings.MOD_BASE_PRICE:
+                viewPetPrice.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.admin_fragment, priceFragment, CURRENT_FRAGMENT).commit();
                 break;
-//            case Strings.SALARY:
-//                ft = fm.beginTransaction();
-//                ft.replace(R.id.admin_fragment, salaryFragment, CURRENT_FRAGMENT).commit();
-//                break;
+            case Strings.SALARY:
+                viewSalary.setBackgroundColor(Color.CYAN);
+                ft = fm.beginTransaction();
+                ft.replace(R.id.admin_fragment, salaryFragment, CURRENT_FRAGMENT).commit();
+                break;
             case Strings.RATING:
+                viewRating.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.admin_fragment, ratingFragment, CURRENT_FRAGMENT).commit();
                 break;

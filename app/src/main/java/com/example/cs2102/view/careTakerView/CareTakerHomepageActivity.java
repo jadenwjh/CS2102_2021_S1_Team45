@@ -54,6 +54,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     private CareTakerSetPriceFragment priceFragment;
     private CareTakerAvailabilityFragment availabilityFragment;
     private CareTakerHomepageViewModel homepageViewModel;
+    private CareTakerSalaryFragment salaryFragment;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
@@ -69,6 +70,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         homepageViewModel = ViewModelProviders.of(this).get(CareTakerHomepageViewModel.class);
 
         setContentView(R.layout.activity_care_taker_homepage);
+        ButterKnife.bind(this);
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
@@ -122,11 +124,12 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                         datePicker.show(getSupportFragmentManager(), CURRENT_FRAGMENT);
                     });
 
+                    salaryFragment = CareTakerSalaryFragment.newInstance(username);
+
                     //default bid page
                     ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
+                    viewBids.setBackgroundColor(Color.CYAN);
                 }
-
-                ButterKnife.bind(this);
 
                 if (contract.equals(Strings.FULL_TIME)) {
                     viewLeavesOrFree.setText(R.string.leaves);
@@ -141,6 +144,8 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 viewBids.setOnClickListener(view -> switchFragment(Strings.BIDS));
 
                 viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
+
+                viewSalary.setOnClickListener(view -> switchFragment(Strings.SALARY));
 
                 careTakerHomepageObserver();
 
@@ -163,18 +168,30 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
 
     private void switchFragment(String key) {
         toggleHideNavigator(false);
+        viewBids.setBackgroundColor(Color.BLACK);
+        viewPrices.setBackgroundColor(Color.BLACK);
+        viewLeavesOrFree.setBackgroundColor(Color.BLACK);
+        viewSalary.setBackgroundColor(Color.BLACK);
         switch (key) {
             case Strings.BIDS:
+                viewBids.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.PRICES:
+                viewPrices.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, priceFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.LEAVES_AVAILABILITY:
+                viewLeavesOrFree.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, availabilityFragment, CURRENT_FRAGMENT).commit();
+                break;
+            case Strings.SALARY:
+                viewSalary.setBackgroundColor(Color.CYAN);
+                ft = fm.beginTransaction();
+                ft.replace(R.id.careTaker_fragment, salaryFragment, CURRENT_FRAGMENT).commit();
                 break;
             default:
                 throw new RuntimeException(String.format("Unable to load %s fragment", key));

@@ -66,6 +66,9 @@ public interface DataApi {
     @POST(Strings.CT_PART_TIME_FREE)
     Completable setPartTimeFree(@Body HashMap<String, String> params);
 
+    @POST(Strings.CT_SALARY)
+    Single<LinkedTreeMap<String,String>> getCTSalary(@Body HashMap<String, String> params);
+
     /**
      * PET OWNER
      * */
@@ -115,4 +118,10 @@ public interface DataApi {
 
     @GET(Strings.GET_RATINGS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getRatings(@Path("username") String username);
+
+    @GET(Strings.GET_SALARY + "/{username}/{date}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getSalary(@Path("username") String username, @Path("date") String date);
+
+    @GET(Strings.STATS + "/{username}/{date}")
+    Single<LinkedTreeMap<String,String>> getStats(@Path("username") String username, @Path("date") String date);
 }

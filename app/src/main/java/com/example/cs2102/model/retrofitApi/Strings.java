@@ -37,6 +37,7 @@ public class Strings {
     public static final String CT_FULL_TIME_LEAVE = "caretaker/leaves";
     public static final String CT_BIDS = "caretaker/bids";
     public static final String CT_PART_TIME_FREE = "caretaker/available";
+    public static final String CT_SALARY = "CareTaker/salary";
 
     public static final String PO_GET_LISTINGS = "petowner/findCareTaker";
     public static final String PETS_PETOWNER = "petowner/pets";
@@ -48,4 +49,6 @@ public class Strings {
     public static final String LEAVE_RATING = "PetOwner/RatingsReviews";
 
     public static final String GET_RATINGS = "Admin/summary";
+    public static final String STATS = "Admin/petstats";
+    public static final String GET_SALARY = "Admin/salary";
 }

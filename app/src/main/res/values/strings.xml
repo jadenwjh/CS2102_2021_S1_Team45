@@ -98,5 +98,8 @@
     <string name="modify_price">Modify price:</string>
     <string name="new_price">New price</string>
     <string name="there_is_nothing_to_view">There is nothing to view</string>
+    <string name="picking_any_day_will_search_salaries_by_the_month">Picking any day will search salaries by the month</string>
+    <string name="statistics_for_the_month_will_be_shown">Statistics for the month will be shown</string>
+    <string name="note_that_only_salaries_before_current_month_will_be_shown">Note that only salaries before current month will be shown</string>
 
 </resources>

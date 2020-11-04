@@ -35,6 +35,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
     @BindView(R.id.viewPets)
     Button viewPets;
+
     @BindView(R.id.viewReview)
     Button viewReview;
 
@@ -52,6 +53,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         String username = userProfile.username;
 
         setContentView(R.layout.activity_pet_owner_homepage);
+        ButterKnife.bind(this);
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
@@ -90,9 +92,8 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
             //default listing page
             ft.add(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
+            viewListings.setBackgroundColor(Color.CYAN);
         }
-
-        ButterKnife.bind(this);
 
         viewListings.setOnClickListener(view -> {
             switchFragment(Strings.LISTINGS);
@@ -123,17 +124,23 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
     private void switchFragment(String key) {
         toggleHideNavigator(false);
+        viewListings.setBackgroundColor(Color.BLACK);
+        viewPets.setBackgroundColor(Color.BLACK);
+        viewReview.setBackgroundColor(Color.BLACK);
         switch (key) {
             case Strings.LISTINGS:
+                viewListings.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 listingFragment.clearSelection();
                 ft.replace(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.PETS:
+                viewPets.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.petOwner_fragment, petsFragment, CURRENT_FRAGMENT).commit();
                 break;
             case Strings.BIDS:
+                viewReview.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.petOwner_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
                 break;

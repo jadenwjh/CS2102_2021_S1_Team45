@@ -83,6 +83,7 @@ public class PetOwnerBidsFragment extends Fragment {
             public void onStartReview(CareTakerBid currentBid) {
                 ReviewFragment reviewFragment = ReviewFragment.newInstance(currentBid);
                 bidsFragmentReviewListener.exitReviewFragment(reviewFragment);
+                historyButton.setBackgroundColor(Color.CYAN);
             }
         });
 
@@ -113,7 +114,7 @@ public class PetOwnerBidsFragment extends Fragment {
 
     private void bidsFragmentObserver() {
         petOwnerBidsViewModel.ongoingBids.observe(getViewLifecycleOwner(), bidsList -> {
-            if (bidsList != null && bidsList.size() != 0) {
+            if (bidsList != null) {
                 petOwnerBidsAdapter.updateBidsList(bidsList);
                 bidsRecyclerView.setVisibility(View.VISIBLE);
                 bidsRecyclerView.setAdapter(petOwnerBidsAdapter);
@@ -122,7 +123,7 @@ public class PetOwnerBidsFragment extends Fragment {
             }
         });
         petOwnerBidsViewModel.expiredBids.observe(getViewLifecycleOwner(), bidsList -> {
-            if (bidsList != null && bidsList.size() != 0) {
+            if (bidsList != null) {
                 petOwnerBidsAdapter.updateBidsList(bidsList);
                 bidsRecyclerView.setVisibility(View.VISIBLE);
                 bidsRecyclerView.setAdapter(petOwnerBidsAdapter);

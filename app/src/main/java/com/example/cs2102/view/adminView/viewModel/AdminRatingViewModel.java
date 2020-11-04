@@ -65,5 +65,3 @@ public class AdminRatingViewModel extends ViewModel {
         disposable.clear();
     }
 }
-
-//pdepport0, Password:uwh6If

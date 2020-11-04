@@ -24,16 +24,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:weightSum="4">
+            android:weightSum="5">
 
             <Button
                 android:id="@+id/viewPrices"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="8sp"
                 android:text="@string/prices" />
 
             <Space
@@ -42,6 +46,7 @@
 
             <Button
                 android:id="@+id/viewBids"
+                android:textSize="8sp"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,6 +59,7 @@
 
             <Button
                 android:id="@+id/viewLeaves"
+                android:textSize="8sp"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -65,6 +71,7 @@
 
             <Button
                 android:id="@+id/viewSalary"
+                android:textSize="8sp"
                 android:layout_weight="1"
                 android:text="@string/salary"
                 android:layout_width="wrap_content"
