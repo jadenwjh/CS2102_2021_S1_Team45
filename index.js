@@ -42,10 +42,12 @@ app.post("/Users/login", async (req, res) => {
       accountType = ["PetOwners", "PetOwners"];
     } else if (req.body.acctype==="caretaker") {
       accountType = ["CareTakers", "CareTakers"];
+    } else if (req.body.acctype==="admin") {
+      accountType = ["PCSadmins", "PCSadmins"];
     } else if (req.body.acctype==="both") {
       accountType = ["PetOwners", "CareTakers"];
     } else {
-      throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker', 'both'], case insensitive.");
+      throw Error("Unknown account type. acctype must be one of ['petowner', 'caretaker' 'both', 'admin'], case insensitive.");
     }
     const getUsers = await pool.query(
       `SELECT Users.*, '${req.body.acctype}' AS acctype

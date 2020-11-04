@@ -111,7 +111,7 @@
 
     - `password`: string, user password
 
-    - `acctype`: string, one of ['petowner', 'caretaker', 'both'], case insensitive
+    - `acctype`: string, one of ['petowner', 'caretaker', 'both', 'admin'], case insensitive
 
     ### Example:
     - POST https://shielded-oasis-35437.herokuapp.com/Users/login
