@@ -161,7 +161,9 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
             viewBids.setVisibility(View.INVISIBLE);
             viewLeavesOrFree.setVisibility(View.INVISIBLE);
             viewPrices.setVisibility(View.INVISIBLE);
+            viewSalary.setVisibility(View.INVISIBLE);
         } else {
+            viewSalary.setVisibility(View.VISIBLE);
             viewBids.setVisibility(View.VISIBLE);
             viewLeavesOrFree.setVisibility(View.VISIBLE);
             viewPrices.setVisibility(View.VISIBLE);
