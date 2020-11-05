@@ -51,4 +51,13 @@ public class Strings {
     public static final String GET_RATINGS = "Admin/summary";
     public static final String STATS = "Admin/petstats";
     public static final String GET_SALARY = "Admin/salary";
+
+    public static String convertDate(String old) {
+        String[] dates = old.split("-");
+        int m = Integer.parseInt(dates[1]) + 1;
+        if (m == 13) {
+            m = 1;
+        }
+        return String.format("%s-%d-%s", dates[0], m, dates[2]);
+    }
 }

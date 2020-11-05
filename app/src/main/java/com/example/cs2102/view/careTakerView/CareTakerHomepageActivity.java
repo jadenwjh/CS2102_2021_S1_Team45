@@ -115,7 +115,9 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                     });
 
                     availabilityFragment = CareTakerAvailabilityFragment.newInstance(contract);
+
                     Calendar now = Calendar.getInstance();
+                    Log.e("requestToApplyLeave", now.toString());
                     availabilityFragment.setAvailabilityDatePicker(days -> {
                         String date = "";
                         DatePickerDialog datePicker = DatePickerDialog.newInstance(dateSetListener, now);

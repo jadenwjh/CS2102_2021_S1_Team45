@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.retrofitApi.DataApiService;
+import com.example.cs2102.model.retrofitApi.Strings;
 import com.google.gson.internal.LinkedTreeMap;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -51,7 +52,9 @@ public class CareTakerHomepageViewModel extends ViewModel {
 
     public void requestToSendAvailability(String careTakerUsername, String date, Context context) {
         loading.setValue(true);
-        disposable.add(dataApiService.setPartTimerFree(careTakerUsername, date)
+        String converted_date = Strings.convertDate(date);
+        Log.e("requestToSendAvail", converted_date);
+        disposable.add(dataApiService.setPartTimerFree(careTakerUsername, converted_date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -59,8 +62,7 @@ public class CareTakerHomepageViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.e("Set availability", "Success");
-                        Log.e("sent avail for PT", date);
-                        Toast.makeText(context, "Availability successfully set on " + date, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Availability successfully set on " + converted_date, Toast.LENGTH_SHORT).show();
                         loadErrorPT.setValue(false);
                         loading.setValue(false);
                     }
@@ -78,7 +80,10 @@ public class CareTakerHomepageViewModel extends ViewModel {
 
     public void requestToApplyLeave(String careTakerUsername, String date, Context context) {
         loading.setValue(true);
-        disposable.add(dataApiService.applyLeave(careTakerUsername, date)
+        //yyyy-mm-dd
+        String converted_date = Strings.convertDate(date);
+        Log.e("requestToApplyLeave", converted_date);
+        disposable.add(dataApiService.applyLeave(careTakerUsername, converted_date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver() {
@@ -86,8 +91,7 @@ public class CareTakerHomepageViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.e("Apply leave", "Success");
-                        Log.e("sent leave for FT", date);
-                        Toast.makeText(context, "Leave successfully set on " + date, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Leave successfully set on " + converted_date, Toast.LENGTH_SHORT).show();
                         loadErrorFT.setValue(false);
                         loading.setValue(false);
                     }
