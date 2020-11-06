@@ -38,6 +38,7 @@ public class Strings {
     public static final String CT_BIDS = "caretaker/bids";
     public static final String CT_PART_TIME_FREE = "caretaker/available";
     public static final String CT_SALARY = "CareTaker/salary";
+    public static final String CT_REVIEWS = "petowner/ratingsreviews";
 
     public static final String PO_GET_LISTINGS = "petowner/findCareTaker";
     public static final String PETS_PETOWNER = "petowner/pets";

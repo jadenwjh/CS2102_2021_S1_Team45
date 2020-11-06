@@ -69,6 +69,9 @@ public interface DataApi {
     @POST(Strings.CT_SALARY)
     Single<LinkedTreeMap<String,String>> getCTSalary(@Body HashMap<String, String> params);
 
+    @GET(Strings.CT_REVIEWS + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getCTReview(@Path("username") String username);
+
     /**
      * PET OWNER
      * */

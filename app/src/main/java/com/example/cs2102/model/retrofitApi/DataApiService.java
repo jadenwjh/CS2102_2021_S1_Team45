@@ -203,6 +203,9 @@ public class DataApiService {
     public Single<ArrayList<LinkedTreeMap<String,String>>> getPetNamesOfType(String username, String petType) {
         return dataApi.getPetNamesOfType(username, petType);
     }
+    public Single<ArrayList<LinkedTreeMap<String,String>>> getCareTakerReviews(String username) {
+        return dataApi.getCTReview(username);
+    }
 
     // Pets Page
     public Single<ArrayList<LinkedTreeMap<String,String>>> getOwnedPets(String username) {

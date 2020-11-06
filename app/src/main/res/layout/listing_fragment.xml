@@ -33,17 +33,6 @@
                 android:layout_height="2dp" />
 
             <TextView
-                android:id="@+id/price_listing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="15sp" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="2dp" />
-
-            <TextView
                 android:id="@+id/listing_care_taker_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,13 +96,53 @@
                 android:inputType="text"
                 android:hint="@string/transfer_type" />
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="4dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/price_listing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="15sp" />
+
+                <Space
+                    android:layout_width="5dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLength="3"
+                    android:inputType="number"
+                    android:hint="@string/bid_price"
+                    android:id="@+id/bid_price" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/reviewList"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/submit_bid" />
 
         <Button
             android:id="@+id/submit_bid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="52dp"
+            android:layout_marginTop="40dp"
             android:text="@string/submit_bid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
