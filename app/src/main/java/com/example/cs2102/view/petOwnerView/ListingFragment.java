@@ -44,7 +44,7 @@ public class ListingFragment extends Fragment {
     Spinner paymentType;
 
     @BindView(R.id.listing_transfer)
-    EditText transferType;
+    Spinner transferType;
 
     @BindView(R.id.bid_price)
     EditText inputBidPrice;
@@ -120,7 +120,7 @@ public class ListingFragment extends Fragment {
         submitBid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String t = transferType.getText().toString();
+                String t = transferType.getSelectedItem().toString();
                 if (!petForBid.getName().equals("") && t.trim().length() != 0) {
                     String payment = paymentType.getSelectedItem().toString();
                     listingViewModel.submitBid(
@@ -143,6 +143,7 @@ public class ListingFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         listingSelectedObserver();
         generatePaymentTypes();
+        generateTransferTypes();
     }
 
     @Override
@@ -156,6 +157,13 @@ public class ListingFragment extends Fragment {
                 R.array.payment_selection, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         paymentType.setAdapter(adapter);
+    }
+
+    public void generateTransferTypes() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.transfer_types, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        transferType.setAdapter(adapter);
     }
 
     private void listingSelectedObserver() {
