@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -69,7 +68,7 @@ public class ListingFragment extends Fragment {
     private static String username;
     private static Pet petForBid;
 
-    private ReviewAdapter reviewAdapter = new ReviewAdapter(new ArrayList<>());
+    private CTReviewViewAdapter CTReviewViewAdapter = new CTReviewViewAdapter(new ArrayList<>());
 
     public interface ListingSelectedListener {
         void onListingSubmittedExitFragment();
@@ -104,9 +103,9 @@ public class ListingFragment extends Fragment {
         listingViewModel.fetchReviews(listing.getCareTaker());
         listingViewModel.reviews.observe(getViewLifecycleOwner(), reviewFetched -> {
             if (reviewFetched != null) {
-                reviewAdapter.updateReviewList(reviewFetched);
+                CTReviewViewAdapter.updateReviewList(reviewFetched);
             }
-            reviewList.setAdapter(reviewAdapter);
+            reviewList.setAdapter(CTReviewViewAdapter);
         });
 
         loadingBar.setVisibility(View.GONE);

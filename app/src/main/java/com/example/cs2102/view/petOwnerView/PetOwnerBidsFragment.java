@@ -40,7 +40,7 @@ public class PetOwnerBidsFragment extends Fragment {
     RecyclerView bidsRecyclerView;
 
     private PetOwnerBidsViewModel petOwnerBidsViewModel;
-    private PetOwnerBidsAdapter petOwnerBidsAdapter = new PetOwnerBidsAdapter(new ArrayList<>());
+    public PetOwnerBidsAdapter petOwnerBidsAdapter = new PetOwnerBidsAdapter(new ArrayList<>());
 
     private static String petOwnerUsername;
 

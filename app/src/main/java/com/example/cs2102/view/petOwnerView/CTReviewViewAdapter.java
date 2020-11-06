@@ -16,11 +16,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
+public class CTReviewViewAdapter extends RecyclerView.Adapter<CTReviewViewAdapter.ReviewViewHolder> {
 
     private List<Review> reviewList;
 
-    public ReviewAdapter(List<Review> reviewList) {
+    public CTReviewViewAdapter(List<Review> reviewList) {
         this.reviewList = reviewList;
     }
 

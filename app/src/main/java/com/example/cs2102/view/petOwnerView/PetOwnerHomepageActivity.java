@@ -22,6 +22,8 @@ import com.example.cs2102.model.UserProfile;
 import com.example.cs2102.model.retrofitApi.Strings;
 import com.example.cs2102.view.loginView.LoginActivity;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -83,7 +85,6 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
             bidsFragment.setBidsFragmentReviewListener(selectedBid -> {
                 selectedBid.setExitReviewFragmentCallback(() -> {
                     switchFragment(Strings.BIDS);
-                    bidsFragment.historyButton.setBackgroundColor(Color.CYAN);
                 });
                 ft = fm.beginTransaction();
                 toggleHideNavigator(true);
@@ -141,6 +142,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
                 break;
             case Strings.BIDS:
                 viewReview.setBackgroundColor(Color.CYAN);
+                bidsFragment.petOwnerBidsAdapter.updateBidsList(new ArrayList<>());
                 ft = fm.beginTransaction();
                 ft.replace(R.id.petOwner_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
                 break;
