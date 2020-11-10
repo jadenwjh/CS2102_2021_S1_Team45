@@ -901,3 +901,39 @@
     Output:
     
     `[{"caretaker":"jgastickep2","ptsalary":3000}, ...]`
+
+&nbsp;
+- ## get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings  <div style="text-align: right"> `GET /Admin/ctsummary/:date`
+
+    ### Params:
+    - `date` : string
+
+    ### Example:
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/ctsummary/2020-08-02
+
+    Output:
+    
+    caretaker, contract type, salary, pet days clocked, average rating, number of ratings
+
+
+&nbsp;
+- ## get monthly financials info between a start date and an end date  <div style="text-align: right"> `POST /Admin/finances`
+
+    ### Body:
+    - `sdate` : string
+    - `edate` : string
+
+    ### Example:
+    POST https://shielded-oasis-35437.herokuapp.com/Admin/finances
+
+    Body:
+    ```
+    {
+        "sdate": "2020-01-01",
+        "edate": "2020-03-31"
+    }
+    ```
+
+    Output:
+    
+    year, month, total profit, revenue, total salary paid, total pets for each month

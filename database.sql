@@ -670,24 +670,24 @@ FOR EACH ROW EXECUTE PROCEDURE isDeletableAdmin();
 ------------------------------------------
 
 CREATE OR REPLACE PROCEDURE
-addPCSadmin(username VARCHAR, email VARCHAR, profile VARCHAR,
+addPCSadmin(username VARCHAR, email VARCHAR, password VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER) AS 
 $$ 
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
-			INSERT INTO Users VALUES(username, email, profile, address, phone);
+			INSERT INTO Users VALUES(username, email, password, profile, address, phone);
 		END IF;
 		INSERT INTO PCSadmins VALUES(username);
 	END; $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE
-addPetOwner(username VARCHAR, email VARCHAR, profile VARCHAR,
+addPetOwner(username VARCHAR, email VARCHAR, password VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER, creditcard INTEGER, bankacc INTEGER) AS 
 $$ 
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
-			INSERT INTO Users VALUES(username, email, profile, address, phone);
+			INSERT INTO Users VALUES(username, email, password, profile, address, phone);
 		END IF;
 		IF username NOT IN (SELECT C.username FROM Consumers C) THEN
 			INSERT INTO Consumers VALUES(username, creditcard, bankacc);
@@ -697,14 +697,14 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE
-addCareTaker(username VARCHAR, email VARCHAR, profile VARCHAR,
+addCareTaker(username VARCHAR, email VARCHAR, password VARCHAR, profile VARCHAR,
 		address VARCHAR, phone INTEGER, creditcard INTEGER, bankacc INTEGER, isPartTime BOOLEAN, manager VARCHAR) AS 
 $$ 
 	DECLARE sdate DATE;
 	DECLARE edate DATE;
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
-			INSERT INTO Users VALUES(username, email, profile, address, phone);
+			INSERT INTO Users VALUES(username, email, password, profile, address, phone);
 		END IF;
 		IF username NOT IN (SELECT C.username FROM Consumers C) THEN
 			INSERT INTO Consumers VALUES(username, creditcard, bankacc);
@@ -805,6 +805,162 @@ CREATE OR REPLACE PROCEDURE applyLeave(ctname VARCHAR, startdate DATE, enddate D
 			leaveDate := leaveDate + 1;
 		END LOOP;
 	END; $$
+LANGUAGE plpgsql;
+
+
+/* Support browsing of Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings*/
+/* input:datein (should correspond to the month of interest)*/
+/* output: caretaker, contract type, salary, pet days clocked, average rating, number of ratings */
+CREATE OR REPLACE FUNCTION viewCareTakersWagePetDaysRatings(datein DATE) /*To be used only in triggers*/
+RETURNS TABLE(
+	caretaker VARCHAR,
+	contract TEXT,
+	salary FLOAT,
+	petdaysclocked BIGINT,
+	avgrating NUMERIC,
+	numratings BIGINT
+	) AS $$
+	BEGIN
+		RETURN QUERY ( 
+			SELECT WG.caretaker, WG.contract, WG.salary, WG.petdaysclocked, RT.avgrating, RT.numratings
+			FROM
+				(/*This table tabulates the salary and pet days clocked for part-timers with at least 1 approved paid bid*/
+				SELECT CB.caretaker, 'Part-Time' AS contract, SUM(price)*0.75 AS salary, COUNT(*) AS petdaysclocked
+				FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+				WHERE CB.avail <= CAST(date_trunc('month', datein)+ interval '1 month - 1 day' AS DATE)
+					AND CB.avail >= CAST(date_trunc('month', datein) AS DATE)
+					AND CB.isPaid = TRUE 
+					AND CB.status = 'a' 
+					AND CB.caretaker IN (SELECT PT.username FROM PartTimers PT)
+				GROUP BY CB.caretaker
+				UNION
+				/*This table tabulates the salary and pet days clocked for part-timers with no approved paid bid*/
+				SELECT PT.username AS caretaker, 'Part-Time' AS contract, 0.0 AS salary , 0 AS petdaysclocked
+				FROM PartTimers PT
+				WHERE PT.username NOT IN (
+						SELECT B.caretaker 
+						FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) B 
+						WHERE B.avail <= CAST(date_trunc('month', datein)+ interval '1 month - 1 day' AS DATE)
+							AND B.avail >= CAST(date_trunc('month', datein) AS DATE)
+							AND B.isPaid = TRUE 
+							AND B.status = 'a')
+				UNION
+				/*This table tabulates the salary and pet days clocked for full-timers with at least 1 approved paid bid*/
+				SELECT CT.username AS caretaker, 'Full-Time' AS contract, ( /*computation of salary for one full-timer*/
+						SELECT CASE 
+								WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+								ELSE 3000
+								END
+						FROM ( /*Find prices of all excess pet days*/
+							SELECT *
+							FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+							WHERE CB.caretaker=CT.username 
+								AND CB.avail <= CAST(date_trunc('month', datein)+ interval '1 month - 1 day' AS DATE)
+								AND CB.avail >= CAST(date_trunc('month', datein) AS DATE)
+								AND CB.isPaid = TRUE 
+								AND CB.status = 'a'
+							ORDER BY CB.price ASC 
+							OFFSET 60  /*First 60 entries are assigned to the base pet days*/
+							) OFS
+					) AS salary,
+					( /*counting the pet days clocked for this full-timer*/
+					SELECT COUNT(*) AS petdaysclocked
+					FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+					WHERE CB.caretaker=CT.username 
+						AND CB.avail <= CAST(date_trunc('month', datein)+ interval '1 month - 1 day' AS DATE)
+						AND CB.avail >= CAST(date_trunc('month', datein) AS DATE)
+						AND CB.isPaid = TRUE 
+						AND CB.status = 'a'
+					) AS petdaysclocked
+				FROM CareTakers CT
+				WHERE CT.username NOT IN (SELECT PT.username FROM PartTimers PT) /*condition to select only full-timers*/
+				) WG 
+				NATURAL JOIN (
+				/*This table computes the average ratings for each caretaker*/
+				SELECT CB.caretaker, AVG(CB.rating) AS avgrating, COUNT(CB.rating) AS numratings
+				FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+				GROUP BY CB.caretaker
+				UNION
+				SELECT CT.username AS caretaker, NULL AS avgrating, 0 AS numratings
+				FROM CareTakers CT
+				WHERE CT.username NOT IN (SELECT CB1.caretaker 
+											FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB1)
+				) RT
+			ORDER BY RT.avgrating ASC, RT.numratings ASC, WG.petdaysclocked ASC 
+			/*order by average ratings, number of ratings, then pet days clocked*/
+		);
+	END;$$
+LANGUAGE plpgsql;
+
+/* Support browsing of key financial information about the business by PCS admin
+	such as profit, revenue, salary cost and pet serviced for each months over a range of months*/
+/*Input: startdate, enddate (corresponding to the start month and end month of interest)*/
+/*Output: year, month, total profit, revenue, total salary paid and total pets for each month, uses CTE*/
+CREATE OR REPLACE FUNCTION viewMonthlyFinancials(startdatein DATE, enddatein DATE) 
+RETURNS TABLE(
+	year_ FLOAT,
+	month_ FLOAT,
+	profit FLOAT,
+	totalrevenue REAL,
+	totalsalarypaid FLOAT, 
+	totalpets BIGINT
+	) AS $$
+	BEGIN
+		RETURN QUERY (
+			WITH transactions AS (
+				SELECT CB.petowner, CB.petname, CB.caretaker, CB.avail, CB.price, 
+						EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
+				FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+				WHERE CB.status='a' AND CB.isPaid 
+					AND CB.avail <=CAST(date_trunc('month', enddatein)+ interval '1 month - 1 day' AS DATE)
+					AND CB.avail >=CAST(date_trunc('month', startdatein) AS DATE)
+				)
+			SELECT TSP.year_, TSP.month_, TRP.totalrevenue-TSP.totalsalarypaid AS profit,
+					TRP.totalrevenue, TSP.totalsalarypaid, TRP.totalpets
+			FROM (/*This table tabulates the total salary paid for each month*/
+				SELECT CTS.year_, CTS.month_, SUM(CTS.salary) AS totalsalarypaid
+				FROM ( /*This table tabulates the salary for each caretaker for a given month and year*/
+					SELECT CT.username AS caretaker, MY.year_, MY.month_,  
+						(SELECT CASE /*compute salary for each caretaker*/
+							/*Full-timers case*/
+							WHEN CT.username NOT IN (SELECT PT.username FROM PartTimers PT) THEN 
+							(SELECT CASE 
+								WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+								ELSE 3000
+								END
+							FROM (
+								SELECT *
+								FROM transactions CB
+								WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+								ORDER BY CB.price ASC 
+								OFFSET 60 
+								) OFS
+							)
+						ELSE /*part-timers case*/
+							(
+							SELECT CASE 
+								WHEN SUM(price) IS NOT NULL THEN SUM(price)*0.75
+								ELSE 0
+								END
+							FROM transactions CB 
+							WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+							)
+						END
+						)AS salary
+					FROM CareTakers CT, (SELECT DISTINCT T0.month_, T0.year_ FROM transactions T0) MY
+					) AS CTS
+				GROUP BY CTS.year_, CTS.month_
+				) TSP
+				NATURAL JOIN 
+				( /*This table tabulates the total revenue and the total number pets served for each month*/
+				SELECT TR0.year_, TR0.month_, SUM(TR0.price) AS totalrevenue, 
+					COUNT(DISTINCT CONCAT(TR0.petowner, ',', TR0.petname) ) AS totalpets
+				FROM transactions TR0
+				GROUP BY TR0.year_, TR0.month_
+				) TRP
+			ORDER BY TSP.year_ ASC, TSP.month_ ASC
+		);
+	END;$$
 LANGUAGE plpgsql;
 
 -- ------------------------------------------------------------

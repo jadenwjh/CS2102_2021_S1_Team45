@@ -837,6 +837,33 @@ app.get("/Admin/salary/:admin/:date", async (req, res) => {
 });
 
 
+// get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings
+app.get("/Admin/ctsummary/:date", async (req, res) => {
+  try {
+    const caretakerSummary = await pool.query(
+      `SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE));`
+    );
+
+    res.json(caretakerSummary.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// get monthly financials info between a start date and an end date
+app.post("/Admin/finances", async (req, res) => {
+  try {
+    const finances = await pool.query(
+      `SELECT * FROM viewMonthlyFinancials(CAST('${req.body.sdate}' AS DATE), CAST('${req.body.edate}' AS DATE));`
+    );
+
+    res.json(finances.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
 /* 
     ###########################
     #          Debug          #
