@@ -165,9 +165,9 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
     const getRating = await pool.query(
       // Smallest avail(sdate) from each group
       `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
-      FROM Bids AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
+      FROM combinedBids() AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
       WHERE B1.petowner = '${req.params.petowner}'
-      AND (SELECT sum(B2.rating) FROM Bids AS B2 
+      AND (SELECT sum(B2.rating) FROM combinedBids() AS B2 
         WHERE B1.edate = B2.avail
         AND B1.petowner = B2.petowner
         AND B1.petname = B2.petname
@@ -195,11 +195,8 @@ app.post("/PetOwner/RatingsReviews", async (req, res) => {
       `CALL rateCareTaker('${req.body.petowner}', '${req.body.petname}',
       '${req.body.caretaker}', '${req.body.avail}', ${req.body.rating}, '${req.body.review}');
       
-      UPDATE Bids SET isPaid = ${req.body.isPaid} 
-      WHERE avail = '${req.body.avail}'
-      AND petowner = '${req.body.petowner}'
-      AND petname = '${req.body.petname}'
-      AND caretaker = '${req.body.caretaker}'; `
+      CALL updateIsPaid('${req.body.petowner}', '${req.body.petname}',
+      '${req.body.caretaker}', '${req.body.avail}', ${req.body.isPaid}); `
     );
     res.json("Ratings and reviews updated");
   } catch (err) {
@@ -213,19 +210,19 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
   try {
     const getRating = await pool.query(
       `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
-      FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
-      WHERE Bids.petowner = '${req.params.petowner}'
-      AND (SELECT sum(B2.rating) FROM Bids AS B2 
-        WHERE Bids.edate = B2.avail
-        AND Bids.petowner = B2.petowner
-        AND Bids.petname = B2.petname
-        AND Bids.caretaker = B2.caretaker
-        AND Bids.edate = B2.edate) IS NULL 
+      FROM combinedBids() as B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
+      WHERE B1.petowner = '${req.params.petowner}'
+      AND (SELECT sum(B2.rating) FROM combinedBids() AS B2 
+        WHERE B1.edate = B2.avail
+        AND B1.petowner = B2.petowner
+        AND B1.petname = B2.petname
+        AND B1.caretaker = B2.caretaker
+        AND B1.edate = B2.edate) IS NULL 
       AND status='a'
       AND (SELECT currentDate()) >= edate
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
-      ORDER BY Bids.edate;`
+      ORDER BY B1.edate;`
     );
     res.json(getRating.rows);
   } catch (err) {
@@ -237,45 +234,55 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
 app.post("/PetOwner/findCareTaker", async (req, res) => {
   try {
     const availCareTakers = await pool.query(
-      `SELECT atc.caretaker, atc.category, atc.feeperday, '${req.body.sdate}' AS startdate, '${req.body.edate}' AS enddate
-      FROM AbleToCare atc
-      WHERE EXISTS (
-        SELECT 1 FROM (
-          SELECT availCT.caretaker, COUNT(*) AS days
-          FROM (
-
-            SELECT AV.caretaker, AV.avail 
-            FROM (
-
-              SELECT B.caretaker, B.avail, COUNT(*) AS cnt
-              FROM Bids B
-              WHERE B.status ='a'
-              GROUP BY B.caretaker, B.avail
-
-              UNION 
-              
-              SELECT Bw.caretaker, Bw.avail, COUNT(*) AS cnt
-              FROM BidsWithoutPetOwner bw
-              WHERE Bw.status ='a'
-              GROUP BY Bw.caretaker, Bw.avail
-
-              UNION 
-
-              SELECT A.caretaker, A.avail, 0 AS cnt 
-              FROM Availability A
-              WHERE NOT EXISTS (SELECT * FROM Bids B WHERE B.caretaker=A.caretaker AND B.avail=A.avail AND B.status='a')
-
-            ) AV
-            WHERE AV.cnt<(SELECT computeMaxPet(AV.caretaker)) AND (AV.avail BETWEEN '${req.body.sdate}' AND '${req.body.edate}')
-            ORDER BY avail ASC
-
-          ) AS availCT
+      `SELECT atc.caretaker, atc.category, atc.feeperday, AVGRC.avgrating, AVGRC.numratings, '${req.body.sdate}' AS startdate, '${req.body.edate}' AS enddate
+      FROM AbleToCare atc 
+        NATURAL JOIN ( /*Table of each caretaker's average rating and number of rating*/
+          SELECT CB.caretaker, AVG(CB.rating) AS avgrating, COUNT(CB.rating) AS numratings
+          FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+          GROUP BY CB.caretaker
+          UNION
+          SELECT CT.username AS caretaker, NULL AS avgrating, 0 AS numratings
+          FROM CareTakers CT
+          WHERE CT.username NOT IN (SELECT CB1.caretaker FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB1)
+          ) AVGRC
+      WHERE EXISTS 
+        (SELECT 1 FROM
+          (SELECT availCT.caretaker, COUNT(*) AS days
+            FROM /*table of caretaker's availability to take on another pet on that date, within a restricted date range*/
+              (SELECT AV.caretaker, AV.avail 
+                FROM /*table of tabulating number of pets a caretaker has to take care on a work day*/
+                  (SELECT B.caretaker, B.avail, COUNT(*) AS cnt
+                    FROM Bids B
+                    WHERE B.status ='a'
+                    GROUP BY B.caretaker, B.avail
+                    UNION 
+                    SELECT A.caretaker, A.avail, 0 AS cnt 
+                    FROM Availability A
+                    WHERE NOT EXISTS (SELECT * FROM Bids B WHERE B.caretaker=A.caretaker AND B.avail=A.avail AND B.status='a')
+                  ) AV
+                WHERE AV.cnt<(/*This nested query computes the max pet limit of AV.caretaker*/
+                        SELECT CASE 
+                          WHEN AV.caretaker NOT IN (SELECT P.username FROM PartTimers P) THEN 5
+                            /*means caretaker is full-time, default value 5. Look at part-time case below*/
+                          WHEN avgrating>4.7 THEN 5
+                          WHEN avgrating>4.0 THEN 4
+                          WHEN avgrating>3.0 THEN 3
+                          ELSE 2
+                          END
+                        FROM (SELECT AVG(CB.rating) AS avgrating
+                            FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+                            WHERE CB.caretaker=AV.caretaker) AVGR
+                        ) 
+                  AND (AV.avail BETWEEN '${req.body.sdate}' AND '${req.body.edate}') /*restrict to date range*/
+              )AS availCT
           GROUP BY availCT.caretaker
           HAVING COUNT(*) = (CAST(MAX('${req.body.edate}') AS date) - CAST(MIN('${req.body.sdate}') AS date)) +1
-        ) AS t
-      )
-      AND atc.category = '${req.body.category}'; 
-      `
+          /*means caretaker is available evey day within the date range*/
+          ) AS t
+        WHERE t.caretaker = ATC.caretaker
+        )
+        AND atc.category = '${req.body.category}'
+      ORDER BY avgrating DESC NULLS LAST, numratings DESC, feeperday ASC; `
     );
 
     res.json(availCareTakers.rows);
@@ -290,7 +297,7 @@ app.get("/PetOwner/RatingsReviews/:caretaker", async (req, res) => {
   try {
     const getRating = await pool.query(
       `SELECT caretaker, rating, review, Pets.petowner, Pets.petname, edate, Pets.category
-      FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
+      FROM combinedBids() AS B LEFT JOIN Pets on B.petowner = Pets.petowner AND B.petname = Pets.petname
       WHERE caretaker = '${req.params.caretaker}'
       AND rating IS NOT NULL
       ORDER BY edate;`
@@ -511,7 +518,7 @@ app.delete("/CareTaker/AbleToCare", async (req, res) => {
     );
     res.json(abletocare.rows[0]);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.message); 
   }
 });
 
@@ -534,7 +541,7 @@ app.get("/CareTaker/RatingsReviews/:caretaker", async (req, res) => {
   try {
     const getRating = await pool.query(
       `SELECT caretaker, rating, review, Pets.petowner, Pets.petname, edate, Pets.category
-      FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
+      FROM combinedBids() AS B LEFT JOIN Pets on B.petowner = Pets.petowner AND B.petname = Pets.petname
       WHERE caretaker = '${req.params.caretaker}'
       AND rating IS NOT NULL
       ORDER BY edate;`
@@ -550,7 +557,7 @@ app.get("/CareTaker/Bids/:caretaker", async (req, res) => {
   try {
     const getBid = await pool.query(
       `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.*
-      FROM Bids LEFT JOIN Pets on Bids.petowner = Pets.petowner AND Bids.petname = Pets.petname
+      FROM combinedBids() AS B LEFT JOIN Pets on B.petowner = Pets.petowner AND B.petname = Pets.petname
       WHERE caretaker = '${req.params.caretaker}'
       AND status = 'p'
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
@@ -717,7 +724,7 @@ app.get("/Admin/summary/:admin", async (req, res) => {
   try {
     const caretakerSummary = await pool.query(
       `SELECT b.caretaker, AVG(rating) AS averageRating
-      FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
+      FROM combinedBids() b INNER JOIN caretakers c ON b.caretaker = c.username
       WHERE c.manager = '${req.params.admin}'
       GROUP BY b.caretaker
       ORDER BY averageRating;`
@@ -736,7 +743,7 @@ app.get("/Admin/petstats/:admin/:date", async (req, res) => {
       `SELECT SUM(count) as Totalpets
       FROM (
       SELECT 1 as count
-      FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
+      FROM combinedBids() b INNER JOIN caretakers c ON b.caretaker = c.username
       WHERE b.status = 'a'
       AND c.manager = '${req.params.admin}'
       AND b.avail <= CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)  + INTERVAL '1 month' - INTERVAL '1 day'
@@ -746,7 +753,7 @@ app.get("/Admin/petstats/:admin/:date", async (req, res) => {
     );
     const numdays = await pool.query(
       `SELECT COUNT(*) as petdays 
-      FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
+      FROM combinedBids() b INNER JOIN caretakers c ON b.caretaker = c.username
       WHERE b.status = 'a'
       AND c.manager = '${req.params.admin}'
       AND b.avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
@@ -759,100 +766,68 @@ app.get("/Admin/petstats/:admin/:date", async (req, res) => {
   }
 });
 
-// // Get total number of pet days in a month by CTs under an admin
-// app.get("/Admin/numdays/:admin/:date", async (req, res) => {
-//   try {
-//     const numdays = await pool.query(
-//       `SELECT COUNT(*) as petdays 
-//       FROM Bids b INNER JOIN caretakers c ON b.caretaker = c.username
-//       WHERE b.status = 'a'
-//       AND c.manager = '${req.params.admin}'
-//       AND b.avail BETWEEN CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)
-//       AND CAST(date_trunc('month', DATE '${req.params.date}') AS DATE) + INTERVAL '1 month' - INTERVAL '1 day'; `
-//     );
-
-//     res.json(numdays.rows[0]);
-//   } catch (err) {
-//     console.error(err.message);
-//   }
-// });
 
 // Get all salaries of CTs under an admin
 app.get("/Admin/salary/:admin/:date", async (req, res) => {
   try {
     const month = `CAST(date_trunc('month', DATE '${req.params.date}') AS DATE)`
-    query = `SELECT bb.caretaker, sum*0.75 AS ptsalary
-    FROM (
-      SELECT b.caretaker, SUM(price)
-      FROM Bids b 
-      WHERE b.avail <= ${month} + interval '1 month'
-      AND b.avail >= ${month} 
-      AND b.isPaid = TRUE 
-      AND b.status = 'a' 
-      GROUP BY b.caretaker
 
-      UNION 
-
-      SELECT bw.caretaker, SUM(price)
-      FROM BidsWithoutPetOwner bw
-      WHERE bw.avail <= ${month} + interval '1 month'
-      AND bw.avail >= ${month} 
-      AND bw.isPaid = TRUE 
-      AND bw.status = 'a' 
-      GROUP BY bw.caretaker  
-    ) AS bb INNER JOIN caretakers c ON bb.caretaker = c.username
-    WHERE bb.caretaker IN (SELECT username FROM Parttimers)
-    AND c.manager = '${req.params.admin}'
-
-    UNION
-    /*for fulltimers */
-    /*fulltimers wage*/
-
-    SELECT bb.caretaker, 3000+ ((wage - 3000) *0.8 ) AS FTsalary
-    FROM (
-      SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
-      FROM Bids b 
-      WHERE b.avail <= ${month} + interval '1 month'
-      AND b.avail >= ${month} 
-      AND b.isPaid = TRUE 
-      AND b.status = 'a' 
-      GROUP BY b.caretaker 
-      UNION 
-      SELECT bw.caretaker, COUNT(*) as petdays, SUM(price) as wage
-      FROM BidsWithoutPetOwner bw 
-      WHERE bw.avail <= ${month} + interval '1 month'
-      AND bw.avail >= ${month} 
-      AND bw.isPaid = TRUE 
-      AND bw.status = 'a' 
-      GROUP BY bw.caretaker 
-    ) AS bb INNER JOIN caretakers c ON bb.caretaker = c.username
-    WHERE bb.caretaker NOT IN (SELECT p.username FROM Parttimers p)
-    AND petdays > 60 
-    AND c.manager = '${req.params.admin}'
-
-    UNION 
-
-    SELECT caretaker, 3000 AS FTsalary
-    FROM (
-      SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
-      FROM Bids b 
-      WHERE b.avail <= ${month} + interval '1 month'
-      AND b.avail >= ${month} 
-      AND b.isPaid = TRUE 
-      AND b.status = 'a' 
-      GROUP BY b.caretaker 
-      UNION 
-      SELECT bw.caretaker, COUNT(*) as petdays, SUM(price) as wage
-      FROM BidsWithoutPetOwner bw 
-      WHERE bw.avail <= ${month} + interval '1 month'
-      AND bw.avail >= ${month} 
-      AND bw.isPaid = TRUE 
-      AND bw.status = 'a' 
-      GROUP BY bw.caretaker 
-    ) AS bb INNER JOIN caretakers c ON bb.caretaker = c.username
-    WHERE bb.caretaker NOT IN (SELECT p.username FROM Parttimers p)
-    AND petdays <= 60
-    AND c.manager = '${req.params.admin}';`
+    const query = `SELECT ACT.*
+    FROM caretakers C INNER JOIN (
+      /*Vanessa and Huihui's salary code*/
+      SELECT CB.caretaker, SUM(price)*0.75 AS salary, COUNT(*) AS petdaysclocked, "parttime" AS contract
+      FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+      WHERE CB.avail < ${month}  + interval '1 month'
+        AND CB.avail >= ${month} 
+        AND CB.isPaid = TRUE 
+        AND CB.status = 'a' 
+        AND CB.caretaker IN (SELECT PT.username FROM PartTimers PT)
+      GROUP BY CB.caretaker
+      UNION
+      SELECT PT.username AS caretaker, 0.0 AS salary , 0 AS petdaysclocked
+      FROM PartTimers PT
+      WHERE PT.username NOT IN (SELECT B.caretaker 
+                    FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) B 
+                    WHERE B.avail < ${month}  + interval '1 month'
+                      AND B.avail >= ${month}
+                      AND B.isPaid = TRUE 
+                      AND B.status = 'a')
+      
+      UNION
+      
+      /*for fulltimers */
+      /*fulltimers wage*/
+      
+      SELECT CT.username AS caretaker, (
+        SELECT CASE 
+            WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+            ELSE 3000
+            END
+        FROM (
+          SELECT *
+          FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+          WHERE CB.caretaker=CT.username AND CB.avail < ${month}  + interval '1 month'
+            AND CB.avail >= ${month}
+            AND CB.isPaid = TRUE 
+            AND CB.status = 'a'
+          ORDER BY CB.price ASC 
+          OFFSET 60 
+          ) OFS
+        ) AS salary,
+        (
+        SELECT COUNT(*) AS petdaysclocked
+        FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+        WHERE CB.caretaker=CT.username AND CB.avail < ${month}  + interval '1 month'
+          AND CB.avail >= ${month}
+          AND CB.isPaid = TRUE 
+          AND CB.status = 'a'
+        ) AS petdaysclocked, "parttime" AS contract
+      FROM CareTakers CT
+      WHERE CT.username NOT IN (SELECT PT.username FROM PartTimers PT)
+    ) AS ACT ON ACT.caretaker = C.username
+    WHERE C.manager = '${req.params.admin}'
+    ;`
+    
     const salaries = await pool.query(query);
 
     res.json(salaries.rows);

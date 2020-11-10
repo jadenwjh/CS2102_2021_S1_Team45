@@ -84,14 +84,7 @@
         Output:
 
         `{"category": "Meowth", "baseprice": 100}`
-
-&nbsp;
-
-- ## Inject SQL:<div style="text-align: right">`POST /secretsql`</div>
-    
-    ### Body:
-    - `sql` : string, sql code
-
+        
 --------------------------------------------------------------------------------------------
 &nbsp;
 

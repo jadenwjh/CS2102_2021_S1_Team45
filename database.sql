@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS BidsWithoutPetOwner;
 DROP TABLE IF EXISTS InvalidatedBids;
 DROP TABLE IF EXISTS Bids;
 DROP TABLE IF EXISTS Availability;
-DROP TABLE IF EXISTS Pets;
+DROP TABLE IF EXISTS Pets; 
 DROP TABLE IF EXISTS AbleToCare;
 DROP TABLE IF EXISTS PetTypes;
 DROP TABLE IF EXISTS PartTimers;
@@ -141,7 +141,7 @@ CREATE TABLE InvalidatedBids ( /*For pet owners to check their bids rejected due
 CREATE OR REPLACE FUNCTION currentDate() /*To track today's date, currently uses dummy*/
 RETURNS DATE AS $$
 	BEGIN
-		RETURN (SELECT CURRENT_DATE);   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
+		RETURN (SELECT CAST('2019-12-31'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
 	END; $$
 LANGUAGE plpgsql;
 
@@ -210,28 +210,6 @@ RETURNS NUMERIC AS $$
 		RETURN (SELECT mapAvgRatingToMultiplier(avgratings));
 	END; $$
 LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS checkIsValidFee ON AbleToCare; 
-CREATE OR REPLACE FUNCTION isValidFee()
-RETURNS TRIGGER AS $$
-	DECLARE basefee NUMERIC;
-	BEGIN 
-		SELECT P.baseprice INTO basefee FROM PetTypes P WHERE P.category=NEW.category;
-		IF NEW.feeperday<basefee THEN 
-			RAISE EXCEPTION 'fee per day cannot be lower than base price';
-			RETURN NULL;
-		END IF;
-		IF NEW.feeperday>(SELECT computeMaxPriceMultiplier(NEW.caretaker))*basefee THEN
-			RAISE EXCEPTION 'fee per day cannot be above upper limit';
-			RETURN NULL;
-		END IF;
-		RETURN NEW;
-	END; $$
-LANGUAGE plpgsql;
-
-CREATE TRIGGER checkIsValidFee
-BEFORE INSERT OR UPDATE ON AbleToCare
-FOR EACH ROW EXECUTE PROCEDURE isValidFee();
 
 CREATE OR REPLACE FUNCTION computeMaxPet(ctname VARCHAR)
 RETURNS INTEGER AS $$
@@ -317,8 +295,27 @@ LANGUAGE plpgsql;
 ------------------------------------------
 -----------------Triggers-----------------
 ------------------------------------------
+DROP TRIGGER IF EXISTS checkIsValidFee ON AbleToCare; 
+CREATE OR REPLACE FUNCTION isValidFee()
+RETURNS TRIGGER AS $$
+	DECLARE basefee NUMERIC;
+	BEGIN 
+		SELECT P.baseprice INTO basefee FROM PetTypes P WHERE P.category=NEW.category;
+		IF NEW.feeperday<basefee THEN 
+			RAISE EXCEPTION 'fee per day cannot be lower than base price';
+			RETURN NULL;
+		END IF;
+		IF NEW.feeperday>(SELECT computeMaxPriceMultiplier(NEW.caretaker))*basefee THEN
+			RAISE EXCEPTION 'fee per day cannot be above upper limit';
+			RETURN NULL;
+		END IF;
+		RETURN NEW;
+	END; $$
+LANGUAGE plpgsql;
 
-
+CREATE TRIGGER checkIsValidFee
+BEFORE INSERT OR UPDATE ON AbleToCare
+FOR EACH ROW EXECUTE PROCEDURE isValidFee();
 
 DROP TRIGGER IF EXISTS checkIsValidBid ON Bids; 
 CREATE OR REPLACE FUNCTION isValidBid()
@@ -705,7 +702,6 @@ addCareTaker(username VARCHAR, email VARCHAR, profile VARCHAR,
 $$ 
 	DECLARE sdate DATE;
 	DECLARE edate DATE;
-
 	BEGIN 
 		IF username NOT IN (SELECT U.username FROM Users U) THEN
 			INSERT INTO Users VALUES(username, email, profile, address, phone);
@@ -716,13 +712,11 @@ $$
 		INSERT INTO Caretakers VALUES(username, manager);
 		IF isPartTime THEN
 			INSERT INTO PartTimers VALUES(username);
-		END IF;
-		SELECT CURRENT_DATE INTO sdate;
-		SELECT CURRENT_DATE + INTERVAL '2 year' – INTERVAL '1 day' INTO edate;
-		IF isPartTime = false THEN 
+		ELSE
+			SELECT currentDate() INTO sdate;
+			SELECT CAST(sdate + INTERVAL '2 years' - INTERVAL '1 day' AS DATE) INTO edate;
 			CALL addAvailableDates(username, sdate, edate);
-		END IF; 
-
+		END IF;
 	END; $$
 LANGUAGE plpgsql;
 
@@ -770,6 +764,20 @@ CREATE OR REPLACE PROCEDURE approveRejectBid(POname VARCHAR, nameOfPet VARCHAR,
 	END; $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE PROCEDURE updateIsPaid(POname VARCHAR, nameOfPet VARCHAR, 
+			CTname VARCHAR, availdate DATE, ispaidval BOOLEAN) AS $$
+	DECLARE enddate DATE;
+	BEGIN 
+		enddate := (SELECT B.edate 
+								FROM Bids B 
+								WHERE B.petowner=POname AND B.petname=nameOfPet 
+									AND B.caretaker=CTname AND B.avail=availDate);
+		UPDATE Bids SET isPaid=ispaidval
+			WHERE petowner=POname AND petname=nameOfPet AND caretaker=CTname
+				AND edate = enddate;
+	END; $$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE PROCEDURE rateCareTaker(POname VARCHAR, nameOfPet VARCHAR,
 			CTname VARCHAR, availdate DATE, givenrating INTEGER, givenreview VARCHAR) AS $$
 	DECLARE enddate DATE;
@@ -799,87 +807,623 @@ CREATE OR REPLACE PROCEDURE applyLeave(ctname VARCHAR, startdate DATE, enddate D
 	END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION 
-viewMySalary(myUsername VARCHAR, startofMonth DATE) 
-RETURNS TABLE (caretaker VARCHAR, salary FLOAT) AS $$
-	BEGIN 
-		/*parttimers*/	
-		IF myUsername IN (SELECT p.username FROM Parttimers p) THEN 
-			RETURN QUERY (
-			SELECT bb.caretaker, sum*0.75 AS ptsalary
-			FROM (
-				SELECT b.caretaker, SUM(price)
-				FROM Bids b 
-				WHERE b.avail < startofMonth + interval '1 month'
-				AND b.avail >= startofMonth 
-				AND b.isPaid = TRUE 
-				AND b.status = 'a' 
-				GROUP BY b.caretaker 
+-- ------------------------------------------------------------
+-- -----------------Sample Data and Test Cases-----------------
+-- ------------------------------------------------------------
 
-				UNION 
+-- CALL addPCSadmin('master', 'master@hotmail.com', 'thebottomline', 'marina bay sands', 96667224);
 
-				SELECT bw.caretaker, SUM(price)
-				FROM BidsWithoutPetOwner bw
-				WHERE bw.avail < startofMonth + interval '1 month'
-				AND bw.avail >= startofMonth
-				AND bw.isPaid = TRUE 
-				AND bw.status = 'a' 
-				GROUP BY bw.caretaker
-			) AS bb
-			WHERE bb.caretaker = myUsername);
-		END IF;
+-- CALL addPetOwner('john','john@gmail', 'hello', 'jurong', 92345332, 2131231, 34536435);
+-- CALL addPetOwner('jack','jack@gmail', 'hello', 'jurong', 92232232, 65433546, 245325);
+-- CALL addPetOwner('jane','jane@gmail', 'hello', 'tampines', 92345332, 35663456,4653445);
+-- CALL addPetOwner('mary','mary@gmail', 'hello', 'hougang', 92345332, 4567574, 356434);
+-- CALL addPetOwner('bill','bill@gmail', 'hello', 'toapayoh', 92345522, 47456754,254354);
 
-		/*fulltimer*/ 
-		IF myUsername IN (SELECT c.username FROM Caretakers c EXCEPT (SELECT pt.username FROM Parttimers pt)) THEN 
-			RETURN QUERY (
-			SELECT bb.caretaker, 3000 + ((wage - 3000) * 0.8 ) AS FTsalary
-			FROM (
-				SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
-				FROM Bids b 
-				WHERE b.avail < startofMonth + interval '1 month'
-				AND b.avail >= startofMonth
-				AND b.isPaid = TRUE 
-				AND b.status = 'a' 
-				GROUP BY b.caretaker 
 
-				UNION 
+-- CALL addCareTaker('bill','bill@gmail', 'hello', 'toapayoh', 92345522, 47456754, 254354, TRUE, 'master');
+-- CALL addCareTaker('jean','jean@gmail', 'hello', 'marina', 97788522, 3456364, 2453243, FALSE, 'master');
+-- CALL addCareTaker('amanda','amanda@gmail', 'hello', 'yishun', 97733292, 2345324,43224, FALSE, 'master');
+-- CALL addCareTaker('germ','germ@gmail', 'hello', 'yishun', 97733292, 234525, 23141243, TRUE, 'master');
+-- CALL addCareTaker('edmund','germ@gmail', 'hello', 'bandemeer', 97733292, 234524, 412334, TRUE, 'master');
+-- CALL addCareTaker('linyi','linyi@gmail', 'hello', 'bandemeer', 97423292, 232224, 498334, TRUE, 'master');
 
-				SELECT bw.caretaker, COUNT(*) as petdays, SUM(price)
-				FROM BidsWithoutPetOwner bw
-				WHERE bw.avail < startofMonth + interval '1 month'
-				AND bw.avail >= startofMonth 
-				AND bw.isPaid = TRUE 
-				AND bw.status = 'a' 
-				GROUP BY bw.caretaker
-			) AS bb
-			WHERE petdays > 60 
-			AND bb.caretaker = myUsername
+-- CALL addAvailableDates('bill', '2020-01-01', '2021-03-28');
+-- CALL addAvailableDates('germ', '2020-01-01', '2021-03-28');
+-- CALL addAvailableDates('edmund', '2020-01-01', '2021-03-28');
 
-			UNION 
+-- INSERT INTO PetTypes VALUES('cat', 25);
+-- INSERT INTO PetTypes VALUES('dog', 35);
+-- INSERT INTO PetTypes VALUES('bird', 15);
 
-			SELECT bb.caretaker, 3000 AS FTsalary
-			FROM (
-				SELECT b.caretaker, COUNT(*) as petdays, SUM(price) as wage
-				FROM Bids b 
-				WHERE b.avail < startofMonth + interval '1 month'
-				AND b.avail >= startofMonth
-				AND b.isPaid = TRUE 
-				AND b.status = 'a' 
-				GROUP BY b.caretaker 
+-- INSERT INTO Pets VALUES('bill', 'wolfie', 'hi', NULL, 'dog');
+-- INSERT INTO Pets VALUES('bill', 'meow', 'hi', NULL, 'cat');
+-- INSERT INTO Pets VALUES('bill', 'birdie', 'hi', NULL, 'bird');
+-- INSERT INTO Pets VALUES('john', 'wolfie', 'hi', NULL, 'dog');
+-- INSERT INTO Pets VALUES('john', 'miao', 'hi', NULL, 'cat');
+-- INSERT INTO Pets VALUES('john', 'birdie', 'hi', NULL, 'bird');
+-- INSERT INTO Pets VALUES('jack', 'wolf', 'hi', NULL, 'dog');
+-- INSERT INTO Pets VALUES('jack', 'meow', 'hi', NULL, 'cat');
+-- INSERT INTO Pets VALUES('jack', 'birdb', 'hi', NULL, 'bird');
+-- INSERT INTO Pets VALUES('jane', 'fierce', 'hi', NULL, 'dog');
+-- INSERT INTO Pets VALUES('jane', 'kitty', 'hi', NULL, 'cat');
+-- INSERT INTO Pets VALUES('jane', 'birdie', 'hi', NULL, 'bird');
+-- INSERT INTO Pets VALUES('mary', 'canine', 'hi', NULL, 'dog');
+-- INSERT INTO Pets VALUES('mary', 'miao', 'hi', NULL, 'cat');
+-- INSERT INTO Pets VALUES('mary', 'chirp', 'hi', NULL, 'bird');
 
-				UNION 
+-- INSERT INTO AbleToCare VALUES('bill', 'cat', 25);
+-- INSERT INTO AbleToCare VALUES('bill', 'dog', 35);
+-- INSERT INTO AbleToCare VALUES('bill', 'bird', 15);
+-- INSERT INTO AbleToCare VALUES('jean', 'cat', 25);
+-- INSERT INTO AbleToCare VALUES('jean', 'dog', 35);
+-- INSERT INTO AbleToCare VALUES('jean', 'bird', 15);
+-- INSERT INTO AbleToCare VALUES('amanda', 'cat', 25);
+-- INSERT INTO AbleToCare VALUES('amanda', 'dog', 35);
+-- INSERT INTO AbleToCare VALUES('amanda', 'bird', 15);
+-- INSERT INTO AbleToCare VALUES('germ', 'cat', 25);
+-- INSERT INTO AbleToCare VALUES('germ', 'dog', 35);
+-- INSERT INTO AbleToCare VALUES('germ', 'bird', 15);
+-- INSERT INTO AbleToCare VALUES('edmund', 'cat', 25);
+-- INSERT INTO AbleToCare VALUES('edmund', 'dog', 35);
+-- INSERT INTO AbleToCare VALUES('edmund', 'bird', 15);
+-- INSERT INTO AbleToCare VALUES('linyi', 'cat', 25);
+-- INSERT INTO AbleToCare VALUES('linyi', 'dog', 35);
+-- INSERT INTO AbleToCare VALUES('linyi', 'bird', 15);
+-- /*
+-- CALL enterBid('bill', 'wolfie', 'bill', '2020-01-03', '2020-01-10', 'pcs', 'cash', 100); --shouldnt be able to bid for himself
+-- */
+-- CALL enterBid('john', 'wolfie', 'bill', '2020-01-01','2020-01-15','pcs', 'cash', 40);
+-- CALL enterBid('jane', 'kitty', 'bill', '2020-01-05','2020-01-16','pcs', 'cash', 40);
+-- CALL enterBid('jack', 'meow', 'bill', '2020-01-07', '2020-01-20', 'pcs', 'creditcard', 38);
+-- CALL enterBid('john', 'wolfie', 'jean', '2020-01-01','2020-01-20','pcs', 'cash', 40);
+-- SELECT computeMaxPet('bill');
+-- SELECT CASE 
+-- 		WHEN 'jean' NOT IN (SELECT P.username FROM PartTimers P) THEN 5
+-- 		WHEN avgrating>4.7 THEN 5
+-- 		WHEN avgrating>4.0 THEN 4
+-- 		WHEN avgrating>3.0 THEN 3
+-- 		ELSE 2
+-- 		END
+-- 	FROM (SELECT MAX(CB.caretaker) AS caretaker, AVG(CB.rating) AS avgrating
+-- 			FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- 			WHERE CB.caretaker='jean') AVGR
+-- 	;
 
-				SELECT bw.caretaker, COUNT(*) as petdays, SUM(price)
-				FROM BidsWithoutPetOwner bw
-				WHERE bw.avail < startofMonth + interval '1 month'
-				AND bw.avail >= startofMonth 
-				AND bw.isPaid = TRUE 
-				AND bw.status = 'a' 
-				GROUP BY bw.caretaker 
-			) AS bb
-			WHERE petdays <= 60 
-			AND bb.caretaker = myUsername);
-		END IF; 
-	END;  $$
-LANGUAGE plpgsql;
+-- CALL approveRejectBid('john', 'wolfie', 'bill', '2020-01-01', 'a');
+-- /*CALL enterBid('john', 'wolfie', 'amanda', '2020-01-03','2020-01-20','pcs', 'cash', 40);*/ /*meant to raise error*/
+-- CALL updateIsPaid('john', 'wolfie', 'bill', '2020-01-01', true);
+-- CALL approveRejectBid('jane', 'kitty', 'bill', '2020-01-05', 'a');
+-- CALL updateIsPaid('jane', 'kitty', 'bill', '2020-01-05', true);
+
+-- /*  --should raise errors
+-- UPDATE Bids SET rating=5
+-- 	WHERE petowner='john' AND petname='wolfie' AND caretaker='bill' AND avail= (SELECT CAST('2020-01-01' AS DATE));
+-- UPDATE Bids SET review='awesome'
+-- 	WHERE petowner='john' AND petname='wolfie' AND caretaker='bill' AND avail=(SELECT CAST('2020-01-01' AS DATE));
+-- */
+-- CALL rateCareTaker('john', 'wolfie', 'bill', '2020-01-01', 5, 'awesome');  
+-- /*DELETE FROM Users WHERE username='john'; */
+-- SELECT computeMaxPet('bill');
+
+-- SELECT CASE 
+-- 		WHEN 'bill' NOT IN (SELECT P.username FROM PartTimers P) THEN 5
+-- 		WHEN avgrating>4.7 THEN 5
+-- 		WHEN avgrating>4.0 THEN 4
+-- 		WHEN avgrating>3.0 THEN 3
+-- 		ELSE 2
+-- 		END
+-- 	FROM (SELECT AVG(CB.rating) AS avgrating
+-- 			FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- 			WHERE CB.caretaker='bill') AVGR
+-- 	;
+	
+	
+-- SELECT computeMaxPriceMultiplier('bill');
+-- UPDATE AbleToCare SET feeperday=30 WHERE caretaker='bill' AND category='cat';
+-- UPDATE AbleToCare SET feeperday=42 WHERE caretaker='bill' AND category='dog';
+-- UPDATE AbleToCare SET feeperday=18 WHERE caretaker='bill' AND category='bird';
+-- CALL enterBid('mary', 'canine', 'bill', '2020-01-05','2020-01-17','pcs', 'cash', 42); /*should be rejected when bills rating falls*/
+-- CALL rateCareTaker('jane', 'kitty', 'bill', '2020-01-05', 1, 'lousy'); /*Bill's average rating falls to 3, max pet slots should fall, prices reset to base*/
+
+-- SELECT CASE 
+-- 		WHEN 'bill' NOT IN (SELECT P.username FROM PartTimers P) THEN 5
+-- 		WHEN avgrating>4.7 THEN 5
+-- 		WHEN avgrating>4.0 THEN 4
+-- 		WHEN avgrating>3.0 THEN 3
+-- 		ELSE 2
+-- 		END
+-- 	FROM (SELECT AVG(CB.rating) AS avgrating
+-- 			FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- 			WHERE CB.caretaker='bill') AVGR
+-- 	;
+
+-- SELECT computeMaxPet('bill');
+-- SELECT computeMaxPriceMultiplier('bill');
+
+-- CALL addAvailableDates('jean', '2020-01-01', '2021-03-28');
+-- CALL enterBid('jane', 'birdie', 'jean', '2020-01-21','2020-01-28','pcs', 'cash', 40);
+-- CALL applyLeave('jean', '2020-01-23', '2020-02-24');
+-- CALL addAvailableDates('jean', '2020-01-01', '2021-03-28');
+
+-- /*
+-- CREATE OR REPLACE FUNCTION currentDate()
+-- RETURNS DATE AS $$
+-- 	BEGIN
+-- 		RETURN (SELECT CAST('2021-01-01'AS DATE));
+-- 	END; $$
+-- LANGUAGE plpgsql;
+-- */
+-- /*
+-- CALL enterBid('jane', 'birdie', 'jean', '2020-01-21','2020-01-28','pcs', 'cash', 40);
+-- CALL approveRejectBid('jane', 'birdie', 'jean', '2020-01-22', 'a');
+-- DELETE FROM Users WHERE username='jane';
+-- CALL applyLeave('jean', '2020-01-23', '2020-02-24'); */ /*meant to raise error*/
+-- CALL addAvailableDates('jean', '2020-01-01', '2021-03-28');
+-- /* CALL applyLeave('jean', '2020-02-23', '2020-03-24'); */ /*meant to raise error*/
+-- SELECT caretaker, avail FROM availability WHERE caretaker='jean';
+
+-- /*Below are test cases for the change base price trigger*/
+-- CALL enterBid('john', 'birdie', 'jean', '2020-02-21','2020-02-28','pcs', 'cash', 45);
+-- CALL enterBid('jack', 'birdb', 'amanda', '2020-02-21','2020-02-28','pcs', 'cash', 45);
+-- CALL enterBid('mary', 'chirp', 'germ', '2020-02-21','2020-02-28','pcs', 'cash', 45);
+-- CALL enterBid('jane', 'birdie', 'edmund', '2020-02-21','2020-02-28','pcs', 'cash', 45);
+-- CALL approveRejectBid('john', 'birdie', 'jean', '2020-02-21', 'a');
+-- CALL updateIsPaid('john', 'birdie', 'jean', '2020-02-21', true);
+-- CALL approveRejectBid('jack', 'birdb', 'amanda', '2020-02-21', 'a');
+-- CALL updateIsPaid('jack', 'birdb', 'amanda', '2020-02-21', true);
+-- CALL approveRejectBid('mary', 'chirp', 'germ', '2020-02-21', 'a');
+-- CALL updateIsPaid('mary', 'chirp', 'germ', '2020-02-21', true);
+-- CALL approveRejectBid('jane', 'birdie', 'edmund', '2020-02-21', 'a');
+-- CALL updateIsPaid('jane', 'birdie', 'edmund', '2020-02-21', true);
+-- CALL rateCareTaker('john', 'birdie', 'jean', '2020-02-21', 5, 'great');
+-- CALL rateCareTaker('jack', 'birdb', 'amanda', '2020-02-21', 5, 'great');
+-- CALL rateCareTaker('mary', 'chirp', 'germ', '2020-02-21', 5, 'great');
+-- CALL rateCareTaker('jane', 'birdie', 'edmund', '2020-02-21', 5, 'great');
+-- --DELETE FROM Users WHERE username='john';
+-- --DELETE FROM Users WHERE username='jack';
+-- --DELETE FROM Users WHERE username='mary';
+-- --DELETE FROM Users WHERE username='jane';
+
+
+-- UPDATE AbleToCare SET feeperday=30 WHERE caretaker='jean' AND category='cat';
+-- UPDATE AbleToCare SET feeperday=42 WHERE caretaker='jean' AND category='dog';
+-- UPDATE AbleToCare SET feeperday=18 WHERE caretaker='jean' AND category='bird';
+
+-- UPDATE AbleToCare SET feeperday=29 WHERE caretaker='amanda' AND category='cat';
+-- UPDATE AbleToCare SET feeperday=41 WHERE caretaker='amanda' AND category='dog';
+-- UPDATE AbleToCare SET feeperday=17 WHERE caretaker='amanda' AND category='bird';
+
+-- UPDATE AbleToCare SET feeperday=28 WHERE caretaker='germ' AND category='cat';
+-- UPDATE AbleToCare SET feeperday=40 WHERE caretaker='germ' AND category='dog';
+-- UPDATE AbleToCare SET feeperday=16 WHERE caretaker='germ' AND category='bird';
+
+-- UPDATE AbleToCare SET feeperday=27 WHERE caretaker='edmund' AND category='cat';
+-- UPDATE AbleToCare SET feeperday=39 WHERE caretaker='edmund' AND category='dog';
+-- UPDATE AbleToCare SET feeperday=15 WHERE caretaker='edmund' AND category='bird';
+
+-- /*UPDATE PetTypes SET baseprice=17 WHERE category='bird';*/ /*Jeans bird fee should remain at 18*/
+-- /*UPDATE PetTypes SET baseprice=40 WHERE category='dog';*/ /*amanda and jeans fee for dog should remain above 40*/
+-- /*UPDATE PetTypes SET baseprice=23.5 WHERE category='cat';*/ /*germ and edmunds fee for cat should remain the same*/
+
+
+-- /*
+-- CREATE OR REPLACE FUNCTION currentDate()
+-- RETURNS DATE AS $$
+-- 	BEGIN
+-- 		RETURN (SELECT CAST('2021-01-01'AS DATE));
+-- 	END; $$
+-- LANGUAGE plpgsql;
+-- */
+-- /*DELETE FROM Users WHERE username='john'; */
+-- /*DELETE FROM Pets WHERE petowner='john' AND petname='wolfie';*/
+-- /*DELETE FROM Users WHERE username = 'bill';*/
+
+-- /*CALL addPetOwner('john','john@gmail', 'hello', 'jurong', 92345332, 2131231, 34536435);*/
+
+-- ---------------------------------------------------------------------
+-- -----------------Queries to view certain information-----------------
+-- ---------------------------------------------------------------------
+
+-- /*View bids(approve or pending only) for a particular care taker*/
+-- SELECT petowner, petname, status, category, price, sdate, edate, paymenttype, transfertype
+-- FROM
+-- 	(SELECT B.petowner, B.petname, MAX(B.avail) AS sdate, B.edate
+-- 	FROM combinedBids() B
+-- 	WHERE B.caretaker='bill'
+-- 	GROUP BY B.petowner, B.petname, B.edate) A
+-- 	NATURAL JOIN
+-- 	(SELECT *
+-- 	FROM combinedBids() B NATURAL LEFT JOIN Pets P
+-- 	WHERE B.edate=B.avail AND B.caretaker='bill') B
+-- WHERE B.status!='r'
+-- ;
+
+-- SELECT* FROM combinedbids(); 
+-- /*DELETE FROM Users WHERE username='master'; */
+
+
+
+-- /*View availability of each caretaker*/
+-- SELECT AV.caretaker, AV.avail
+-- FROM
+-- 	(SELECT B.caretaker, B.avail, COUNT(*) AS cnt
+-- 	FROM combinedBids() B
+-- 	WHERE B.status ='a'
+-- 	GROUP BY B.caretaker, B.avail
+-- 	UNION 
+-- 	SELECT A.caretaker, A.avail, 0 AS cnt 
+-- 	FROM Availability A
+-- 	WHERE NOT EXISTS (SELECT * FROM combinedBids() B WHERE B.caretaker=A.caretaker AND B.avail=A.avail AND B.status='a')
+-- 	) AV
+-- WHERE AV.cnt<(SELECT computeMaxPet(AV.caretaker)) 
+-- ORDER BY avail ASC
+-- ;
+
+-- /*View their fee per day and their range of settable prices*/
+-- SELECT A.caretaker, A.category, A.feeperday, P.baseprice, P.baseprice*(SELECT computeMaxPriceMultiplier('bill')) AS upperlimit
+-- FROM AbleToCare A NATURAL JOIN PetTypes P
+-- WHERE A.caretaker='bill';
+
+-- /*View each caretaker's average rating and number of rating*/
+-- SELECT CB.caretaker, AVG(CB.rating) AS avgrating, COUNT(CB.rating) AS numRatings
+-- FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- GROUP BY CB.caretaker
+-- UNION
+-- SELECT CT.username AS caretaker, NULL AS avgrating, 0 AS numratings
+-- FROM CareTakers CT
+-- WHERE CT.username NOT IN (SELECT CB1.caretaker FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB1);
+
+
+-- /*compute max pet*/
+-- SELECT CASE 
+-- 		WHEN 'bill' NOT IN (SELECT P.username FROM PartTimers P) THEN 5
+-- 		WHEN avgrating>4.7 THEN 5
+-- 		WHEN avgrating>4.0 THEN 4
+-- 		WHEN avgrating>3.0 THEN 3
+-- 		ELSE 2
+-- 		END
+-- 	FROM (SELECT AVG(CB.rating) AS avgrating
+-- 			FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- 			WHERE CB.caretaker='bill') AVGR
+-- 	;
+
+-- /* AVAILABILITY (availability is all the dates that is not on leave) */
+-- /* Support the browsing for caretakers by pet owners */ 
+-- /* input: start date, end date, pet category */
+-- /* output: caretaker, pet category, atc.feeperday, start date, end date */
+-- SELECT atc.caretaker, atc.category, atc.feeperday, AVGRC.avgrating, AVGRC.numratings, '2020-01-01' AS startdate, '2020-01-06' AS enddate
+-- FROM AbleToCare atc 
+-- 	NATURAL JOIN ( /*Table of each caretaker's average rating and number of rating*/
+-- 		SELECT CB.caretaker, AVG(CB.rating) AS avgrating, COUNT(CB.rating) AS numratings
+-- 		FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 		GROUP BY CB.caretaker
+-- 		UNION
+-- 		SELECT CT.username AS caretaker, NULL AS avgrating, 0 AS numratings
+-- 		FROM CareTakers CT
+-- 		WHERE CT.username NOT IN (SELECT CB1.caretaker FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB1)
+-- 		) AVGRC
+-- WHERE EXISTS 
+-- 	(SELECT 1 FROM
+-- 		(SELECT availCT.caretaker, COUNT(*) AS days
+-- 			FROM /*table of caretaker's availability to take on another pet on that date, within a restricted date range*/
+-- 				(SELECT AV.caretaker, AV.avail 
+-- 					FROM /*table of tabulating number of pets a caretaker has to take care on a work day*/
+-- 						(SELECT B.caretaker, B.avail, COUNT(*) AS cnt
+-- 							FROM Bids B
+-- 							WHERE B.status ='a'
+-- 							GROUP BY B.caretaker, B.avail
+-- 							UNION 
+-- 							SELECT A.caretaker, A.avail, 0 AS cnt 
+-- 							FROM Availability A
+-- 							WHERE NOT EXISTS (SELECT * FROM Bids B WHERE B.caretaker=A.caretaker AND B.avail=A.avail AND B.status='a')
+-- 						) AV
+-- 					WHERE AV.cnt<(/*This nested query computes the max pet limit of AV.caretaker*/
+-- 									SELECT CASE 
+-- 										WHEN AV.caretaker NOT IN (SELECT P.username FROM PartTimers P) THEN 5
+-- 											/*means caretaker is full-time, default value 5. Look at part-time case below*/
+-- 										WHEN avgrating>4.7 THEN 5
+-- 										WHEN avgrating>4.0 THEN 4
+-- 										WHEN avgrating>3.0 THEN 3
+-- 										ELSE 2
+-- 										END
+-- 									FROM (SELECT AVG(CB.rating) AS avgrating
+-- 											FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- 											WHERE CB.caretaker=AV.caretaker) AVGR
+-- 									) 
+-- 						AND (AV.avail BETWEEN '2020-01-01' AND '2020-01-06') /*restrict to date range*/
+-- 				)AS availCT
+-- 		GROUP BY availCT.caretaker
+-- 		HAVING COUNT(*) = (CAST(MAX('2020-01-06') AS date) - CAST(MIN('2020-01-01') AS date)) +1
+-- 		/*means caretaker is available evey day within the date range*/
+-- 		) AS t
+-- 	WHERE t.caretaker = ATC.caretaker
+-- 	)
+-- 	AND atc.category = 'dog'
+-- ORDER BY avgrating DESC NULLS LAST, numratings DESC, feeperday ASC; 
+
+
+
+-- /*bids must be approved, isPaid, bids dates between the month*/
+-- /* one transaction: daily fee * no of days in transaction */
+-- /*calculate wage = sum(of all transaction)*/
+
+-- /*for parttimers */
+-- SELECT CB.caretaker, SUM(price)*0.75 AS salary, COUNT(*) AS petdaysclocked
+-- FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- WHERE CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 	AND CB.avail >= CAST('2020-02-01' AS DATE) 
+-- 	AND CB.isPaid = TRUE 
+-- 	AND CB.status = 'a' 
+-- 	AND CB.caretaker IN (SELECT PT.username FROM PartTimers PT)
+-- GROUP BY CB.caretaker
+-- UNION
+-- SELECT PT.username AS caretaker, 0.0 AS salary , 0 AS petdaysclocked
+-- FROM PartTimers PT
+-- WHERE PT.username NOT IN (SELECT B.caretaker 
+-- 							FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) B 
+-- 							WHERE B.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 								AND B.avail >= CAST('2020-02-01' AS DATE)
+-- 								AND B.isPaid = TRUE 
+-- 								AND B.status = 'a')
+-- ;
+
+-- /*for fulltimers */
+-- /*fulltimers wage*/
+
+-- SELECT CT.username AS caretaker, (
+-- 	SELECT CASE 
+-- 			WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+-- 			ELSE 3000
+-- 			END
+-- 	FROM (
+-- 		SELECT *
+-- 		FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 		WHERE CB.caretaker=CT.username AND CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 			AND CB.avail >= CAST('2020-02-01' AS DATE)
+-- 			AND CB.isPaid = TRUE 
+-- 			AND CB.status = 'a'
+-- 		ORDER BY CB.price ASC 
+-- 		OFFSET 60 
+-- 		) OFS
+-- 	) AS salary,
+-- 	(
+-- 	SELECT COUNT(*) AS petdaysclocked
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.caretaker=CT.username AND CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 		AND CB.avail >= CAST('2020-02-01' AS DATE)
+-- 		AND CB.isPaid = TRUE 
+-- 		AND CB.status = 'a'
+-- 	) AS petdaysclocked
+-- FROM CareTakers CT
+-- WHERE CT.username NOT IN (SELECT PT.username FROM PartTimers PT)
+-- ;
+
+
+
+
+-- /*For testing only*/
+-- /*SELECT CASE
+-- 	WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+-- 	ELSE 3000
+-- 	END
+-- FROM (
+-- 	SELECT *
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.caretaker='jean' AND CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 		AND CB.avail >= CAST('2020-02-01' AS DATE)
+-- 		AND CB.isPaid = TRUE 
+-- 		AND CB.status = 'a'
+-- 	ORDER BY CB.price ASC 
+-- 	OFFSET 5 
+-- 	) OFS
+-- ;*/
+
+-- /*combined wages for a particular month with caretaker's ratings and num ratings*/
+-- SELECT WG.caretaker, WG.contract, WG.salary, WG.petdaysclocked, RT.avgrating, RT.numratings
+-- FROM
+-- 	(
+-- 	SELECT CB.caretaker, 'Part-Time' AS contract, SUM(price)*0.75 AS salary, COUNT(*) AS petdaysclocked
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB 
+-- 	WHERE CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 		AND CB.avail >= CAST('2020-02-01' AS DATE) 
+-- 		AND CB.isPaid = TRUE 
+-- 		AND CB.status = 'a' 
+-- 		AND CB.caretaker IN (SELECT PT.username FROM PartTimers PT)
+-- 	GROUP BY CB.caretaker
+-- 	UNION
+-- 	SELECT PT.username AS caretaker, 'Part-Time' AS contract, 0.0 AS salary , 0 AS petdaysclocked
+-- 	FROM PartTimers PT
+-- 	WHERE PT.username NOT IN (SELECT B.caretaker 
+-- 								FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) B 
+-- 								WHERE B.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 									AND B.avail >= CAST('2020-02-01' AS DATE)
+-- 									AND B.isPaid = TRUE 
+-- 									AND B.status = 'a')
+-- 	UNION
+-- 	SELECT CT.username AS caretaker, 'Full-Time' AS contract, (
+-- 		SELECT CASE 
+-- 				WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+-- 				ELSE 3000
+-- 				END
+-- 		FROM (
+-- 			SELECT *
+-- 			FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 			WHERE CB.caretaker=CT.username AND CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 				AND CB.avail >= CAST('2020-02-01' AS DATE)
+-- 				AND CB.isPaid = TRUE 
+-- 				AND CB.status = 'a'
+-- 			ORDER BY CB.price ASC 
+-- 			OFFSET 60 
+-- 			) OFS
+-- 		) AS salary,
+-- 		(
+-- 		SELECT COUNT(*) AS petdaysclocked
+-- 		FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 		WHERE CB.caretaker=CT.username AND CB.avail <= CAST('2020-02-01' AS DATE)  + interval '1 month'
+-- 			AND CB.avail >= CAST('2020-02-01' AS DATE)
+-- 			AND CB.isPaid = TRUE 
+-- 			AND CB.status = 'a'
+-- 		) AS petdaysclocked
+-- 	FROM CareTakers CT
+-- 	WHERE CT.username NOT IN (SELECT PT.username FROM PartTimers PT)
+-- 	) WG
+-- 	NATURAL JOIN
+-- 	(SELECT CB.caretaker, AVG(CB.rating) AS avgrating, COUNT(CB.rating) AS numratings
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	GROUP BY CB.caretaker
+-- 	UNION
+-- 	SELECT CT.username AS caretaker, NULL AS avgrating, 0 AS numratings
+-- 	FROM CareTakers CT
+-- 	WHERE CT.username NOT IN (SELECT CB1.caretaker FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB1)
+-- 	) RT
+-- ORDER BY RT.avgrating ASC, RT.numratings ASC, WG.petdaysclocked ASC
+-- ;
+
+
+-- /*FOR TESTING ONLY IGNORE, DONT USE, View salaries of worker my month, uses CTE*/
+-- WITH transactions AS
+-- 	(SELECT CB.petowner, CB.petname, CB.caretaker, CB.avail, CB.price, EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.status='a' AND CB.isPaid
+-- 	)
+-- SELECT CT.username AS caretaker, MY.year_, MY.month_, 
+-- 	(SELECT CASE
+-- 		WHEN CT.username NOT IN (SELECT PT.username FROM PartTimers PT) THEN
+-- 		(SELECT CASE 
+-- 			WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+-- 			ELSE 3000
+-- 			END
+-- 		FROM (
+-- 			SELECT *
+-- 			FROM transactions CB
+-- 			WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+-- 			ORDER BY CB.price ASC 
+-- 			OFFSET 60 
+-- 			) OFS
+-- 		)
+-- 	ELSE 
+-- 		(
+-- 		SELECT CASE 
+-- 			WHEN SUM(price) IS NOT NULL THEN SUM(price)*0.75
+-- 			ELSE 0
+-- 			END
+-- 		FROM transactions CB 
+-- 		WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+-- 		)
+-- 	END
+-- 	)AS salary
+-- FROM CareTakers CT, (SELECT DISTINCT T0.month_, T0.year_ FROM transactions T0) MY
+-- ;
+
+-- /*FOR TESTING ONLY IGNORE, DONT USE, Total salary paid for each month, uses CTE*/
+-- WITH transactions AS
+-- 	(SELECT CB.petowner, CB.petname, CB.caretaker, CB.avail, CB.price, EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.status='a' AND CB.isPaid
+-- 	)
+-- SELECT CTS.year_, CTS.month_, SUM(CTS.salary) AS totalsalarypaid
+-- FROM (
+-- 	SELECT CT.username AS caretaker, MY.year_, MY.month_,  
+-- 		(SELECT CASE
+-- 			WHEN CT.username NOT IN (SELECT PT.username FROM PartTimers PT) THEN
+-- 			(SELECT CASE 
+-- 				WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+-- 				ELSE 3000
+-- 				END
+-- 			FROM (
+-- 				SELECT *
+-- 				FROM transactions CB
+-- 				WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+-- 				ORDER BY CB.price ASC 
+-- 				OFFSET 60 
+-- 				) OFS
+-- 			)
+-- 		ELSE 
+-- 			(
+-- 			SELECT CASE 
+-- 				WHEN SUM(price) IS NOT NULL THEN SUM(price)*0.75
+-- 				ELSE 0
+-- 				END
+-- 			FROM transactions CB 
+-- 			WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+-- 			)
+-- 		END
+-- 		)AS salary
+-- 	FROM CareTakers CT, (SELECT DISTINCT T0.month_, T0.year_ FROM transactions T0) MY
+-- 	) AS CTS
+-- GROUP BY CTS.year_, CTS.month_
+-- ;
+
+-- /*FOR TESTING ONLY IGNORE, DONT USE, total revenue and total pets for each month, uses CTE*/
+-- WITH transactions AS
+-- 	(SELECT CB.petowner, CB.petname, CB.caretaker, CB.avail, CB.price, EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.status='a' AND CB.isPaid
+-- 	)
+-- SELECT TR0.year_, TR0.month_, SUM(TR0.price) AS totalrevenue, COUNT(DISTINCT CONCAT(TR0.petowner, ',', TR0.petname) ) AS totalpets
+-- FROM transactions TR0
+-- GROUP BY TR0.year_, TR0.month_
+-- ;
+
+-- /* --for checking previous table
+-- WITH transactions AS
+-- 	(SELECT CB.petowner, CB.petname, CB.caretaker, CB.avail, CB.price, EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.status='a' AND CB.isPaid
+-- 	)
+-- SELECT DISTINCT TR0.year_, TR0.month_, TR0.petowner, TR0.petname
+-- FROM transactions TR0
+-- ORDER BY TR0.month_ ASC
+-- ;
+-- */
+
+-- /*Total profit, revenue, salary paid and total pets for each month, uses CTE*/
+-- /*Note to Boshen, limit the date range in the where condition of the CTE table*/
+-- WITH transactions AS
+-- 	(SELECT CB.petowner, CB.petname, CB.caretaker, CB.avail, CB.price, EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
+-- 	FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
+-- 	WHERE CB.status='a' AND CB.isPaid
+-- 	)
+-- SELECT TSP.year_, TSP.month_, TRP.totalrevenue-TSP.totalsalarypaid AS profit, TRP.totalrevenue, TSP.totalsalarypaid, TRP.totalpets
+-- FROM (/*This table tabulates the total salary paid for each month*/
+-- 	SELECT CTS.year_, CTS.month_, SUM(CTS.salary) AS totalsalarypaid
+-- 	FROM ( /*This table tabulates the salary for each caretaker for a given month and year*/
+-- 		SELECT CT.username AS caretaker, MY.year_, MY.month_,  
+-- 			(SELECT CASE
+-- 				WHEN CT.username NOT IN (SELECT PT.username FROM PartTimers PT) THEN /*Full-timers case*/
+-- 				(SELECT CASE 
+-- 					WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+-- 					ELSE 3000
+-- 					END
+-- 				FROM (
+-- 					SELECT *
+-- 					FROM transactions CB
+-- 					WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+-- 					ORDER BY CB.price ASC 
+-- 					OFFSET 60 
+-- 					) OFS
+-- 				)
+-- 			ELSE /*part-timers case*/
+-- 				(
+-- 				SELECT CASE 
+-- 					WHEN SUM(price) IS NOT NULL THEN SUM(price)*0.75
+-- 					ELSE 0
+-- 					END
+-- 				FROM transactions CB 
+-- 				WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+-- 				)
+-- 			END
+-- 			)AS salary
+-- 		FROM CareTakers CT, (SELECT DISTINCT T0.month_, T0.year_ FROM transactions T0) MY
+-- 		) AS CTS
+-- 	GROUP BY CTS.year_, CTS.month_
+-- 	) TSP
+-- 	NATURAL JOIN 
+-- 	( /*This table tabulates the total revenue and the total number pets served for each month*/
+-- 	SELECT TR0.year_, TR0.month_, SUM(TR0.price) AS totalrevenue, COUNT(DISTINCT CONCAT(TR0.petowner, ',', TR0.petname) ) AS totalpets
+-- 	FROM transactions TR0
+-- 	GROUP BY TR0.year_, TR0.month_
+-- 	) TRP
+-- ORDER BY TSP.year_ ASC, TSP.month_ ASC
+-- ;
 
