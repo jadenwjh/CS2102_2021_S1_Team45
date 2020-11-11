@@ -838,10 +838,12 @@ app.get("/Admin/salary/:admin/:date", async (req, res) => {
 
 
 // get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings
-app.get("/Admin/ctsummary/:date", async (req, res) => {
+app.get("/Admin/ctsummary/:adminUserName/:date", async (req, res) => {
   try {
     const caretakerSummary = await pool.query(
-      `SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE));`
+      `SELECT a.* FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
+      INNER JOIN CareTakers ON a.caretaker = CareTakers.username
+      WHERE CareTakers.manager = ${req.params.adminUserName};`
     );
 
     res.json(caretakerSummary.rows);

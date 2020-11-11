@@ -903,13 +903,13 @@
     `[{"caretaker":"jgastickep2","ptsalary":3000}, ...]`
 
 &nbsp;
-- ## get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings  <div style="text-align: right"> `GET /Admin/ctsummary/:date`
+- ## get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings  <div style="text-align: right"> `GET /Admin/ctsummary/:adminUserName/:date`
 
     ### Params:
     - `date` : string
 
     ### Example:
-    GET https://shielded-oasis-35437.herokuapp.com/Admin/ctsummary/2020-08-02
+    GET https://shielded-oasis-35437.herokuapp.com/Admin/ctsummary/McKirton/2020-08-02
 
     Output:
     
