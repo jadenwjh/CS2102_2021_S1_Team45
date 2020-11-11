@@ -141,7 +141,7 @@ CREATE TABLE InvalidatedBids ( /*For pet owners to check their bids rejected due
 CREATE OR REPLACE FUNCTION currentDate() /*To track today's date, currently uses dummy*/
 RETURNS DATE AS $$
 	BEGIN
-		RETURN (SELECT CAST('2019-12-31'AS DATE));   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
+		RETURN (SELECT CURRENT_DATE);   /* dummy current date. For live application, it should returns (SELECT CURRENT_DATE)*/
 	END; $$
 LANGUAGE plpgsql;
 
@@ -896,6 +896,7 @@ LANGUAGE plpgsql;
 	such as profit, revenue, salary cost and pet serviced for each months over a range of months*/
 /*Input: startdate, enddate (corresponding to the start month and end month of interest)*/
 /*Output: year, month, total profit, revenue, total salary paid and total pets for each month, uses CTE*/
+
 CREATE OR REPLACE FUNCTION viewMonthlyFinancials(startdatein DATE, enddatein DATE) 
 RETURNS TABLE(
 	year_ FLOAT,
@@ -912,54 +913,89 @@ RETURNS TABLE(
 						EXTRACT(MONTH FROM CB.avail) AS month_, EXTRACT(YEAR FROM CB.avail) AS year_
 				FROM (SELECT * FROM Bids UNION SELECT * FROM BidsWithoutPetOwner) CB
 				WHERE CB.status='a' AND CB.isPaid 
-					AND CB.avail <=CAST(date_trunc('month', enddatein)+ interval '1 month - 1 day' AS DATE)
+					AND CB.avail <=CAST(date_trunc('month', enddatein)+ INTERVAL '1 month - 1 day' AS DATE)
 					AND CB.avail >=CAST(date_trunc('month', startdatein) AS DATE)
 				)
-			SELECT TSP.year_, TSP.month_, TRP.totalrevenue-TSP.totalsalarypaid AS profit,
-					TRP.totalrevenue, TSP.totalsalarypaid, TRP.totalpets
-			FROM (/*This table tabulates the total salary paid for each month*/
-				SELECT CTS.year_, CTS.month_, SUM(CTS.salary) AS totalsalarypaid
-				FROM ( /*This table tabulates the salary for each caretaker for a given month and year*/
-					SELECT CT.username AS caretaker, MY.year_, MY.month_,  
-						(SELECT CASE /*compute salary for each caretaker*/
-							/*Full-timers case*/
-							WHEN CT.username NOT IN (SELECT PT.username FROM PartTimers PT) THEN 
-							(SELECT CASE 
-								WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
-								ELSE 3000
-								END
-							FROM (
-								SELECT *
-								FROM transactions CB
+			SELECT *
+			FROM (
+				SELECT TSP.year_, TSP.month_, TRP.totalrevenue-TSP.totalsalarypaid AS profit,
+						TRP.totalrevenue, TSP.totalsalarypaid, TRP.totalpets
+				FROM (/*This table tabulates the total salary paid for each month*/
+					SELECT CTS.year_, CTS.month_, SUM(CTS.salary) AS totalsalarypaid
+					FROM ( /*This table tabulates the salary for each caretaker for a given month and year*/
+						SELECT CT.username AS caretaker, MY.year_, MY.month_,  
+							(SELECT CASE /*compute salary for each caretaker*/
+								/*Full-timers case*/
+								WHEN CT.username NOT IN (SELECT PT.username FROM PartTimers PT) THEN 
+								(SELECT CASE 
+									WHEN SUM(OFS.price) IS NOT NULL THEN 3000+SUM(OFS.price)*0.8
+									ELSE 3000
+									END
+								FROM (
+									SELECT *
+									FROM transactions CB
+									WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
+									ORDER BY CB.price ASC 
+									OFFSET 60 
+									) OFS
+								)
+							ELSE /*part-timers case*/
+								(
+								SELECT CASE 
+									WHEN SUM(price) IS NOT NULL THEN SUM(price)*0.75
+									ELSE 0
+									END
+								FROM transactions CB 
 								WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
-								ORDER BY CB.price ASC 
-								OFFSET 60 
-								) OFS
-							)
-						ELSE /*part-timers case*/
-							(
-							SELECT CASE 
-								WHEN SUM(price) IS NOT NULL THEN SUM(price)*0.75
-								ELSE 0
-								END
-							FROM transactions CB 
-							WHERE CB.caretaker=CT.username AND CB.year_=MY.year_ AND CB.month_=MY.month_
-							)
-						END
-						)AS salary
-					FROM CareTakers CT, (SELECT DISTINCT T0.month_, T0.year_ FROM transactions T0) MY
-					) AS CTS
-				GROUP BY CTS.year_, CTS.month_
-				) TSP
-				NATURAL JOIN 
-				( /*This table tabulates the total revenue and the total number pets served for each month*/
-				SELECT TR0.year_, TR0.month_, SUM(TR0.price) AS totalrevenue, 
-					COUNT(DISTINCT CONCAT(TR0.petowner, ',', TR0.petname) ) AS totalpets
-				FROM transactions TR0
-				GROUP BY TR0.year_, TR0.month_
-				) TRP
-			ORDER BY TSP.year_ ASC, TSP.month_ ASC
+								)
+							END
+							)AS salary
+						FROM CareTakers CT, (SELECT DISTINCT T0.month_, T0.year_ FROM transactions T0) MY
+						) AS CTS
+					GROUP BY CTS.year_, CTS.month_
+					) TSP
+					NATURAL JOIN 
+					( /*This table tabulates the total revenue and the total number pets served for each month*/
+					SELECT TR0.year_, TR0.month_, SUM(TR0.price) AS totalrevenue, 
+						COUNT(DISTINCT CONCAT(TR0.petowner, ',', TR0.petname) ) AS totalpets
+					FROM transactions TR0
+					GROUP BY TR0.year_, TR0.month_
+					) TRP
+				UNION
+				SELECT GM.year_, GM.month_, 0.0 AS profit, /*Add months not in bids table*/
+						0.0 AS revenue, 0.0 AS totalsalarypaid, 0 AS totalpets
+					FROM generateMonths(startdatein, enddatein) GM
+					WHERE NOT EXISTS (SELECT * FROM transactions TR1 
+										WHERE TR1.year_=GM.year_ AND TR1.month_=GM.month_)
+			) FT
+			ORDER BY FT.year_ ASC, FT.month_ ASC
 		);
+	END;$$
+LANGUAGE plpgsql;
+
+
+/*Helper function to generate months not captured in bids table*/
+DROP FUNCTION IF EXISTS generateMonths(startdatein DATE, enddatein DATE);
+CREATE OR REPLACE FUNCTION generateMonths(startdatein DATE, enddatein DATE)
+RETURNS TABLE(
+		year_ FLOAT,
+		month_ FLOAT
+	) AS $$
+	DECLARE currdate DATE;
+	DECLARE dates DATE;
+	BEGIN
+		DROP TABLE IF EXISTS tempmonths;
+		CREATE TEMP TABLE tempmonths (
+			year_ FLOAT,
+			month_ FLOAT,
+			PRIMARY KEY(year_, month_)
+		);
+		currdate:=CAST(date_trunc('month', startdatein) AS DATE);
+		WHILE currdate <= enddatein LOOP
+			INSERT INTO tempmonths VALUES(EXTRACT(YEAR FROM currdate), EXTRACT(MONTH FROM currdate));
+			currdate := currdate + INTERVAL '1 month';
+		END LOOP;
+		RETURN QUERY(SELECT * FROM tempmonths);
 	END;$$
 LANGUAGE plpgsql;
 
