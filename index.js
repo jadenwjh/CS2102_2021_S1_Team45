@@ -843,7 +843,7 @@ app.get("/Admin/ctsummary/:adminUserName/:date", async (req, res) => {
     const caretakerSummary = await pool.query(
       `SELECT a.* FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
       INNER JOIN CareTakers ON a.caretaker = CareTakers.username
-      WHERE CareTakers.manager = ${req.params.adminUserName};`
+      WHERE CareTakers.manager = '${req.params.adminUserName}';`
     );
 
     res.json(caretakerSummary.rows);
