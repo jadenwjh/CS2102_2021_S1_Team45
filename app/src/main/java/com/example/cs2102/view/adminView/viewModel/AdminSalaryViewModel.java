@@ -1,10 +1,12 @@
 package com.example.cs2102.view.adminView.viewModel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.cs2102.model.AdminStats;
-import com.example.cs2102.model.Salary;
+import com.example.cs2102.model.CaretakerInfo;
 import com.example.cs2102.model.retrofitApi.DataApiService;
 import com.google.gson.internal.LinkedTreeMap;
 
@@ -19,63 +21,42 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AdminSalaryViewModel extends ViewModel {
 
-    public MutableLiveData<List<Salary>> salarys = new MutableLiveData<>();
-    public MutableLiveData<AdminStats> stats = new MutableLiveData<>();
+    public MutableLiveData<List<CaretakerInfo>> caretakerInfos = new MutableLiveData<>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
-    public MutableLiveData<Boolean> fetchedData = new MutableLiveData<>();
     public MutableLiveData<Boolean> nothing = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public void fetchSalary(String username, String date) {
+    public void fetchCTInfo(String username, String date) {
         loading.setValue(true);
-        fetchedData.setValue(false);
         nothing.setValue(false);
-        disposable.add(dataApiService.fetchSalarys(username, date)
+        disposable.add(dataApiService.fetchCTInfo(username, date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,String>>>() {
 
                     @Override
                     public void onSuccess(@NonNull ArrayList<LinkedTreeMap<String, String>> linkedTreeMaps) {
-                        List<Salary> list = new ArrayList<>();
+                        List<CaretakerInfo> list = new ArrayList<>();
                         for (LinkedTreeMap<String, String> row : linkedTreeMaps) {
                             String name = row.get("caretaker");
-                            String amount = row.get("ptsalary");
-                            Salary current = new Salary(name, amount);
+                            String contract = row.get("contract");
+                            String amount = row.get("salary");
+                            String days = row.get("petdaysclocked");
+                            String rating = row.get("avgrating") == null ? "0" : row.get("avgrating");
+                            String freq = row.get("numratings");
+                            CaretakerInfo current = new CaretakerInfo(name, contract, amount, days, rating, freq);
                             list.add(current);
                         }
-                        salarys.setValue(list);
-                        fetchStats(username, date);
+                        caretakerInfos.setValue(list);
+                        loading.setValue(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         loading.setValue(false);
                         nothing.setValue(true);
-                    }
-                })
-        );
-    }
-
-    private void fetchStats(String username, String date) {
-        disposable.add(dataApiService.fetchAdminStats(username, date)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<LinkedTreeMap<String,String>>() {
-
-                    @Override
-                    public void onSuccess(@NonNull LinkedTreeMap<String, String> map) {
-                        AdminStats adminStats = new AdminStats(map.get("totalpets"), map.get("petdays"));
-                        stats.setValue(adminStats);
-                        loading.setValue(false);
-                        fetchedData.setValue(true);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loading.setValue(false);
                     }
                 })
         );

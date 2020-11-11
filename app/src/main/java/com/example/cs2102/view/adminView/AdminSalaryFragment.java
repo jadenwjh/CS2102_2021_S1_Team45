@@ -1,6 +1,7 @@
 package com.example.cs2102.view.adminView;
 
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -90,15 +92,9 @@ public class AdminSalaryFragment extends Fragment {
     }
 
     private void salaryObserver() {
-        adminSalaryViewModel.fetchedData.observe(getViewLifecycleOwner(), fetched -> {
-            if (fetched) {
-                AdminStats stat = adminSalaryViewModel.stats.getValue();
-                stats.setText(String.format("Total pets served: %s. Pet-days: %s", stat.getTotalpets() == null ? "0" : stat.getTotalpets(), stat.getPetdays()));
-            }
-        });
-        adminSalaryViewModel.salarys.observe(getViewLifecycleOwner(), salarys -> {
-            if (salarys.size() != 0) {
-                salaryAdapter.updateSalary(salarys);
+        adminSalaryViewModel.caretakerInfos.observe(getViewLifecycleOwner(), caretakerInfos -> {
+            if (caretakerInfos.size() != 0) {
+                salaryAdapter.updateSalary(caretakerInfos);
                 salaryList.setAdapter(salaryAdapter);
                 salaryList.setVisibility(View.VISIBLE);
             }
@@ -122,6 +118,27 @@ public class AdminSalaryFragment extends Fragment {
     private void showRangePicker() {
         MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
         CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        constraintsBuilder.setValidator(new CalendarConstraints.DateValidator() {
+            @Override
+            public boolean isValid(long date) {
+                Calendar cal = Calendar.getInstance();
+                if (date > cal.getTimeInMillis()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+
+            }
+        });
         builder.setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar);
         builder.setCalendarConstraints(constraintsBuilder.build());
         MaterialDatePicker<Long> picker = builder.build();
@@ -133,7 +150,7 @@ public class AdminSalaryFragment extends Fragment {
                 SimpleDateFormat forData = new SimpleDateFormat("yyyy-MM-dd");
                 String month = forButton.format(new Date(selection));
                 String parse = forData.format(new Date(selection));
-                adminSalaryViewModel.fetchSalary(adminUsername, parse);
+                adminSalaryViewModel.fetchCTInfo(adminUsername, parse);
 
                 searchByMonth.setText(month);
                 monthSelected.setText(String.format("Month selected: %s", month));

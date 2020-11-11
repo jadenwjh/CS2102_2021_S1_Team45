@@ -20,8 +20,8 @@ public class DataApiService {
     private DataApiService() {}
 
     OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(3, TimeUnit.SECONDS)
-            .readTimeout(3,TimeUnit.SECONDS).build();
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20,TimeUnit.SECONDS).build();
 
     public DataApi dataApi =  new Retrofit.Builder()
             .baseUrl(Strings.BASE_URL)
@@ -273,8 +273,8 @@ public class DataApiService {
     public Single<ArrayList<LinkedTreeMap<String,String>>> fetchRatings(String username) {
         return dataApi.getRatings(username);
     }
-    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchSalarys(String username, String date) {
-        return dataApi.getSalary(username, date);
+    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchCTInfo(String username, String date) {
+        return dataApi.getCTInfo(username, date);
     }
     public Single<LinkedTreeMap<String,String>> fetchAdminStats(String username, String date) {
         return dataApi.getStats(username, date);

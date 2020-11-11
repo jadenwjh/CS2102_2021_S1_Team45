@@ -33,7 +33,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:orientation="vertical"
-            android:weightSum="6"
+            android:weightSum="4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/salaryList">
@@ -72,21 +72,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:layout_weight="1"
-                android:text="@string/picking_any_day_will_search_salaries_by_the_month" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_weight="1"
-                android:text="@string/statistics_for_the_month_will_be_shown" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_weight="1"
-                android:text="@string/note_that_only_salaries_before_current_month_will_be_shown" />
+                android:text="@string/picking_any_day_will_show_performances_of_cts_for_the_month" />
 
         </LinearLayout>
 

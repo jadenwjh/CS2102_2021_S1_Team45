@@ -1,10 +1,13 @@
 package com.example.cs2102.view.registerView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -84,7 +87,7 @@ public class PetOwnerSignUpFragment extends Fragment {
         }
 
         register.setOnClickListener(currView -> {
-            Log.e("POSignUp", "Register clicked");
+            hideKeyboard(getActivity());
             String uname = username.getText().toString();
             String pw = password.getText().toString();
             String mail = email.getText().toString();
@@ -102,5 +105,12 @@ public class PetOwnerSignUpFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    private void hideKeyboard(Activity activity) {
+        if (activity.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }

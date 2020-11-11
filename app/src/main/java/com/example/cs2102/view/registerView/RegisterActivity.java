@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -123,8 +124,13 @@ public class RegisterActivity extends AppCompatActivity {
         });
         registerViewModel.registered.observe(this, aBoolean -> {
             if (aBoolean) {
-                Log.e(this.toString(), "Registered so exiting");
+                Toast.makeText(this, "You have successfully registered", Toast.LENGTH_SHORT).show();
                 finish();
+            }
+        });
+        registerViewModel.usernameTaken.observe(this, taken -> {
+            if (taken) {
+                Toast.makeText(this, "This username is taken", Toast.LENGTH_SHORT).show();
             }
         });
     }

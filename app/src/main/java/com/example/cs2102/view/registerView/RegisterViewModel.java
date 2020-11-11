@@ -16,7 +16,7 @@ import io.reactivex.schedulers.Schedulers;
 public class RegisterViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> registered = new MutableLiveData<Boolean>();
-    public MutableLiveData<Boolean> loadError = new MutableLiveData<Boolean>();
+    public MutableLiveData<Boolean> usernameTaken = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
@@ -35,7 +35,7 @@ public class RegisterViewModel extends ViewModel {
                     public void onComplete() {
                         Log.e(this.toString(), "success");
                         registered.setValue(true);
-                        loadError.setValue(false);
+                        usernameTaken.setValue(false);
                         loading.setValue(false);
                     }
 
@@ -44,7 +44,7 @@ public class RegisterViewModel extends ViewModel {
                         Log.e("RequestError", String.valueOf(e));
                         Log.e(this.toString(), "failed");
                         registered.setValue(false);
-                        loadError.setValue(true);
+                        usernameTaken.setValue(true);
                         loading.setValue(false);
                     }
                 })
@@ -64,7 +64,7 @@ public class RegisterViewModel extends ViewModel {
                     public void onComplete() {
                         Log.e(this.toString(), "success");
                         registered.setValue(true);
-                        loadError.setValue(false);
+                        usernameTaken.setValue(false);
                         loading.setValue(false);
                     }
 
@@ -73,7 +73,7 @@ public class RegisterViewModel extends ViewModel {
                         Log.e("RequestError", String.valueOf(e));
                         Log.e(this.toString(), "failed");
                         registered.setValue(false);
-                        loadError.setValue(true);
+                        usernameTaken.setValue(true);
                         loading.setValue(false);
                     }
                 })
@@ -93,7 +93,7 @@ public class RegisterViewModel extends ViewModel {
                     public void onComplete() {
                         Log.e(this.toString(), "success");
                         registered.setValue(true);
-                        loadError.setValue(false);
+                        usernameTaken.setValue(false);
                         loading.setValue(false);
                     }
 
@@ -102,7 +102,7 @@ public class RegisterViewModel extends ViewModel {
                         Log.e("RequestError", String.valueOf(e));
                         Log.e(this.toString(), "failed");
                         registered.setValue(false);
-                        loadError.setValue(true);
+                        usernameTaken.setValue(true);
                         loading.setValue(false);
                     }
                 })

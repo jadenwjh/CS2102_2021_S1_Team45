@@ -122,8 +122,8 @@ public interface DataApi {
     @GET(Strings.GET_RATINGS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getRatings(@Path("username") String username);
 
-    @GET(Strings.GET_SALARY + "/{username}/{date}")
-    Single<ArrayList<LinkedTreeMap<String,String>>> getSalary(@Path("username") String username, @Path("date") String date);
+    @GET(Strings.GET_CTINFO + "/{username}/{date}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getCTInfo(@Path("username") String username, @Path("date") String date);
 
     @GET(Strings.STATS + "/{username}/{date}")
     Single<LinkedTreeMap<String,String>> getStats(@Path("username") String username, @Path("date") String date);

@@ -9,8 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cs2102.R;
-import com.example.cs2102.model.Rating;
-import com.example.cs2102.model.Salary;
+import com.example.cs2102.model.CaretakerInfo;
 
 import java.util.List;
 
@@ -19,13 +18,13 @@ import butterknife.ButterKnife;
 
 public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.SalaryViewHolder> {
 
-    private List<Salary> salaryList;
+    private List<CaretakerInfo> salaryList;
 
-    public SalaryAdapter(List<Salary> salaryList) {
+    public SalaryAdapter(List<CaretakerInfo> salaryList) {
         this.salaryList = salaryList;
     }
 
-    public void updateSalary(List<Salary> list) {
+    public void updateSalary(List<CaretakerInfo> list) {
         salaryList.clear();
         salaryList.addAll(list);
         notifyDataSetChanged();
@@ -53,17 +52,29 @@ public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.SalaryView
         @BindView(R.id.caretaker)
         TextView caretaker;
 
+        @BindView(R.id.contract)
+        TextView contract;
+
         @BindView(R.id.salary)
         TextView salaryText;
+
+        @BindView(R.id.days)
+        TextView petDays;
+
+        @BindView(R.id.ratings)
+        TextView averageRating;
 
         public SalaryViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Salary salary) {
-            caretaker.setText(String.format("Care Taker: %s", salary.getCaretaker()));
-            salaryText.setText(String.format("Salary: $%s", salary.getSalary()));
+        void bind(CaretakerInfo info) {
+            caretaker.setText(String.format("Care Taker: %s", info.getCaretaker()));
+            contract.setText(String.format("Contract: %s", info.getContract()));
+            salaryText.setText(String.format("Salary: $%s", info.getSalary()));
+            petDays.setText(String.format("Pet-days: %s", info.getDays()));
+            averageRating.setText(String.format("Ratings: Average of %s from %s users", info.getRating(), info.getFrequency()));
         }
     }
 }

@@ -11,6 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_margin="5dp"
         android:orientation="vertical"
         android:padding="5dp">
@@ -24,7 +25,31 @@
             android:padding="3dp"/>
 
         <TextView
+            android:id="@+id/contract"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:padding="3dp"/>
+
+        <TextView
             android:id="@+id/salary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:padding="3dp"/>
+
+        <TextView
+            android:id="@+id/days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:padding="3dp"/>
+
+        <TextView
+            android:id="@+id/ratings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"

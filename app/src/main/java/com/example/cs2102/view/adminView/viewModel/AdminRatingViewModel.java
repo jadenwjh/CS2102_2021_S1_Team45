@@ -41,8 +41,8 @@ public class AdminRatingViewModel extends ViewModel {
                         List<Rating> list = new ArrayList<>();
                         for (LinkedTreeMap<String, String> row : linkedTreeMaps) {
                             String name = row.get("caretaker");
-                            String rating = row.get("averagerating");
-                            if (name.trim().length() != 0) {
+                            String rating = row.get("averagerating") == null ? "0.00" : row.get("averagerating");
+                            if (name != null) {
                                 Rating current = new Rating(name, rating);
                                 list.add(current);
                             }
