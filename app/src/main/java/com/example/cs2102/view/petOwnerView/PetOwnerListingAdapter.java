@@ -75,6 +75,9 @@ public class PetOwnerListingAdapter extends RecyclerView.Adapter<PetOwnerListing
         @BindView(R.id.listing_date)
         TextView avail;
 
+        @BindView(R.id.rate)
+        TextView rating;
+
         public ListingViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -92,6 +95,7 @@ public class PetOwnerListingAdapter extends RecyclerView.Adapter<PetOwnerListing
             careTaker.setText(String.format("Care Taker: %s", listing.getCareTaker()));
             category.setText(String.format("Category: %s", listing.getPetType()));
             price.setText(String.format("Fee per day: $%s", listing.getPrice()));
+            rating.setText(String.format("Rating: %s from %s users", listing.getRating().substring(0,3), listing.getNumber()));
             avail.setText(String.format("Date: %s to %s", listing.getStartDate(), listing.getEndDate()));
         }
     }

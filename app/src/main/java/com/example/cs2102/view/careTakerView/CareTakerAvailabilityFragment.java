@@ -53,7 +53,7 @@ public class CareTakerAvailabilityFragment extends Fragment {
 
         datePicker.setOnClickListener(v -> {
             if (contract.equals(Strings.PART_TIME)) {
-                int limit = 10;
+                int limit = 730;
                 Calendar[] days = new Calendar[limit];
                 for(int i = 0; i < limit; i++){
                     Calendar mCalendar = Calendar.getInstance();

@@ -52,6 +52,7 @@ public class Strings {
     public static final String GET_RATINGS = "Admin/summary";
     public static final String STATS = "Admin/petstats";
     public static final String GET_CTINFO = "Admin/ctsummary";
+    public static final String FINANCES = "Admin/finances";
 
     public static String convertDate(String old) {
         String[] dates = old.split("-");

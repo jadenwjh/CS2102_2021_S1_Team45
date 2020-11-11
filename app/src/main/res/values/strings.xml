@@ -112,5 +112,6 @@
     <string name="performance">Performance</string>
     <string name="picking_any_day_will_show_performances_of_cts_for_the_month">Picking any day will show performances of CTs for the month</string>
     <string name="note_that_only_information_before_the_current_month_is_available">Note that only information before the current month is available</string>
+    <string name="finances">Finances</string>
 
 </resources>

@@ -127,4 +127,7 @@ public interface DataApi {
 
     @GET(Strings.STATS + "/{username}/{date}")
     Single<LinkedTreeMap<String,String>> getStats(@Path("username") String username, @Path("date") String date);
+
+    @POST(Strings.FINANCES)
+    Single<ArrayList<LinkedTreeMap<String,String>>> getFinances(@Body HashMap<String,Object> params);
 }

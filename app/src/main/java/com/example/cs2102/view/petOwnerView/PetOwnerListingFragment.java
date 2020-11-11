@@ -222,7 +222,9 @@ public class PetOwnerListingFragment extends Fragment {
                             listing.get("category"),
                             listing.get("feeperday"),
                             listing.get("startdate"),
-                            listing.get("enddate"));
+                            listing.get("enddate"),
+                            listing.get("avgrating") == null ? "0.00" : listing.get("avgrating"),
+                            listing.get("numratings") == null ? "0" : listing.get("numratings"));
                     listings.add(obj);
                 }
                 listingAdapter.updateListings(listings);

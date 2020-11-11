@@ -270,13 +270,13 @@ public class DataApiService {
         params.put("category", type);
         return dataApi.updateBasePrice(params);
     }
-    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchRatings(String username) {
-        return dataApi.getRatings(username);
-    }
     public Single<ArrayList<LinkedTreeMap<String,String>>> fetchCTInfo(String username, String date) {
         return dataApi.getCTInfo(username, date);
     }
-    public Single<LinkedTreeMap<String,String>> fetchAdminStats(String username, String date) {
-        return dataApi.getStats(username, date);
+    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchFinances(String sdate, String edate) {
+        HashMap<String,Object> params = new HashMap<>();
+        params.put("sdate", sdate);
+        params.put("edate", edate);
+        return dataApi.getFinances(params);
     }
 }
