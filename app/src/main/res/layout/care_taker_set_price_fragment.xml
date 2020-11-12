@@ -15,185 +15,183 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/all_pets"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintHeight_max="250dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/add_edit_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:orientation="horizontal"
-                android:weightSum="3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/all_pets">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center">
 
-                <TextView
-                    android:id="@+id/priceRange"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/bids_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/add_edit_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="12sp" />
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
 
-                <TextView
-                    android:id="@+id/set_pet_hint"
+                    <TextView
+                        android:id="@+id/priceRange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/set_pet_hint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/select_a_pet"
+                        android:textSize="12sp" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/editPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:inputType="number"
+                        android:maxLength="3"
+                        android:textSize="12sp" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="wrap_content" />
+
+                    <Button
+                        android:id="@+id/setPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/set" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/add_set_buttons"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/select_a_pet"
-                    android:textSize="12sp" />
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/add_new_category"
+                        android:textSize="12sp" />
 
-                <EditText
-                    android:id="@+id/editPrice"
+                    <Spinner
+                        android:id="@+id/petTypesList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="wrap_content" />
+
+                    <Button
+                        android:id="@+id/addNewPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/add" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/delete_pet_line"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:inputType="number"
-                    android:maxLength="3"
-                    android:textSize="12sp" />
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/delete_category"
+                        android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/setPrice"
+                    <Spinner
+                        android:id="@+id/deletePetTypesList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="10sp"
+                        android:layout_height="wrap_content" />
+
+                    <Button
+                        android:id="@+id/removePrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/del" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/set" />
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/careTakerNoTypes"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:text="@string/you_currently_have_no_categories_set"/>
+
+                    <TextView
+                        android:id="@+id/careTakerPricesError"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:text="@string/errorText" />
+
+                </LinearLayout>
 
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/add_set_buttons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:weightSum="3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/add_edit_price">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_new_category"
-                    android:textSize="12sp" />
-
-                <Spinner
-                    android:id="@+id/petTypesList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/addNewPrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/delete_pet_line"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:weightSum="3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/add_set_buttons">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/delete_category"
-                    android:textSize="12sp" />
-
-                <Spinner
-                    android:id="@+id/deletePetTypesList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Space
-                    android:layout_width="10sp"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/removePrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/del" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/to_add_fill_in_all_entries_nto_modify_same_but_with_target_name_type_nto_delete_fill_in_name"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/delete_pet_line" />
-
-            <TextView
-                android:id="@+id/careTakerNoTypes"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:text="@string/you_currently_have_no_categories_set"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/careTakerPricesError"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:text="@string/errorText"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
 
             <ProgressBar
                 android:id="@+id/careTakerPricesLoading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

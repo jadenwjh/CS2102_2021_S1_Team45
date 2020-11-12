@@ -49,7 +49,7 @@ public class CareTakerSetPriceFragment extends Fragment {
     @BindView(R.id.careTakerPricesLoading)
     ProgressBar loadingView;
 
-    @BindView(R.id.all_pets)
+    @BindView(R.id.bids_recycler_view)
     RecyclerView pricesRecyclerView;
 
     @BindView(R.id.editPrice)

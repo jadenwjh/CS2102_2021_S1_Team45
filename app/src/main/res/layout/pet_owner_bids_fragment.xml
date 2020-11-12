@@ -10,40 +10,57 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/bids_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <LinearLayout
-            android:id="@+id/bids_buttons_pets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/ongoing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/ongoing" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_gravity="center">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/bids_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Space
-                android:layout_width="80sp"
-                android:layout_height="wrap_content" />
+                android:layout_width="wrap_content"
+                android:layout_height="5dp" />
 
-            <Button
-                android:id="@+id/for_review"
-                android:layout_weight="1"
+            <LinearLayout
+                android:id="@+id/bids_buttons_pets"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/successful" />
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/ongoing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/ongoing" />
+
+                <Space
+                    android:layout_width="80sp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/for_review"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/successful" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -54,7 +71,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bids_recycler_view" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

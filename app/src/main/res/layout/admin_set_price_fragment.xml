@@ -10,70 +10,87 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pet_list"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <LinearLayout
-            android:id="@+id/choose_existing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_list">
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/modify_price"
-                android:textSize="15sp" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_gravity="center">
 
-            <EditText
-                android:id="@+id/pet_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLength="20"
-                android:hint="@string/pet_type"
-                android:inputType="text" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/pet_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Space
-                android:layout_width="12sp"
-                android:layout_height="wrap_content" />
+                android:layout_width="wrap_content"
+                android:layout_height="5dp" />
 
-            <EditText
-                android:id="@+id/price"
-                android:hint="@string/new_price"
-                android:maxLength="3"
+            <LinearLayout
+                android:id="@+id/choose_existing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/modify_price"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/pet_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/pet_type"
+                    android:inputType="text"
+                    android:maxLength="20" />
+
+                <Space
+                    android:layout_width="12sp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_price"
+                    android:inputType="number"
+                    android:maxLength="3" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="5dp" />
+
+            <Button
+                android:layout_gravity="center"
+                android:id="@+id/set_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/set" />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/set_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/set"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/choose_existing" />
 
         <ProgressBar
             android:id="@+id/loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/set_price" />
+            app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
