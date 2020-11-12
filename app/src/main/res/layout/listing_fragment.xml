@@ -12,12 +12,10 @@
 
         <LinearLayout
             android:id="@+id/spinners"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:orientation="vertical"
-            android:weightSum="7"
             android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -26,7 +24,6 @@
                 android:id="@+id/date_range_listing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textSize="15sp" />
 
             <Space
@@ -37,7 +34,6 @@
                 android:id="@+id/listing_care_taker_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textSize="15sp" />
 
             <Space
@@ -48,7 +44,6 @@
                 android:id="@+id/current_pet_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textSize="15sp" />
 
             <Space
@@ -59,23 +54,21 @@
                 android:id="@+id/current_pet_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textSize="15sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_weight="1"
                 android:gravity="center"
-                android:weightSum="2" >
+                android:orientation="horizontal"
+                android:weightSum="2">
 
                 <TextView
                     android:id="@+id/payment_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/payment_type"
                     android:layout_weight="1"
+                    android:text="@string/payment_type"
                     android:textSize="15sp" />
 
                 <Spinner
@@ -93,24 +86,23 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_weight="1"
-                android:weightSum="2" >
+                android:orientation="horizontal"
+                android:weightSum="2">
 
                 <TextView
                     android:id="@+id/transfer_types"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/transfer_type_1"
                     android:layout_weight="1"
+                    android:text="@string/transfer_type_1"
                     android:textSize="15sp" />
 
                 <Spinner
+                    android:id="@+id/listing_transfer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/listing_transfer" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
@@ -119,11 +111,11 @@
                 android:layout_height="4dp" />
 
             <LinearLayout
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:weightSum="2"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/price_listing"
@@ -137,35 +129,36 @@
                     android:layout_height="wrap_content" />
 
                 <EditText
+                    android:id="@+id/bid_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLength="3"
-                    android:inputType="number"
                     android:hint="@string/bid_price"
-                    android:id="@+id/bid_price" />
+                    android:inputType="number"
+                    android:maxLength="3" />
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/submit_bid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/submit_bid" />
+
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="wrap_content" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reviewList"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                app:layout_constraintTop_toBottomOf="@+id/submit_bid" />
+
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/reviewList"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="30dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/submit_bid" />
-
-        <Button
-            android:id="@+id/submit_bid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/submit_bid"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinners" />
 
         <ProgressBar
             android:id="@+id/loading"
@@ -174,7 +167,7 @@
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/submit_bid" />
+            app:layout_constraintTop_toBottomOf="@+id/spinners" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
