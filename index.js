@@ -552,6 +552,21 @@ app.get("/CareTaker/RatingsReviews/:caretaker", async (req, res) => {
   }
 });
 
+
+// get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings
+app.get("/caretaker/summary/:caretaker/:date", async (req, res) => {
+  try {
+    const caretakerSummary = await pool.query(
+      `SELECT * FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
+      WHERE a.caretaker = '${req.params.caretaker}';`
+    );
+
+    res.json(caretakerSummary.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Get all pending bids for self
 app.get("/CareTaker/Bids/:caretaker", async (req, res) => {
   try {

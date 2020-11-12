@@ -641,6 +641,24 @@
 
     `[{"caretaker":"jgastickep2","rating":5,"review":"This pet care works too well. It buoyantly improves my football by a lot.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-03-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":5,"review":"This pet care works certainly well. It accidentally improves my baseball by a lot.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-04-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":4,"review":"It only works when I am Azerbaijan.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-05-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":3,"review":"talk about contempt!","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-06-05T00:00:00.000Z"},{"caretaker":"jgastickep2","rating":4,"review":"heard about this on timba radio, decided to give it a try.","petowner":"daleksidze6","petname":"Gabbey","edate":"2020-07-05T00:00:00.000Z"}]`
 
+
+
+
+
+&nbsp;
+- ## get Caretaker's wages and pet days clocked for a particular month with caretaker's average ratings and num ratings <div style="text-align: right">`GET /caretaker/summary/:caretaker/:date`
+
+    ### Params:
+    - `caretaker` : string
+    - `date`: date string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/summary/Dominguez/2020-06-02
+
+    Output:
+
+    `{"caretaker":"Dominguez","contract":"Full-Time","salary":3000,"petdaysclocked":"60","avgrating":"4.5000000000000000","numratings":"2"}`
+
 &nbsp;
 - ## Get all bids for self <div style="text-align: right">`GET /CareTaker/Bids/:caretaker`
 
