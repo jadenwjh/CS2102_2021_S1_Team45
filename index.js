@@ -229,6 +229,31 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
   }
 });
 
+
+// Get information about rejected bids
+app.get("/PetOwner/Bids/:petowner/rejected", async (req, res) => {
+  try {
+    const getRating = await pool.query(
+      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
+      FROM combinedBids() as B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
+      WHERE B1.petowner = '${req.params.petowner}'
+      AND (SELECT sum(B2.rating) FROM combinedBids() AS B2 
+        WHERE B1.edate = B2.avail
+        AND B1.petowner = B2.petowner
+        AND B1.petname = B2.petname
+        AND B1.caretaker = B2.caretaker
+        AND B1.edate = B2.edate) IS NULL 
+      AND status='r'
+      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
+      ORDER BY B1.edate;`
+    );
+    res.json(getRating.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Get available caretakers
 app.post("/PetOwner/findCareTaker", async (req, res) => {
   try {

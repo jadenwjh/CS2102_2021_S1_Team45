@@ -261,6 +261,22 @@
         `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-04T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}]`
 
 &nbsp;
+- ## Get information about rejected bids:<div style="text-align: right">`GET /PetOwner/Bids/:petowner`</div>
+
+    ### Params:
+
+    - `petowner`: string, petowner's username
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/petowner/bids/ccarnewp8/rejected
+
+        Output:
+
+        > Bids that are pending / accepted, before the currentDate() can be found here
+
+        `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-06-04T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"r","review":null,"rating":null}]`
+
+&nbsp;
 - ## Leave rating and reviews for caretaker, as well as sending payment<div style="text-align: right">`POST /PetOwner/RatingsReviews`  </div>
 
     ### Body:
