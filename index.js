@@ -124,7 +124,7 @@ app.delete("/Users/delete", async (req, res) => {
       WHERE '${req.body.username}' = username
       AND '${req.body.password}' = password RETURNING *;`
     );
-    if (!Array.isArray(getUsers.rows) || !getUsers.rows.length) {
+    if (!Array.isArray(delUser.rows) || !delUser.rows.length) {
       throw Error("Cannot delete. Check for existing approved bids.");
     }
     res.json(deluser.rows[0]);
@@ -164,19 +164,27 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
   try {
     const getRating = await pool.query(
       // Smallest avail(sdate) from each group
-      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
-      FROM combinedBids() AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
-      WHERE B1.petowner = '${req.params.petowner}'
-      AND (SELECT sum(B2.rating) FROM combinedBids() AS B2 
-        WHERE B1.edate = B2.avail
-        AND B1.petowner = B2.petowner
-        AND B1.petname = B2.petname
-        AND B1.caretaker = B2.caretaker
-        AND B1.edate = B2.edate) IS NULL 
-      AND status = 'p'
-      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
-      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
+      `SELECT *
+      FROM (
+        SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
+              FROM Bids AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
+              WHERE B1.petowner = '${req.params.petowner}'
+              AND (SELECT sum(B2.rating) FROM Bids AS B2 
+                WHERE B1.edate = B2.avail
+                AND B1.petowner = B2.petowner
+                AND B1.petname = B2.petname
+                AND B1.caretaker = B2.caretaker
+                AND B1.edate = B2.edate) IS NULL 
+              AND status = 'p'
+              GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+              Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
+        UNION
+        SELECT sdate AS avail, caretaker, edate, transferType, paymentType, price, FALSE AS isPaid, 'r' AS status, NULL AS rating,
+          NULL AS review, Pets.*
+        FROM InvalidatedBids IB NATURAL JOIN Pets
+        WHERE IB.petowner = '${req.params.petowner}') POB
       ORDER BY status, edate;`
+
     );
     res.json(getRating.rows);
   } catch (err) {
@@ -208,19 +216,27 @@ app.post("/PetOwner/RatingsReviews", async (req, res) => {
 app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
   try {
     const getRating = await pool.query(
-      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
-      FROM combinedBids() as B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
-      WHERE B1.petowner = '${req.params.petowner}'
-      AND (SELECT sum(B2.rating) FROM combinedBids() AS B2 
-        WHERE B1.edate = B2.avail
-        AND B1.petowner = B2.petowner
-        AND B1.petname = B2.petname
-        AND B1.caretaker = B2.caretaker
-        AND B1.edate = B2.edate) IS NULL 
-      AND (status='a' OR status = 'r')
-      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
-      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
-      ORDER BY B1.edate;`
+      `SELECT *
+      FROM (
+        SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.* 
+              FROM Bids AS B1 LEFT JOIN Pets on B1.petowner = Pets.petowner AND B1.petname = Pets.petname
+              WHERE B1.petowner = '${req.params.petowner}'
+              AND (SELECT sum(B2.rating) FROM Bids AS B2 
+                WHERE B1.edate = B2.avail
+                AND B1.petowner = B2.petowner
+                AND B1.petname = B2.petname
+                AND B1.caretaker = B2.caretaker
+                AND B1.edate = B2.edate) IS NULL 
+              AND (status = 'a' OR status = 'r')
+              GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+              Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
+        UNION
+        SELECT sdate AS avail, caretaker, edate, transferType, paymentType, price, FALSE AS isPaid, 'r' AS status, NULL AS rating,
+          NULL AS review, Pets.*
+        FROM InvalidatedBids IB NATURAL JOIN Pets
+        WHERE IB.petowner = '${req.params.petowner}') POB
+      ORDER BY status, edate;`
+      
     );
     res.json(getRating.rows);
   } catch (err) {
@@ -580,7 +596,8 @@ app.get("/CareTaker/RatingsReviews/:caretaker", async (req, res) => {
 app.get("/caretaker/summary/:caretaker/:date", async (req, res) => {
   try {
     const caretakerSummary = await pool.query(
-      `SELECT * FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
+      `SELECT *,  CAST(salary AS decimal) AS salary
+      FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
       WHERE a.caretaker = '${req.params.caretaker}';`
     );
 
@@ -670,7 +687,7 @@ app.put("/CareTaker/pricing", async (req, res) => {
 app.post("/CareTaker/salary", async (req, res) => {
   try {
     const abletocare = await pool.query(
-      `SELECT salary FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
+      `SELECT salary FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.body.date}' AS DATE))) AS a
       WHERE a.caretaker = '${req.body.caretaker}'; `
     );
     res.json(abletocare.rows[0]);
