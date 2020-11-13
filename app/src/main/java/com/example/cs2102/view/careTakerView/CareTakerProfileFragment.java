@@ -108,13 +108,13 @@ public class CareTakerProfileFragment extends Fragment {
 
         careTakerProfileViewModel.stats.observe(getViewLifecycleOwner(), stats -> {
             String con = stats.get("contract").toString();
-            double sal = (double) stats.get("salary");
+            String sal = stats.get("salary").toString();
             String day = stats.get("petdaysclocked").toString();
             String avg = stats.get("avgrating") != null ? stats.get("avgrating").toString().substring(0,3) : "Currently not rated";
             String num = stats.get("numratings").toString();
 
             contract.setText(String.format("Contract type: %s", con));
-            salary.setText(String.format("Expected earning this month: $%s", Double.toString(sal)));
+            salary.setText(String.format("Expected earning this month: $%s", sal));
             petdays.setText(String.format("Pet Days accumulated: %s", day));
             rating.setText(avg.equals("Currently not rated") ? "Currently not rated" : String.format("Average Rating: %s from %s users", avg, num));
         });

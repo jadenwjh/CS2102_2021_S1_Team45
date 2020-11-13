@@ -42,6 +42,9 @@ public interface DataApi {
     @GET(Strings.CT_BIDS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getBidsReceived(@Path("username") String username);
 
+    @GET(Strings.CT_SUCCESSFUL_BIDS + "/{username}")
+    Single<ArrayList<LinkedTreeMap<String,String>>> getBidsAccepted(@Path("username") String username);
+
     @GET(Strings.UPDATE_PRICE_CT + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getPetsForCare(@Path("username") String username);
 
@@ -66,8 +69,8 @@ public interface DataApi {
     @POST(Strings.CT_PART_TIME_FREE)
     Completable setPartTimeFree(@Body HashMap<String, String> params);
 
-    @POST(Strings.CT_SALARY)
-    Single<LinkedTreeMap<String,String>> getCTSalary(@Body HashMap<String, String> params);
+    @GET(Strings.CT_SALARY + "/{username}/{date}")
+    Single<LinkedTreeMap<String,Object>> getCTSalary(@Path("username") String username, @Path("date") String date);
 
     @GET(Strings.CT_REVIEWS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getCTReview(@Path("username") String username);

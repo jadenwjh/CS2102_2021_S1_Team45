@@ -1,9 +1,11 @@
 package com.example.cs2102.view.careTakerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -34,13 +36,17 @@ public class CareTakerBidsFragment extends Fragment {
     @BindView(R.id.careTakerBidsLoading)
     ProgressBar loadingView;
 
-    @BindView(R.id.careTakerBidsRefresh)
-    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.ongoing)
+    Button ongoingBids;
+
+    @BindView(R.id.successful)
+    Button successBids;
 
     private static String currentCareTakerUsername;
 
     private CareTakerBidsViewModel bidsVM;
-    private CareTakerBidsAdapter careTakerBidsAdapter = new CareTakerBidsAdapter(new ArrayList<>());
+    private CareTakerBidsAdapter careTakerOngoingBidsAdapter = new CareTakerBidsAdapter(new ArrayList<>());
+    private CareTakerBidsAdapter careTakerAcceptedBidsAdapter = new CareTakerBidsAdapter(new ArrayList<>());
 
     public static CareTakerBidsFragment newInstance(String username) {
         currentCareTakerUsername = username;
@@ -69,17 +75,29 @@ public class CareTakerBidsFragment extends Fragment {
         ButterKnife.bind(this, view);
         bidsVM = ViewModelProviders.of(this).get(CareTakerBidsViewModel.class);
         bidsVM.loading.setValue(false);
+        bidsVM.refreshBids(currentCareTakerUsername);
 
         bidsRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        careTakerBidsAdapter.setBidsListener(petOwner -> {
+        careTakerOngoingBidsAdapter.setBidsListener(petOwner -> {
             BidSelectedFragment currentBid = BidSelectedFragment.newInstance(currentCareTakerUsername, petOwner);
             careTakerBidsFragmentListener.onBidSelectedFromBidsFragment(currentBid);
         });
 
-        refreshLayout.setOnRefreshListener(() -> {
-            bidsVM.refreshBids(currentCareTakerUsername);
-            refreshLayout.setRefreshing(false);
+        careTakerAcceptedBidsAdapter.setBidsListener(petOwner -> {});
+
+        ongoingBids.setOnClickListener(v -> {
+            bidsRecyclerView.setAdapter(careTakerOngoingBidsAdapter);
+            bidsRecyclerView.setVisibility(View.VISIBLE);
+            ongoingBids.setBackgroundColor(Color.CYAN);
+            successBids.setBackgroundColor(Color.BLACK);
+        });
+
+        successBids.setOnClickListener(v -> {
+            bidsRecyclerView.setAdapter(careTakerAcceptedBidsAdapter);
+            bidsRecyclerView.setVisibility(View.VISIBLE);
+            ongoingBids.setBackgroundColor(Color.BLACK);
+            successBids.setBackgroundColor(Color.CYAN);
         });
     }
 
@@ -87,7 +105,6 @@ public class CareTakerBidsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         bidsVMObserver();
-        bidsVM.refreshBids(currentCareTakerUsername);
     }
 
     @Override
@@ -108,12 +125,31 @@ public class CareTakerBidsFragment extends Fragment {
                             petOwner.get("avail").substring(0,10),
                             petOwner.get("edate").substring(0,10),
                             petOwner.get("price"),
-                            petOwner.get("paymenttype"));
+                            petOwner.get("paymenttype"),
+                            petOwner.get("status"));
                     bids.add(petOwnerBid);
                 }
-                careTakerBidsAdapter.updatePetOwners(bids);
-                bidsRecyclerView.setAdapter(careTakerBidsAdapter);
-                bidsRecyclerView.setVisibility(View.VISIBLE);
+                careTakerOngoingBidsAdapter.updatePetOwners(bids);
+            } else {
+                Toast.makeText(getContext(), "You have no bids", Toast.LENGTH_SHORT).show();
+            }
+        });
+        bidsVM.acceptedBidsForCT.observe(getViewLifecycleOwner(), petOwners -> {
+            if (petOwners != null && petOwners.size() != 0) {
+                List<PetOwnerBid> bids = new ArrayList<>();
+                for (LinkedTreeMap<String,String> petOwner : petOwners) {
+                    PetOwnerBid petOwnerBid = new PetOwnerBid(
+                            petOwner.get("petowner"),
+                            petOwner.get("petname"),
+                            petOwner.get("category"),
+                            petOwner.get("avail").substring(0,10),
+                            petOwner.get("edate").substring(0,10),
+                            petOwner.get("price"),
+                            petOwner.get("paymenttype"),
+                            petOwner.get("status"));
+                    bids.add(petOwnerBid);
+                }
+                careTakerAcceptedBidsAdapter.updatePetOwners(bids);
             } else {
                 Toast.makeText(getContext(), "You have no bids", Toast.LENGTH_SHORT).show();
             }

@@ -1,5 +1,7 @@
 package com.example.cs2102.view.careTakerView.viewModel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -27,12 +29,11 @@ public class CareTakerSalaryViewModel extends ViewModel {
         disposable.add(dataApiService.fetchCTSalary(username, date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<LinkedTreeMap<String,String>>() {
+                .subscribeWith(new DisposableSingleObserver<LinkedTreeMap<String,Object>>() {
 
                     @Override
-                    public void onSuccess(@NonNull LinkedTreeMap<String, String> map) {
-                        String value = map.get("salary");
-                        salary.setValue(value);
+                    public void onSuccess(@NonNull LinkedTreeMap<String, Object> map) {
+                        salary.setValue((String) map.get("salary"));
                         loading.setValue(false);
                     }
 
@@ -40,6 +41,7 @@ public class CareTakerSalaryViewModel extends ViewModel {
                     public void onError(Throwable e) {
                         loading.setValue(false);
                         nothing.setValue(true);
+                        Log.e("fetchSalary", e.getMessage());
                     }
                 })
         );

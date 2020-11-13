@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".view.careTakerView.CareTakerBidsFragment">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/careTakerBidsRefresh">
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="450dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/careTakerBidsReceived"
@@ -34,6 +34,34 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ongoing"
+                android:text="@string/ongoing" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/successful"
+                android:text="@string/processed" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

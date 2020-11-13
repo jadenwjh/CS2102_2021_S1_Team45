@@ -27,6 +27,7 @@ public class DeleteViewModel extends ViewModel {
 
     public void deleteUser(String username, String password) {
         deleteSuccess.setValue(false);
+        loadError.setValue(false);
         loading.setValue(true);
         disposable.add(dataApiService.deleteUser(username, password)
                 .subscribeOn(Schedulers.newThread())
@@ -35,7 +36,6 @@ public class DeleteViewModel extends ViewModel {
 
                     @Override
                     public void onComplete() {
-                        loadError.setValue(false);
                         loading.setValue(false);
                         deleteSuccess.setValue(true);
                     }

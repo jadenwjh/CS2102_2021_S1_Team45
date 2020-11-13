@@ -59,6 +59,7 @@ public class DeleteActivity extends AppCompatActivity {
     private void deleteObserver() {
         deleteViewModel.deleteSuccess.observe(this, deleted -> {
             if (deleted) {
+                Toast.makeText(this, "Account has been deleted", Toast.LENGTH_SHORT).show();
                 super.onBackPressed();
             }
         });
@@ -71,7 +72,7 @@ public class DeleteActivity extends AppCompatActivity {
         });
         deleteViewModel.loadError.observe(this, failed -> {
             if (failed) {
-                Toast.makeText(this, "This account does not exist or is currently part of a bid", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cannot delete this account currently", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -99,7 +99,7 @@ public class PetOwnerBidsAdapter extends RecyclerView.Adapter<PetOwnerBidsAdapte
             petName.setText(String.format("Pet: %s", bid.getPetName()));
             price.setText(String.format("Price: $%s", bid.getPrice()));
             date.setText(String.format("Date: %s to %s", bid.getStartDate().substring(0,10), bid.getEndDate().substring(0,10)));
-            String currentStatus = bid.getStatus().equals("p") ? "Pending" : "Accepted";
+            String currentStatus = bid.getStatus().equals("p") ? "Pending" : (bid.getStatus().equals("a") ? "Accepted" : "Rejected");
             status.setText(String.format("Status: %s", currentStatus));
         }
     }

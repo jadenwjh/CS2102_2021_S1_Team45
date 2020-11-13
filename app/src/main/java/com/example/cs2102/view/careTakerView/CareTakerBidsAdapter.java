@@ -76,6 +76,9 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
         @BindView(R.id.feeperday)
         TextView price;
 
+        @BindView(R.id.status)
+        TextView status;
+
         public BidsReceivedViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -94,6 +97,7 @@ public class CareTakerBidsAdapter extends RecyclerView.Adapter<CareTakerBidsAdap
             petOwnerPet.setText(String.format("%s - %s", petOwner.getPetName(), petOwner.getPetType()));
             avail.setText(String.format("Date: %s to %s", petOwner.getAvailability(), petOwner.getEndDate()));
             price.setText(String.format("Fee per day: $%s", petOwner.getPrice()));
+            status.setText(petOwner.getStatus().equals("p") ? "Pending" : (petOwner.getStatus().equals("a") ? "Accepted" : "Rejected"));
         }
     }
 }

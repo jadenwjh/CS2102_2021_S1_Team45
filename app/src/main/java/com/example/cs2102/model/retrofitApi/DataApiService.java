@@ -120,6 +120,9 @@ public class DataApiService {
     public Single<ArrayList<LinkedTreeMap<String,String>>> getBids(String careTakerName) {
         return dataApi.getBidsReceived(careTakerName);
     }
+    public Single<ArrayList<LinkedTreeMap<String,String>>> fetchedBidsAccepted(String careTakerName) {
+        return dataApi.getBidsAccepted(careTakerName);
+    }
 
     // Prices Page
     public Completable updatePricePetType(String username, String petType, int price) {
@@ -166,11 +169,8 @@ public class DataApiService {
     }
 
     // Salary page
-    public Single<LinkedTreeMap<String,String>> fetchCTSalary(String username, String date) {
-        HashMap<String,String> params = new HashMap<>();
-        params.put("caretaker", username);
-        params.put("date", date);
-        return dataApi.getCTSalary(params);
+    public Single<LinkedTreeMap<String,Object>> fetchCTSalary(String username, String date) {
+        return dataApi.getCTSalary(username, date);
     }
 
     //Profile page

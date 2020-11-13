@@ -36,8 +36,9 @@ public class Strings {
     public static final String PETS_THE_CARE_TAKER_CAN_TAKE_CARE = "caretaker/abletocare";
     public static final String CT_FULL_TIME_LEAVE = "caretaker/leaves";
     public static final String CT_BIDS = "caretaker/bids";
+    public static final String CT_SUCCESSFUL_BIDS = "caretaker/bids/accepted";
     public static final String CT_PART_TIME_FREE = "caretaker/available";
-    public static final String CT_SALARY = "CareTaker/salary";
+    public static final String CT_SALARY = "caretaker/summary";
     public static final String CT_REVIEWS = "petowner/ratingsreviews";
     public static final String CARETAKER_STATS = "caretaker/summary";
 

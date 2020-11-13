@@ -8,8 +8,9 @@ public class PetOwnerBid {
     private final String endDate;
     private final String price;
     private final String payment;
+    private final String status;
 
-    public PetOwnerBid(String username, String petName, String petType, String availability, String endDate, String price, String payment) {
+    public PetOwnerBid(String username, String petName, String petType, String availability, String endDate, String price, String payment, String status) {
         this.username = username;
         this.petName = petName;
         this.petType = petType;
@@ -17,6 +18,11 @@ public class PetOwnerBid {
         this.price = price;
         this.payment = payment;
         this.endDate = endDate;
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String getPetOwner() {

@@ -74,7 +74,7 @@ public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.SalaryView
             contract.setText(String.format("Contract: %s", info.getContract()));
             salaryText.setText(String.format("Salary: $%s", info.getSalary()));
             petDays.setText(String.format("Pet-days: %s", info.getDays()));
-            averageRating.setText(String.format("Ratings: Average of %s from %s users", info.getRating(), info.getFrequency()));
+            averageRating.setText(String.format("Ratings: Average of %s from %s users", info.getRating().substring(0,3), info.getFrequency()));
         }
     }
 }
