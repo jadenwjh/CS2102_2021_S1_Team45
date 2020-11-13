@@ -670,7 +670,8 @@ app.put("/CareTaker/pricing", async (req, res) => {
 app.post("/CareTaker/salary", async (req, res) => {
   try {
     const abletocare = await pool.query(
-      `SELECT salary FROM viewMySalary('${req.body.caretaker}', CAST(date_trunc('month', DATE '${req.body.date}') AS DATE)); `
+      `SELECT salary FROM (SELECT * FROM viewCareTakersWagePetDaysRatings(CAST('${req.params.date}' AS DATE))) AS a
+      WHERE a.caretaker = '${req.body.caretaker}'; `
     );
     res.json(abletocare.rows[0]);
   } catch (err) {
