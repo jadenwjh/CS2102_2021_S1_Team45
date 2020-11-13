@@ -2,7 +2,6 @@ package com.example.cs2102.view.careTakerView;
 
 import android.os.Bundle;
 import android.os.Parcel;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.cs2102.R;
+import com.example.cs2102.view.careTakerView.viewModel.CareTakerSalaryViewModel;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -105,7 +105,6 @@ public class CareTakerSalaryFragment extends Fragment {
             @Override
             public boolean isValid(long date) {
                 Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.MONTH, -1);
                 if (date > cal.getTimeInMillis()) {
                     return false;
                 } else {

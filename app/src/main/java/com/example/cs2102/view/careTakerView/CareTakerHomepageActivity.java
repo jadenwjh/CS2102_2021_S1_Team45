@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,12 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     @BindView(R.id.viewSalary)
     Button viewSalary;
 
+    @BindView(R.id.profile)
+    Button careTakerProfile;
+
+    @BindView(R.id.title)
+    TextView title;
+
     private static final String CURRENT_FRAGMENT = "CareTakerFragment";
     private FragmentManager fm;
     private FragmentTransaction ft;
@@ -55,6 +62,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
     private CareTakerAvailabilityFragment availabilityFragment;
     private CareTakerHomepageViewModel homepageViewModel;
     private CareTakerSalaryFragment salaryFragment;
+    private CareTakerProfileFragment profileFragment;
 
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
@@ -71,6 +79,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_care_taker_homepage);
         ButterKnife.bind(this);
+        title.setText(String.format("Care Taker: %s", username));
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
@@ -128,6 +137,8 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
 
                     salaryFragment = CareTakerSalaryFragment.newInstance(username);
 
+                    profileFragment = CareTakerProfileFragment.newInstance();
+
                     //default bid page
                     ft.add(R.id.careTaker_fragment, bidsFragment, CURRENT_FRAGMENT).commit();
                     viewBids.setBackgroundColor(Color.CYAN);
@@ -148,6 +159,8 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
                 viewPrices.setOnClickListener(view -> switchFragment(Strings.PRICES));
 
                 viewSalary.setOnClickListener(view -> switchFragment(Strings.SALARY));
+
+                careTakerProfile.setOnClickListener(view -> switchFragment(Strings.PROFILE));
 
                 careTakerHomepageObserver();
 
@@ -177,6 +190,10 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         viewLeavesOrFree.setBackgroundColor(Color.BLACK);
         viewSalary.setBackgroundColor(Color.BLACK);
         switch (key) {
+            case Strings.PROFILE:
+                ft = fm.beginTransaction();
+                ft.replace(R.id.careTaker_fragment, profileFragment, CURRENT_FRAGMENT).commit();
+                break;
             case Strings.BIDS:
                 viewBids.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();

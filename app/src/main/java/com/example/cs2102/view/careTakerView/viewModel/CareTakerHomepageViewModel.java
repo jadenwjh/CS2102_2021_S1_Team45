@@ -82,7 +82,6 @@ public class CareTakerHomepageViewModel extends ViewModel {
         loading.setValue(true);
         //yyyy-mm-dd
         String converted_date = Strings.convertDate(date);
-        Log.e("requestToApplyLeave", converted_date);
         disposable.add(dataApiService.applyLeave(careTakerUsername, converted_date)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

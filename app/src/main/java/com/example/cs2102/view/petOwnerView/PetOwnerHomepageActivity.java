@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,12 +42,19 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
     @BindView(R.id.viewReview)
     Button viewReview;
 
+    @BindView(R.id.profile)
+    Button profilePage;
+
+    @BindView(R.id.title)
+    TextView title;
+
     private static final String CURRENT_FRAGMENT = "PetOwnerFragment";
     private FragmentManager fm;
     private FragmentTransaction ft;
     private PetOwnerListingFragment listingFragment;
     private PetsFragment petsFragment;
     private PetOwnerBidsFragment bidsFragment;
+    private PetOwnerProfileFragment profileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +64,7 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_pet_owner_homepage);
         ButterKnife.bind(this);
+        title.setText(String.format("PetOwner: %s", username));
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
@@ -91,6 +100,8 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
                 ft.replace(R.id.petOwner_fragment, selectedBid, CURRENT_FRAGMENT).commit();
             });
 
+            profileFragment = PetOwnerProfileFragment.newInstance();
+
             //default listing page
             ft.add(R.id.petOwner_fragment, listingFragment, CURRENT_FRAGMENT).commit();
             viewListings.setBackgroundColor(Color.CYAN);
@@ -106,6 +117,10 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
 
         viewReview.setOnClickListener(view -> {
             switchFragment(Strings.BIDS);
+        });
+
+        profilePage.setOnClickListener(view -> {
+            switchFragment(Strings.PROFILE);
         });
 
         loadingBar.setVisibility(View.GONE);
@@ -129,6 +144,11 @@ public class PetOwnerHomepageActivity extends AppCompatActivity {
         viewPets.setBackgroundColor(Color.BLACK);
         viewReview.setBackgroundColor(Color.BLACK);
         switch (key) {
+            case Strings.PROFILE:
+                toggleHideNavigator(true);
+                ft = fm.beginTransaction();
+                ft.replace(R.id.petOwner_fragment, profileFragment, CURRENT_FRAGMENT).commit();
+                break;
             case Strings.LISTINGS:
                 viewListings.setBackgroundColor(Color.CYAN);
                 ft = fm.beginTransaction();

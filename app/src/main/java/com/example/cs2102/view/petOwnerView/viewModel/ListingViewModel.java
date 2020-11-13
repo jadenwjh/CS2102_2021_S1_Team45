@@ -69,7 +69,9 @@ public class ListingViewModel extends ViewModel {
                             String rating = r.get("rating");
                             String review = r.get("review");
                             String petowner = r.get("petowner");
-                            Review newReview = new Review(petowner,rating, review);
+                            String date = r.get("edate").substring(0,10);
+                            String p = r.get("petname");
+                            Review newReview = new Review(petowner,rating, review, date, p);
                             list.add(newReview);
                         }
                         reviews.setValue(list);

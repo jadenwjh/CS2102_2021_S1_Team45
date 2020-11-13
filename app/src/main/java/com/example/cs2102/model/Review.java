@@ -5,11 +5,15 @@ public class Review {
     private final String username;
     private final String rating;
     private final String review;
+    private final String date;
+    private final String petName;
 
-    public Review(String username, String rating, String review) {
+    public Review(String username, String rating, String review, String edate, String p) {
         this.username = username;
         this.rating = rating;
         this.review = review;
+        this.date = edate;
+        this.petName = p;
     }
 
     public String getUsername() {
@@ -22,5 +26,13 @@ public class Review {
 
     public String getReview() {
         return review;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getPetName() {
+        return petName;
     }
 }

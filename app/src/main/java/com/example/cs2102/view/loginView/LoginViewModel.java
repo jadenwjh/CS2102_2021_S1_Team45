@@ -26,7 +26,7 @@ public class LoginViewModel extends ViewModel {
     public MutableLiveData<Boolean> loading = new MutableLiveData<>();
     public MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
     public MutableLiveData<Boolean> loginFailed = new MutableLiveData<>();
-    public MutableLiveData<LinkedTreeMap<String,String>> userProfile = new MutableLiveData<>();
+    public MutableLiveData<LinkedTreeMap<String,Object>> userProfile = new MutableLiveData<>();
 
     private DataApiService dataApiService = DataApiService.getInstance();
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -39,10 +39,10 @@ public class LoginViewModel extends ViewModel {
         disposable.add(dataApiService.verifyLogin(username, password, type)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,String>>>() {
+                .subscribeWith(new DisposableSingleObserver<ArrayList<LinkedTreeMap<String,Object>>>() {
 
                     @Override
-                    public void onSuccess(ArrayList<LinkedTreeMap<String,String>> details) {
+                    public void onSuccess(ArrayList<LinkedTreeMap<String,Object>> details) {
                         Log.e("Login", "Success");
                         userProfile.setValue(details.get(0));
                         Log.e("User Details", details.get(0).toString());

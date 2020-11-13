@@ -21,7 +21,7 @@ public interface DataApi {
      * */
 
     @POST(Strings.LOGIN)
-    Single<ArrayList<LinkedTreeMap<String,String>>> verifyUser(@Body HashMap<String, String> params);
+    Single<ArrayList<LinkedTreeMap<String,Object>>> verifyUser(@Body HashMap<String, String> params);
 
     @POST(Strings.REGISTER)
     Completable addPetOwner(@Body HashMap<String, String> params);
@@ -71,6 +71,9 @@ public interface DataApi {
 
     @GET(Strings.CT_REVIEWS + "/{username}")
     Single<ArrayList<LinkedTreeMap<String,String>>> getCTReview(@Path("username") String username);
+
+    @GET(Strings.CARETAKER_STATS + "/{username}/{date}")
+    Single<LinkedTreeMap<String,Object>> getCTStats(@Path("username") String username, @Path("date") String date);
 
     /**
      * PET OWNER

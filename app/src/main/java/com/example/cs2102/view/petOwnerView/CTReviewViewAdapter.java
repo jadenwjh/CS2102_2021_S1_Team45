@@ -58,15 +58,19 @@ public class CTReviewViewAdapter extends RecyclerView.Adapter<CTReviewViewAdapte
         @BindView(R.id.review)
         TextView reviewText;
 
+        @BindView(R.id.date)
+        TextView date;
+
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
         void bind(Review review) {
-            petowner.setText(String.format("From: %s", review.getUsername()));
+            petowner.setText(String.format("From: %s - Pet: %s", review.getUsername(), review.getPetName()));
             rating.setText(String.format("Rating score %s", review.getRating()));
             reviewText.setText(review.getReview());
+            date.setText(String.format("Date: %s", review.getDate()));
         }
     }
 

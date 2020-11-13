@@ -143,7 +143,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginViewModel.userProfile.observe(this, profile -> userProfile.setUserProfile(profile.get("username"), profile.get("password"), profile.get("email"), profile.get("profile"), profile.get("address"), profile.get("phoneNum"), profile.get("acctype")));
+        loginViewModel.userProfile.observe(this, profile -> userProfile.setUserProfile(
+                profile.get("username").toString(),
+                profile.get("password").toString(),
+                profile.get("email").toString(),
+                profile.get("profile").toString(),
+                profile.get("address").toString(),
+                profile.get("phonenum").toString(),
+                profile.get("acctype").toString()));
     }
 
     private void startRegisterPage() {

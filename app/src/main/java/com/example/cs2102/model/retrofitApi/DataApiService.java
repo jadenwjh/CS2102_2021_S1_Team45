@@ -85,7 +85,7 @@ public class DataApiService {
         params.put("admin", admin);
         return dataApi.addCareTaker(params);
     }
-    public Single<ArrayList<LinkedTreeMap<String,String>>> verifyLogin(String uName, String pw, String type) {
+    public Single<ArrayList<LinkedTreeMap<String,Object>>> verifyLogin(String uName, String pw, String type) {
         HashMap<String, String> params = new HashMap<>();
         params.put("username", uName);
         params.put("password", pw);
@@ -171,6 +171,11 @@ public class DataApiService {
         params.put("caretaker", username);
         params.put("date", date);
         return dataApi.getCTSalary(params);
+    }
+
+    //Profile page
+    public Single<LinkedTreeMap<String,Object>> fetchCTStats(String username, String date) {
+        return dataApi.getCTStats(username, date);
     }
 
     /**
