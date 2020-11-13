@@ -660,7 +660,7 @@
     `{"caretaker":"Dominguez","contract":"Full-Time","salary":3000,"petdaysclocked":"60","avgrating":"4.5000000000000000","numratings":"2"}`
 
 &nbsp;
-- ## Get all bids for self <div style="text-align: right">`GET /CareTaker/Bids/:caretaker`
+- ## Get all pending bids for self <div style="text-align: right">`GET /CareTaker/Bids/:caretaker`
 
     ### Params:
     - `caretaker` : string
@@ -671,6 +671,20 @@
     Output:
 
     `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-05-31T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"p","review":null,"rating":null}, ...]`
+
+
+&nbsp;
+- ## Get all accepted bids for self <div style="text-align: right">`GET /CareTaker/Bids/accepted/:caretaker`
+
+    ### Params:
+    - `caretaker` : string
+
+    ### Example:
+    - GET https://shielded-oasis-35437.herokuapp.com/caretaker/bids/accepted/jgastickep2
+
+    Output:
+
+    `[{"petowner":"daleksidze6","petname":"Gabbey","caretaker":"jgastickep2","avail":"2020-05-31T16:00:00.000Z","edate":"2020-06-04T16:00:00.000Z","transfertype":"f2f","paymenttype":"cash","price":100,"ispaid":false,"status":"a","review":null,"rating":null}, ...]`
 
 &nbsp;
 - ## Respond to a bid <div style="text-align: right">`PUT /CareTaker/Bids`

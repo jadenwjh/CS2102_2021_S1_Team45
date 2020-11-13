@@ -585,6 +585,24 @@ app.get("/CareTaker/Bids/:caretaker", async (req, res) => {
   }
 });
 
+// Get all accepted bids for self
+app.get("/CareTaker/Bids/accepted/:caretaker", async (req, res) => {
+  try {
+    const getBid = await pool.query(
+      `SELECT MIN(avail) AS avail, caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, Pets.*
+      FROM combinedBids() AS B LEFT JOIN Pets on B.petowner = Pets.petowner AND B.petname = Pets.petname
+      WHERE caretaker = '${req.params.caretaker}'
+      AND status = 'a'
+      GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
+      Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
+      ORDER BY edate;`
+    );
+    res.json(getBid.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Respond to bid
 app.put("/CareTaker/Bids", async (req, res) => {
   try {
