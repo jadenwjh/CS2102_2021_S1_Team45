@@ -174,8 +174,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
                 AND B1.petowner = B2.petowner
                 AND B1.petname = B2.petname
                 AND B1.caretaker = B2.caretaker
-                AND B1.edate = B2.edate) IS NULL 
-              AND status = 'p'
+                AND B1.edate = B2.edate) IS NULL
               GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
               Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
         UNION
@@ -183,6 +182,7 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
           NULL AS review, Pets.*
         FROM InvalidatedBids IB NATURAL JOIN Pets
         WHERE IB.petowner = '${req.params.petowner}') POB
+      WHERE status = 'p'  /*choose pending, rejected or approved bids here*/
       ORDER BY status, edate;`
 
     );
@@ -226,8 +226,7 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
                 AND B1.petowner = B2.petowner
                 AND B1.petname = B2.petname
                 AND B1.caretaker = B2.caretaker
-                AND B1.edate = B2.edate) IS NULL 
-              AND (status = 'a' OR status = 'r')
+                AND B1.edate = B2.edate) IS NULL
               GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
               Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
         UNION
@@ -235,6 +234,7 @@ app.get("/PetOwner/Bids/:petowner/history", async (req, res) => {
           NULL AS review, Pets.*
         FROM InvalidatedBids IB NATURAL JOIN Pets
         WHERE IB.petowner = '${req.params.petowner}') POB
+      WHERE status = 'a' OR status = 'r'  /*choose pending, rejected or approved bids here*/
       ORDER BY status, edate;`
       
     );
@@ -259,8 +259,7 @@ app.get("/PetOwner/Bids/:petowner/rejected", async (req, res) => {
                 AND B1.petowner = B2.petowner
                 AND B1.petname = B2.petname
                 AND B1.caretaker = B2.caretaker
-                AND B1.edate = B2.edate) IS NULL 
-              AND status = 'r'
+                AND B1.edate = B2.edate) IS NULL
               GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
               Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
         UNION
@@ -268,6 +267,7 @@ app.get("/PetOwner/Bids/:petowner/rejected", async (req, res) => {
           NULL AS review, Pets.*
         FROM InvalidatedBids IB NATURAL JOIN Pets
         WHERE IB.petowner = '${req.params.petowner}') POB
+      WHERE status = 'r'  /*choose pending, rejected or approved bids here*/
       ORDER BY status, edate;`
     );
     res.json(getRating.rows);
