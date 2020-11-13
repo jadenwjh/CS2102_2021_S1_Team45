@@ -191,6 +191,7 @@ public class CareTakerHomepageActivity extends AppCompatActivity {
         viewSalary.setBackgroundColor(Color.BLACK);
         switch (key) {
             case Strings.PROFILE:
+                toggleHideNavigator(true);
                 ft = fm.beginTransaction();
                 ft.replace(R.id.careTaker_fragment, profileFragment, CURRENT_FRAGMENT).commit();
                 break;
