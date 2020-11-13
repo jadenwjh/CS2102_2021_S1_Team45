@@ -173,11 +173,10 @@ app.get("/PetOwner/Bids/:petowner", async (req, res) => {
         AND B1.petname = B2.petname
         AND B1.caretaker = B2.caretaker
         AND B1.edate = B2.edate) IS NULL 
-      AND status = 'p'
-      AND (SELECT currentDate()) <= B1.edate
+      AND (status = 'p' OR status = 'r')
       GROUP BY caretaker, edate, transferType, paymentType, price, isPaid, status, rating, review, 
       Pets.petowner, Pets.petname, Pets.profile, Pets,specialReq, Pets.category
-      ORDER BY edate;`
+      ORDER BY status, edate;`
     );
     res.json(getRating.rows);
   } catch (err) {
